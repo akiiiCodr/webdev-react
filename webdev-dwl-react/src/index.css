@@ -1,0 +1,1198 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+
+}
+
+
+.container-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 2rem;
+  background-color: hsl(0, 100%, 50%); /* Similar to your image background */
+}
+
+.menu-icon {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.login{
+  background: white;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.sign-up{
+  background: white;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.3s, border-color 0.3s;
+  margin-left: 10px;
+
+}
+
+.title-section {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.title-section h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.title-section p {
+  font-size: 0.9rem;
+  color: rgb(70, 70, 70);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+
+
+.notification {
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.share-idea {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgb(55, 55, 55);
+  background: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: rgb(55, 55, 55);
+  border-radius: 4px;
+}
+
+.profile-circle {
+  width: 40px;
+  height: 40px;
+  background-color: rgb(142, 142, 142);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.reviews-container {
+  padding: 2rem;
+  background-color: #f1f3f5;
+}
+
+.image-gallery {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.image-placeholder {
+  flex: 1;
+  height: 150px;
+  background-color: #e2e3e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #a8a8a8;
+}
+
+.rating {
+  font-size: 1.2rem;
+  color: #444;
+  margin-bottom: 1rem;
+}
+
+.rating .star {
+  color: #ffb400;
+}
+
+.review-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.review-item {
+  display: flex;
+  gap: 1rem;
+  width: calc(50% - 1rem);
+  align-items: flex-start;
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #9e9e9e;
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.review-content {
+  font-size: 0.9rem;
+}
+
+.review-content strong {
+  font-weight: bold;
+  color: #333;
+}
+
+.review-content p {
+  color: #666;
+}
+
+.message-icon {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 2rem;
+  background-color: #444;
+  color: white;
+  padding: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #f1f1f1;
+}
+
+.footer-section ul {
+  list-style: none;
+}
+
+.footer-section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-section ul li a {
+  text-decoration: none;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.footer-section ul li a:hover {
+  color: #f1f1f1;
+}
+
+.social-icons {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.social-icons a {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  line-height: 35px;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.social-icons a:hover {
+  background-color: #777;
+}
+
+.footer-bottom {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #bbb;
+}
+
+
+/* USERSCREEN */
+
+/* Main Content Styles */
+.content {
+  display: flex;
+  padding: 1rem;
+  background-color: #f3f3f3;
+}
+
+.image-gallery {
+  display: flex;
+  gap: 1rem;
+  flex: 3;
+}
+
+.image-placeholder {
+  background-color: #e0e0e0;
+  height: 150px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.review-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  margin-left: 1rem;
+}
+
+.review-card {
+  background-color: #d3d3d3;
+  height: 80px;
+  border-radius: 8px;
+}
+
+/* WEBSCREEN */
+
+/* Content Section */
+/* Login Section */
+
+        body {
+          font-family: Arial, sans-serif;
+      }
+      
+      .menu-bar {
+          position: relative;
+          display: inline-block;
+      }
+      
+      .menu-button {
+          padding: 10px 20px;
+          background-color: #007BFF;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+      }
+      
+      .dropdown {
+        display: none; /* Hidden by default */
+        background-color: #f1f1f1;
+        position: absolute;
+        min-width: 160px;
+        z-index: 1;
+      }
+      
+      .dropdown.active {
+        display: block; /* Show the dropdown when the 'active' class is applied */
+      }
+
+      /* Remove bullets from the list */
+      .dropdown ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* Style the list items */
+      .dropdown li {
+        padding: 10px;
+      }
+
+      /* Style the anchor tags inside the list items */
+      .dropdown li a {
+        text-decoration: none;
+        color: black;
+        display: block;
+        padding: 8px;
+      }
+
+      /* Hover effect for anchor tags */
+      .dropdown li a:hover {
+        background-color: #ddd;
+      }
+
+      
+        
+      
+      .menu-item {
+          display: block;
+          padding: 10px 20px;
+          color: black;
+          text-decoration: none;
+      }
+      
+      .menu-item:hover {
+          background-color: #f1f1f1; /* Change color on hover */
+      }    
+.login-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  background-color: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 350px;
+}
+
+.login-box h1 {
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.login-box p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.forgot-password {
+  display: block;
+  text-align: right;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: #5679ff;
+  text-decoration: none;
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #5679ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.signup-text {
+  text-align: center;
+  font-size: 14px;
+}
+
+.signup-text a {
+  color: #5679ff;
+  text-decoration: none;
+}
+
+/* Availability Section */
+.availability {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.availability input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+.availability button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* SIGNUP.html */
+
+.container {
+  width: 900px;
+  background-color: white;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Section */
+header.logo {
+  margin-bottom: 20px;
+  display: flex;
+}
+
+header img {
+  width: 100px;
+}
+
+/* Form Layout */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Form Body */
+.form-body {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.left-form, .right-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background-color: #f1f3f5;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.input-group input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 16px;
+  color: #555;
+}
+
+.input-group .icon {
+  margin-right: 10px;
+  color: #888;
+}
+
+/* Password Group */
+.password-group {
+  position: relative;
+}
+
+.password-group .toggle-password {
+  background: none;
+  border: none;
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #888;
+}
+
+/* Submit Button */
+.form-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.submit-button {
+  background-color: #4a4a4a;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #333;
+}
+
+
+/* USER_MENU.html */
+
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #f1f1f1;
+  overflow: hidden;
+}
+
+  .notification {
+    font-size: 24px;
+    cursor: pointer;
+    display: inline-block;
+    padding: 10px;
+  }
+  .notification-content {
+    display: none;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .notification-item {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #b0b0b0;
+  padding-top: 20px;
+  position: fixed;
+  left: -250px; /* Hidden by default */
+  height: 100%;
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar a {
+  padding: 15px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  text-align: left;
+  display: block;
+}
+
+.sidebar .logout {
+  margin-top: auto;
+  padding: 15px;
+  background-color: #999;
+  color: white;
+  text-align: center;
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+}
+
+.main.active {
+  margin-left: 250px;
+}
+
+/* Navigation Header */
+.container-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #f1f1f1;
+}
+
+.title-section h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.title-section p {
+  margin: 0;
+  color: #666;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.availability, .calendar, .notification, .share-idea, .profile-circle {
+  margin-left: 10px;
+}
+
+.availability {
+  background-color: #e0e0e0;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.calendar, .notification {
+  font-size: 20px;
+}
+
+.share-idea {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.profile-circle {
+  width: 40px;
+  height: 40px;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Image Grid */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.image {
+  background-color: #d0d0d0;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image.large {
+  grid-column: span 1;
+  height: 200px;
+}
+
+.image.small {
+  height: 100px;
+}
+
+/* Floating Button */
+.floating-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #333;
+  color: white;
+  padding: 15px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Toggle Button (Menu Icon) */
+.menu-icon {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+/* PAYMENT.html */
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #f1f1f1;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #f4f4f4;
+  padding-top: 20px;
+  position: fixed;
+  left: -250px; /* Hidden by default */
+  height: 100%;
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar a {
+  padding: 15px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  text-align: left;
+  display: block;
+}
+
+/* Main Content */
+.main {
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+  padding: 20px;
+}
+
+.main.active {
+  margin-left: 250px;
+}
+
+/* Navigation Header */
+.container-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: hsl(0, 1%, 63%);
+  border-bottom: 1px solid #ddd;
+}
+
+.title-section h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.title-section p {
+  margin: 0;
+  color: #666;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.availability-button, .calendar-button, .notification, .share-idea, .profile-circle {
+  margin-left: 15px;
+}
+
+/* Button Container */
+.right-header {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+}
+
+/* General Button Styling */
+button {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+
+
+button:hover {
+  background-color: #f1f1f1; /* Light background on hover */
+  border-color: #888; /* Darken border on hover */
+}
+
+/* Bed Availability Button */
+.availability-button {
+  background-color: hsl(0, 0%, 90%); /* Light gray */
+}
+
+.availability-button i {
+  margin-right: 8px;
+}
+
+.availability-text {
+  font-size: 14px;
+}
+
+/* Calendar Button */
+.calendar-button {
+  background-color: hsl(0, 0%, 90%); /* Light gray */ 
+}
+
+.calendar-button .calendar-icon {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.calendar-button .date-text {
+  font-size: 14px;
+}
+
+/* Icon and Text Alignment */
+button i, button .calendar-icon {
+  font-size: 18px; /* Icon size */
+  display: inline-block;
+}
+
+button .availability-text, button .date-text {
+  font-size: 14px;
+  font-weight: normal;
+}
+.share-idea {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.profile-circle {
+  width: 40px;
+  height: 40px;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Payment Slip Section */
+.payment-slip-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  background-color: #f8d6d6;
+}
+
+.payment-slip {
+  width: 300px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.payment-header h3 {
+  margin: 0;
+}
+
+.rating {
+  font-size: 18px;
+  color: #4A90E2;
+}
+
+.payment-info {
+  margin-bottom: 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.pay-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4A90E2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.confirmation-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Toggle Button (Menu Icon) */
+.menu-icon {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+
+
+/* Left Sidebar */
+.left-sidebar {
+  width: 350px; /* Adjust width based on sidebar size */
+  background-color: #f4f4f4;
+  padding: 10px;
+  height: 80vh; /* Full height of the viewport */
+  overflow-y: auto; /* Allows scrolling if content overflows */
+  float: left; /* Makes the sidebar float to the left */
+}
+
+/* Sidebar Rectangles */
+.rectangle {
+  width: 100%; /* Full width of the sidebar */
+  height: 60px; /* Rectangle height */
+  background-color: #ddd;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Content Viewer beside Sidebar */
+.content-viewer {
+  margin-left: 210px; /* Space between sidebar and content viewer */
+  padding: 20px;
+  background-color: #ffffff;
+  height: 80vh; /* Same height as the sidebar */
+  overflow-y: auto; /* Allows scrolling if content is too long */
+  display: block; /* Ensures it's positioned beside the sidebar */
+}
+
+/* Content Styling */
+.viewer-content {
+  font-family: Arial, sans-serif;
+  color: #333;
+  font-size: 16px;
+  display: none; /* Hide by default */
+}
+
+/* Show active content */
+.viewer-content.active {
+  display: block; /* Show content when active */
+}
+
+.menu-bar {
+  display: block; /* Optional: Hide menu button for now */
+}
+
+.title-section {
+  text-align: center;
+  flex-grow: 1; /* This makes sure the title is in the center */
+}
+
+.title-section h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0
+}
+
+.name-section {
+  display: flex;
+  flex-direction: column; /* Stack the items vertically */
+  align-items: center; /* Horizontally center the content */
+  text-align: center; /* Center the text inside each element */
+}
+
+.name-section h1 {
+  font-size: 2rem; /* Adjust to a smaller size */
+  margin: 0; /* Remove default margin */
+}
+
+.name-section p {
+  font-size: 1rem; /* Adjust to a smaller size */
+  margin: 0; /* Remove default margin */
+}
+
+
+.title-section p {
+  font-size: 1rem;
+  color: rgb(70, 70, 70);
+  margin: 0
+}
+
+.right-header {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between actions (bed and calendar) and login/signup buttons */
+}
+
+/* Container for the calendar and bed availability */
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between the boxes */
+}
+
+/* Bed Availability Box */
+.availability-box {
+  width: 200px; /* Adjust width as needed */
+  height: 25px; /* Adjust height as needed */
+  background-color: #e0f7fa; /* Example background */
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin: 0; /* Remove any margin */
+}
+
+/* Calendar Box */
+.calendar-box {
+  width: 200px; /* Adjust width as needed */
+  height: 25px; /* Adjust height as needed */
+  background-color: #fff3e0; /* Example background */
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin: 0; /* Remove any margin */
+}
+
+.availability-text {
+  font-size: .7rem; /* Smaller font size */
+}
+
+.calendar-icon {
+  margin-left: 0px; /* Space between the icon and the date */
+}
+
+.availability-icon,
+.calendar-icon {
+  font-size: 1.2rem;
+  margin-right: 5px;
+}
+
+.date-text {
+  font-size: 0.7rem; /* Adjusted text size for a smaller font */
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Hamburger Menu */
+.menu-bar {
+  position: relative;
+}
+
+#hamburger-menu {
+  position: absolute;
+  top: 100%; /* Position the menu below the button */
+  left: 0; /* Align to the right edge of the parent container */
+  width: 200px; /* Adjust width as needed */
+  background-color: #ffffff; /* Background color */
+  border: 1px solid #ddd; /* Optional: Border styling */
+  border-radius: 5px; /* Optional: Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Box shadow for a modern look */
+  padding: 10px;
+  display: none; /* Hidden by default */
+  z-index: 1000; /* Ensure it's above other elements */
+  overflow: hidden; /* Prevent content from overflowing */
+}
+
+#hamburger-menu.visible {
+  display: flex; /* Show the menu when toggled */
+  right: 0;
+}
+
+#hamburger-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  right: 0;
+}
+
+#hamburger-menu ul li {
+  margin-bottom: 10px; /* Space between items */
+  right: 0;
+}
+
+#hamburger-menu ul li:last-child {
+  margin-bottom: 0;
+  right: 0;
+}
+
+#hamburger-menu ul li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1rem;
+  padding: 8px 12px;
+  display: block;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+  right: 0;
+}
+
+#hamburger-menu ul li a:hover {
+  background-color: #f0f0f0; /* Optional: Hover effect */
+}
