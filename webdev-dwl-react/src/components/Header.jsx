@@ -1,12 +1,49 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserGraduate, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false); // To toggle the modal visibility
+  const modalRef = useRef(null); // Reference to the modal element
+  const navigate = useNavigate(); // Get the navigate function
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // Open the modal when the Sign Up button is clicked
+  const handleSignUpClick = () => {
+    setShowModal(true);
+  };
+
+  // Handle role selection and redirect to the signup page with the selected role
+  const handleRoleSelect = (role) => {
+    setShowModal(false); // Close the modal
+    navigate(`/signup?role=${role}`);
+  };
+
+  // Close the modal if user clicks outside of it
+  const handleClickOutside = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      setShowModal(false); // Close the modal if click is outside
+    }
+  };
+
+  // Add the event listener for outside clicks when the modal is open
+  useEffect(() => {
+    if (showModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showModal]);
 
   return (
     <div className="container-nav">
@@ -22,7 +59,6 @@ function Header() {
 
         {/* Dropdown Content */}
         <div className={`dropdown ${isMenuOpen ? "active" : ""}`} id="dropdownMenu">
-          {/* Add your dropdown menu items here */}
           <ul>
             <li>
               <Link to="/" className="menu-item">
@@ -35,23 +71,19 @@ function Header() {
                 Reserve
               </Link>
             </li>
-          
 
-          <li>
+            <li>
               <Link to="/" className="menu-item">
                 Manage
               </Link>
             </li>
-          
+
             <li>
               <Link to="/contact-us" className="menu-item">
                 Contact Us
               </Link>
             </li>
-
           </ul>
-
-          
         </div>
       </div>
 
@@ -88,16 +120,40 @@ function Header() {
         </div>
       </div>
 
-
       {/* Login & Sign Up */}
       <div className="auth-buttons">
-        <Link to="/signup" className="sign-up">
+        <button
+          className="sign-up"
+          onClick={handleSignUpClick} // Open the modal on click
+        >
           Sign Up
-        </Link>
+        </button>
         <Link to="/login" className="login">
           Log In
         </Link>
       </div>
+
+      {/* Modal for Role Selection */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-card" ref={modalRef}>
+            <h3>Select your Role</h3>
+            <div className="modal-buttons">
+              {/* Student Button with Icon */}
+              <button onClick={() => handleRoleSelect("Student")} className="modal-button">
+                <FontAwesomeIcon icon={faUserGraduate} size="3x" /> {/* Student Icon */}
+                <span>Student</span>
+              </button>
+
+              {/* Admin Button with Icon */}
+              <button onClick={() => handleRoleSelect("Admin")} className="modal-button">
+                <FontAwesomeIcon icon={faChalkboardTeacher} size="3x" /> {/* Admin Icon */}
+                <span>Admin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1196,3 +1196,90 @@ button .availability-text, button .date-text {
 #hamburger-menu ul li a:hover {
   background-color: #f0f0f0; /* Optional: Hover effect */
 }
+
+
+
+
+
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Card */
+.modal-card {
+  background-color: hsla(0, 0%, 100%, 0.299);
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: 1000px;
+  height: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: slide-in 0.3s ease-out; /* Optional: Add a slide-in animation */
+}
+
+/* Modal Title */
+.modal-card h3 {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+/* Buttons inside modal card (Horizontal layout) */
+.modal-buttons {
+  display: flex;
+  justify-content: space-around; /* Space out the buttons horizontally */
+  width: 100%;
+}
+
+/* Modal Button */
+.modal-button {
+  width: 300px;
+  height: 300px;
+  margin: 10px;
+  padding: 10px;
+  background-color: #067898;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column; /* Align text and icon vertically */
+}
+
+.modal-button i {
+  font-size: 50px; /* Icon size */
+  margin-bottom: 10px; /* Space between icon and text */
+}
+
+.modal-button:hover {
+  background-color: #adadad;
+}
+
+/* Optional: Slide-in animation for the modal card */
+@keyframes slide-in {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
