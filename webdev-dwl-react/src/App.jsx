@@ -5,6 +5,9 @@ import Footer from './components/Footer.jsx'; // Import the Footer component
 import Content from './components/Content.jsx'; // Import the main Content component
 import Signup from './components/Signup.jsx'; // Import the SignUp component
 import Login from './components/Login.jsx'; // Import the Login component
+import Reservation from './components/Reservation.jsx'; // Import the Reservation and Payment
+import Admin from './components/Admin.jsx'; // Import the Admin
+import Contact from './components/Contact.jsx'; // Import the Contact
 
 function App() {
   return (
@@ -23,6 +26,16 @@ function App() {
 
           {/* Login Page */}
           <Route path="/login" element={<Login/>} />
+
+          {/* Payment Page */}
+          <Route path="/book-a-room" element={<Reservation/>} />
+
+          {/* Admin Page - Forbidden 'Note: Do not add this as front-end it should be hidden'*/}
+          <Route path="/admin255" element={<Admin/>} />
+
+          {/* Contact Page */}
+          <Route path="/contact-us" element={<Contact/>} />
+
         </Routes>
 
         {/* Footer is static across pages */}

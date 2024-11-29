@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+
+
 import { faUserGraduate, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
+
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,8 +71,8 @@ function Header() {
             </li>
 
             <li>
-              <Link to="/reserve" className="menu-item">
-                Reserve
+              <Link to="/book-a-room" className="menu-item">
+                Book a Room
               </Link>
             </li>
 
@@ -83,6 +87,8 @@ function Header() {
                 Contact Us
               </Link>
             </li>
+
+
           </ul>
         </div>
       </div>
@@ -137,7 +143,15 @@ function Header() {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-card" ref={modalRef}>
+
             <h3>Select your Role</h3>
+=======
+            <h3>Select based on your preference</h3>
+
+            <h3>Select your Role</h3>
+
+            <h3>Select your Role</h3>
+
             <div className="modal-buttons">
               {/* Student Button with Icon */}
               <button onClick={() => handleRoleSelect("Student")} className="modal-button">
@@ -149,6 +163,13 @@ function Header() {
               <button onClick={() => handleRoleSelect("Admin")} className="modal-button">
                 <FontAwesomeIcon icon={faChalkboardTeacher} size="3x" /> {/* Admin Icon */}
                 <span>Admin</span>
+                <span>Are you a Student?</span>
+              </button>
+
+              {/* Admin Button with Icon */}
+              <button onClick={() => handleRoleSelect("Guest")} className="modal-button">
+                <FontAwesomeIcon icon={faUserCircle} size="3x" /> {/* Admin Icon */}
+                <span>Are you a Guest?</span>
               </button>
             </div>
           </div>
