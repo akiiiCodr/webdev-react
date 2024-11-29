@@ -58,10 +58,13 @@ const deleteMessage = async (chatId, messageId) => {
   }
 };
 
+
+
 // Set up the webhook
 const setWebhook = async () => {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const webhookUrl = 'https://9bc6-120-28-177-206.ngrok-free.app/telegram-webhook'; // Replace with your server URL
+  const webhook = process.env.WEBHOOK;
+  const webhookUrl = `${webhook}/telegram-webhook`; // Replace with your server URL
 
   try {
     await axios.post(`https://api.telegram.org/bot${botToken}/setWebhook`, {
