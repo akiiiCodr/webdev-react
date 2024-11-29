@@ -1,4 +1,4 @@
-95% of storage used … If you run out, you can't create, edit and upload files. Get 100 GB of storage for ₱89.00 ₱0 for 1 month.
+
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
