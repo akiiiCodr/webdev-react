@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-
-
-import { faUserGraduate, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUserGraduate,
+  faChalkboardTeacher,
+  faUserCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -62,33 +62,31 @@ function Header() {
         </button>
 
         {/* Dropdown Content */}
-        <div className={`dropdown ${isMenuOpen ? "active" : ""}`} id="dropdownMenu">
+        <div
+          className={`dropdown ${isMenuOpen ? "active" : ""}`}
+          id="dropdownMenu"
+        >
           <ul>
             <li>
               <Link to="/" className="menu-item">
                 Home
               </Link>
             </li>
-
             <li>
               <Link to="/book-a-room" className="menu-item">
                 Book a Room
               </Link>
             </li>
-
             <li>
-              <Link to="/" className="menu-item">
+              <Link to="/manage" className="menu-item">
                 Manage
               </Link>
             </li>
-
             <li>
               <Link to="/contact-us" className="menu-item">
                 Contact Us
               </Link>
             </li>
-
-
           </ul>
         </div>
       </div>
@@ -143,32 +141,36 @@ function Header() {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-card" ref={modalRef}>
-
-            <h3>Select your Role</h3>
-            <h3>Select based on your preference</h3>
-
-            <h3>Select your Role</h3>
-
-            <h3>Select your Role</h3>
-
+            <h3>Select your role</h3>
             <div className="modal-buttons">
               {/* Student Button with Icon */}
-              <button onClick={() => handleRoleSelect("Student")} className="modal-button">
-                <FontAwesomeIcon icon={faUserGraduate} size="3x" /> {/* Student Icon */}
+              <button
+                onClick={() => handleRoleSelect("Student")}
+                className="modal-button"
+                aria-label="Sign up as Student"
+              >
+                <FontAwesomeIcon icon={faUserGraduate} size="3x" />
                 <span>Student</span>
               </button>
 
               {/* Admin Button with Icon */}
-              <button onClick={() => handleRoleSelect("Admin")} className="modal-button">
-                <FontAwesomeIcon icon={faChalkboardTeacher} size="3x" /> {/* Admin Icon */}
+              <button
+                onClick={() => handleRoleSelect("Admin")}
+                className="modal-button"
+                aria-label="Sign up as Admin"
+              >
+                <FontAwesomeIcon icon={faChalkboardTeacher} size="3x" />
                 <span>Admin</span>
-                <span>Are you a Student?</span>
               </button>
 
-              {/* Admin Button with Icon */}
-              <button onClick={() => handleRoleSelect("Guest")} className="modal-button">
-                <FontAwesomeIcon icon={faUserCircle} size="3x" /> {/* Admin Icon */}
-                <span>Are you a Guest?</span>
+              {/* Guest Button with Icon */}
+              <button
+                onClick={() => handleRoleSelect("Guest")}
+                className="modal-button"
+                aria-label="Sign up as Guest"
+              >
+                <FontAwesomeIcon icon={faUserCircle} size="3x" />
+                <span>Guest</span>
               </button>
             </div>
           </div>
