@@ -145,7 +145,6 @@ function Header() {
           <div className="modal-card" ref={modalRef}>
 
             <h3>Select your Role</h3>
-=======
             <h3>Select based on your preference</h3>
 
             <h3>Select your Role</h3>
