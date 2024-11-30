@@ -1,32 +1,56 @@
-
+// Import required packages
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import mysql from 'mysql2/promise'; // Use promise-based API for async/await
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: '*', // Replace with your frontend URL for security
     methods: ['GET', 'POST'],
   },
 });
 
+// Port configuration
 const PORT = process.env.PORT || 5001;
 app.use(express.json());
 app.use(cors());
 
-// Store the last message to prevent duplicate broadcasts and self-replies
+// Store the last message and bot's state
 let lastMessage = '';
 let isBotResponding = false;
-const botId = process.env.TELEGRAM_BOT_ID; // Add your bot's ID here
+const botId = process.env.TELEGRAM_BOT_ID; // Bot ID from environment
 
-// Function to send a message to Telegram (from the backend)
+// Set up the MySQL connection
+const dbConfig = {
+  host: 'localhost',
+  user: 'root', // Change this as needed
+  password: '', // Add your MySQL password if any
+  database: 'dwll_react', // Replace with your database name
+};
+
+let dbConnection;
+
+const initializeDatabase = async () => {
+  try {
+    dbConnection = await mysql.createConnection(dbConfig);
+    console.log('Connected to MySQL database successfully');
+  } catch (error) {
+    console.error('Error connecting to the MySQL database:', error.message);
+  }
+};
+
+initializeDatabase();
+
+// Function to send a message to Telegram
 const sendMessageToTelegram = async (message, chatId) => {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
@@ -36,7 +60,6 @@ const sendMessageToTelegram = async (message, chatId) => {
       chat_id: chatId,
       text: message,
     });
-    // Return the message ID for potential deletion
     return response.data.result.message_id;
   } catch (error) {
     console.error('Error sending message to Telegram:', error.message);
@@ -58,27 +81,25 @@ const deleteMessage = async (chatId, messageId) => {
   }
 };
 
-
-
-// Set up the webhook
+// Set up the webhook URL
 const setWebhook = async () => {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const webhook = process.env.WEBHOOK;
-  const webhookUrl = `${webhook}/telegram-webhook`; // Replace with your server URL
+  const webhookUrl = `${process.env.WEBHOOK}/telegram-webhook`;
 
   try {
     await axios.post(`https://api.telegram.org/bot${botToken}/setWebhook`, {
       url: webhookUrl,
     });
+    console.log('Webhook set successfully');
   } catch (error) {
     console.error('Error setting webhook:', error.message);
   }
 };
 
-// Call setWebhook once to initialize the webhook
+// Initialize webhook setup
 setWebhook();
 
-// Webhook route to receive messages from Telegram
+// Route to handle incoming updates from Telegram
 app.post('/telegram-webhook', async (req, res) => {
   try {
     const update = req.body;
@@ -87,28 +108,21 @@ app.post('/telegram-webhook', async (req, res) => {
       const { chat, text, from, message_id } = update.message;
       const chatId = chat.id;
 
-      // Check if the message is from the bot itself
       if (from && from.id === botId) {
         return res.status(200).send('OK'); // Ignore messages from the bot
       }
 
-      // Check if the message is a duplicate of the last message or a bot's response
       if (text !== lastMessage && !isBotResponding) {
-        // Emit the incoming message to the frontend
         io.emit('newMessage', { name: 'Dwell-o', message: text, sender: 'Dwell-o' });
 
-        // Send the message to Telegram (from the bot)
         const messageId = await sendMessageToTelegram(text, chatId);
-
-        // Store the last message and the message_id for deletion later
         lastMessage = text;
 
-        // Delete the bot's own message after 5 seconds (adjust as needed)
         setTimeout(() => {
           if (messageId) {
             deleteMessage(chatId, messageId);
           }
-        }, 500); // 
+        }, 5000); // Adjust as needed
       }
     }
 
@@ -119,7 +133,7 @@ app.post('/telegram-webhook', async (req, res) => {
   }
 });
 
-// Route to handle messages from the frontend and send them to Telegram
+// Route for sending messages from the frontend to Telegram
 app.post('/send', async (req, res) => {
   const { name, email, message } = req.body;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -129,15 +143,9 @@ app.post('/send', async (req, res) => {
   }
 
   try {
-    // Check if the message is a duplicate of the last message
     if (message !== lastMessage && !isBotResponding) {
-      // Send the message to Telegram (as the user)
       const messageId = await sendMessageToTelegram(message, chatId);
-
-      // Emit the message to the frontend (user)
       io.emit('newMessage', { name, email, message, sender: 'user' });
-
-      // Store the last message
       lastMessage = message;
     }
 
@@ -148,6 +156,7 @@ app.post('/send', async (req, res) => {
   }
 });
 
+// WebSocket connection handling
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
@@ -156,18 +165,12 @@ io.on('connection', (socket) => {
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
     try {
-      // Prevent duplicate responses and ensure the bot doesn't reply to itself
       if (message !== lastMessage && !isBotResponding) {
-        // Emit the message to the frontend as a user message
         io.emit('newMessage', { ...messageData, sender: 'user' });
 
-        // Set the bot's responding state
         isBotResponding = true;
-
-        // Send the outgoing message to Telegram (as the user)
         const messageId = await sendMessageToTelegram(message, chatId);
 
-        // Reset the bot's responding state after a short delay
         setTimeout(() => {
           isBotResponding = false;
         }, 500); // Adjust delay as needed
@@ -178,6 +181,7 @@ io.on('connection', (socket) => {
   });
 });
 
+// Start server
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
