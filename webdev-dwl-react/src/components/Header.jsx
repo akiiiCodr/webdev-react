@@ -1,71 +1,60 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUserGraduate,
   faChalkboardTeacher,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import UserInfo from "./UserInfo";
+import Logout from "./Logout";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); // To toggle the modal visibility
-  const modalRef = useRef(null); // Reference to the modal element
-  const navigate = useNavigate(); // Get the navigate function
+  const [showModal, setShowModal] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
+  const modalRef = useRef(null);
+  const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  // Toggle the navigation menu
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
-  // Open the modal when the Sign Up button is clicked
-  const handleSignUpClick = () => {
-    setShowModal(true);
-  };
+  // Open the sign-up modal
+  const handleSignUpClick = () => setShowModal(true);
 
-  // Handle role selection and redirect to the signup page with the selected role
+  // Handle role selection and redirect
   const handleRoleSelect = (role) => {
-    setShowModal(false); // Close the modal
+    setShowModal(false);
     navigate(`/signup?role=${role}`);
   };
 
-  // Close the modal if user clicks outside of it
+  // Close the modal if clicked outside
   const handleClickOutside = (event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
-      setShowModal(false); // Close the modal if click is outside
+      setShowModal(false);
     }
   };
 
-  // Add the event listener for outside clicks when the modal is open
   useEffect(() => {
+    // Attach and clean up event listener for outside clicks
     if (showModal) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
-
-    // Cleanup the event listener when the component unmounts
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showModal]);
 
   return (
     <div className="container-nav">
-      {/* Left Side: Menu Icon */}
+      {/* Left Side: Navigation Menu */}
       <div className="menu-bar">
         <button
           className="menu-button"
           onClick={toggleMenu}
           aria-label="Toggle navigation menu"
         >
-          &#9776; {/* Menu icon */}
+          &#9776;
         </button>
-
-        {/* Dropdown Content */}
-        <div
-          className={`dropdown ${isMenuOpen ? "active" : ""}`}
-          id="dropdownMenu"
-        >
+        <div className={`dropdown ${isMenuOpen ? "active" : ""}`}>
           <ul>
             <li>
               <Link to="/" className="menu-item">
@@ -94,7 +83,7 @@ function Header() {
       {/* Center: Title and Subtitle */}
       <div className="title-section">
         <h1>
-          <Link to="/">Dwell-o</Link> {/* Using Link for navigation */}
+          <Link to="/">Dwell-o</Link>
         </h1>
         <p>A Better Way to Dwell</p>
       </div>
@@ -102,34 +91,32 @@ function Header() {
       {/* Right Side: Actions */}
       <div className="right-header">
         <div className="header-actions">
-          {/* Bed Availability as a Button */}
+          {/* Bed Availability Button */}
           <button className="availability-button">
             <i className="fa fa-user"></i>
             <div className="availability-text">2 Bed Availability</div>
           </button>
 
-          {/* Calendar as a Button */}
+          {/* Calendar Button */}
           <button className="calendar-button">
             <div className="calendar-icon">&#128197;</div>
             <div className="date-text">
-              <span id="current-date">
-                {new Date().toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
+              {new Date().toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
             </div>
           </button>
         </div>
+
+        {/* User Info */}
+        <UserInfo />
       </div>
 
-      {/* Login & Sign Up */}
+      {/* Login & Sign Up Buttons */}
       <div className="auth-buttons">
-        <button
-          className="sign-up"
-          onClick={handleSignUpClick} // Open the modal on click
-        >
+        <button className="sign-up" onClick={handleSignUpClick}>
           Sign Up
         </button>
         <Link to="/login" className="login">
@@ -143,31 +130,23 @@ function Header() {
           <div className="modal-card" ref={modalRef}>
             <h3>Select your role</h3>
             <div className="modal-buttons">
-              {/* Student Button with Icon */}
               <button
                 onClick={() => handleRoleSelect("Student")}
                 className="modal-button"
-                aria-label="Sign up as Student"
               >
                 <FontAwesomeIcon icon={faUserGraduate} size="3x" />
                 <span>Student</span>
               </button>
-
-              {/* Admin Button with Icon */}
               <button
                 onClick={() => handleRoleSelect("Admin")}
                 className="modal-button"
-                aria-label="Sign up as Admin"
               >
                 <FontAwesomeIcon icon={faChalkboardTeacher} size="3x" />
                 <span>Admin</span>
               </button>
-
-              {/* Guest Button with Icon */}
               <button
                 onClick={() => handleRoleSelect("Guest")}
                 className="modal-button"
-                aria-label="Sign up as Guest"
               >
                 <FontAwesomeIcon icon={faUserCircle} size="3x" />
                 <span>Guest</span>
@@ -176,6 +155,9 @@ function Header() {
           </div>
         </div>
       )}
+
+      {/* Render Logout Component */}
+      <Logout />
     </div>
   );
 }

@@ -133,7 +133,7 @@ function Bot() {
                 }}
               >
                 <p>
-                  <strong>{msg.name || "Bot"}:</strong> {msg.message}
+                  <strong>{msg.name || "user"}:</strong> {msg.message}
                 </p>
               </div>
             ))}
