@@ -6,13 +6,14 @@ import {
   faChalkboardTeacher,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios"; // Import axios for HTTP requests
 import UserInfo from "./UserInfo";
 import Logout from "./Logout";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [showLogout, setShowLogout] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Add this state
   const modalRef = useRef(null);
   const navigate = useNavigate();
 
@@ -36,6 +37,24 @@ function Header() {
   };
 
   useEffect(() => {
+    const checkAuthentication = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/api/current-user", {
+          withCredentials: true,
+        });
+        console.log("Response from /api/current-user:", response);
+        setIsAuthenticated(response.data?.user);
+      } catch (error) {
+        console.error(
+          "Error checking authentication status:",
+          error.response || error.message
+        );
+        setIsAuthenticated(false);
+      }
+    };
+  
+    checkAuthentication();
+  
     // Attach and clean up event listener for outside clicks
     if (showModal) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -110,18 +129,23 @@ function Header() {
           </button>
         </div>
 
-        {/* User Info */}
-        <UserInfo />
-      </div>
-
-      {/* Login & Sign Up Buttons */}
-      <div className="auth-buttons">
-        <button className="sign-up" onClick={handleSignUpClick}>
-          Sign Up
-        </button>
-        <Link to="/login" className="login">
-          Log In
-        </Link>
+        {/* Show UserInfo and Logout if authenticated and active */}
+        {isAuthenticated ? (
+          <div className="auth-logged-in">
+            <UserInfo />
+            <Logout />
+          </div>
+        ) : (
+          // Show Login & Sign Up buttons if not authenticated or inactive
+          <div className="auth-buttons">
+            <button className="sign-up" onClick={handleSignUpClick}>
+              Sign Up
+            </button>
+            <Link to="/login" className="login">
+              Log In
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Modal for Role Selection */}
@@ -155,9 +179,6 @@ function Header() {
           </div>
         </div>
       )}
-
-      {/* Render Logout Component */}
-      <Logout />
     </div>
   );
 }

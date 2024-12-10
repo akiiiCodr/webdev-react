@@ -44,7 +44,7 @@ const jsonContentTypeMiddleware = (req, res, next) => {
 
 app.use(cors({
   origin: ['http://localhost:5173'], // Allow both frontend URLs
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
   credentials: true,
 }));
 
@@ -260,7 +260,7 @@ const authenticateUser = async (req, res, next) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const query = 'SELECT googleId, name, email, picture FROM users WHERE sessionToken = ? AND isActive = true';
+    const query = 'SELECT googleId, name, email, picture, isActive FROM users WHERE sessionToken = ? AND isActive = true';
     const [rows] = await dbConnection.execute(query, [sessionToken]);
 
     if (rows.length === 0) {
@@ -427,11 +427,103 @@ app.get('/api/current-user', (req, res) => {
   if (req.user) {
     res.status(200).json({
       user: req.user,
+
       message: 'User is authenticated',
     });
   } else {
     res.status(404).json({ error: 'User not found' });
   }
 });
+
+
+
+
+app.post('/api/tenants', async (req, res) => {
+  try {
+    const { 
+      name = null, 
+      birthday = null, 
+      contactNo = null, 
+      email = null, 
+      guardianName = null, 
+      homeAddress = null, 
+      rentalStart = null, 
+      leaseEnd = null 
+    } = req.body;
+    
+    const query = `INSERT INTO tenants (tenant_name, birthday, contact_no, email_address, guardian_name, home_address, rental_start, lease_end)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    await dbConnection.execute(query, [name, birthday, contactNo, email, guardianName, homeAddress, rentalStart, leaseEnd]);
+    res.status(201).json({ message: 'Tenant added successfully' });
+  } catch (error) {
+    console.error('Error adding tenant:', error);
+    res.status(500).json({ error: 'Failed to add tenant' });
+  }
+});
+
+app.get('/api/tenants', async (req, res) => {
+  try {
+    const { id } = req.query; // Use 'id' to filter the data
+    let query = 'SELECT * FROM tenants';
+    const params = [];
+
+    if (id) {
+      query += ' WHERE id = ?';
+      params.push(id);
+    }
+
+    const [rows] = await dbConnection.execute(query, params);
+
+
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Tenant not found' });
+    }
+
+    res.status(200).json(rows); // Return the data as an array
+  } catch (error) {
+    console.error('Error fetching tenants:', error);
+    res.status(500).json({ error: 'Failed to fetch tenants' });
+  }
+});
+
+
+app.put('/api/tenants', async (req, res) => {
+  try {
+    const { contactNo, ...updateData } = req.body; // Destructure contactNo and the rest of the data
+
+    if (!contactNo) {
+      return res.status(400).json({ error: 'Contact number is required to update' });
+    }
+
+    // Construct the SQL update query
+    const updateQuery = `UPDATE tenants SET tenant_name = ?, birthday = ?, email_address = ?, guardian_name = ?, home_address = ?, rental_start = ?, lease_end = ? WHERE contact_no = ?`;
+
+    // Values to update
+    const values = [
+      updateData.name,
+      updateData.birthday,
+      updateData.email,
+      updateData.guardianName,
+      updateData.homeAddress,
+      updateData.rentalStart,
+      updateData.leaseEnd,
+      contactNo, // This is used to identify which record to update
+    ];
+
+    // Execute the query
+    const [results] = await dbConnection.execute(updateQuery, values);
+    if (results.affectedRows > 0) {
+      res.status(200).json({ message: 'Tenant updated successfully' });
+    } else {
+      res.status(404).json({ error: 'Tenant not found' });
+    }
+  } catch (error) {
+    console.error('Error updating tenant:', error);
+    res.status(500).json({ error: 'Failed to update tenant' });
+  }
+});
+
+
 
 

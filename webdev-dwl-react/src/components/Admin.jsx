@@ -1,11 +1,24 @@
 import React, { useState } from 'react';
+import TenantMenu from './TenantMenu'; // Import the TenantMenu component
+
 
 function Admin() {
   const [activeContent, setActiveContent] = useState('content1');
+  const [isTenantSelected, setIsTenantSelected] = useState(false);
 
+  // Function to show specific content and reset button state when needed
   const showContent = (contentId) => {
     setActiveContent(contentId);
+    if (contentId !== 'content1') {
+      setIsTenantSelected(false);
+    }
   };
+
+  const handleTenantClick = () => {
+    setIsTenantSelected(true);
+  };
+
+ 
 
   return (
     <>
@@ -22,7 +35,8 @@ function Admin() {
           id="content1"
           className={`viewer-content ${activeContent === 'content1' ? 'active' : ''}`}
         >
-          List of Tenants
+          {/* Include the TenantMenu before the List of Tenants */}
+          <TenantMenu />
         </div>
         <div
           id="content2"
