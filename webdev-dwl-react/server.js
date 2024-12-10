@@ -84,7 +84,8 @@ const initializeDatabase = async () => {
     dbConnection = await mysql.createConnection(dbConfig);
     console.log('Connected to MySQL database successfully');
 
-    const createTableQuery = `
+    // Create users table if it doesn't exist
+    const createUsersTableQuery = `
       CREATE TABLE IF NOT EXISTS users (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
         googleId VARCHAR(255) NOT NULL UNIQUE,
@@ -96,13 +97,48 @@ const initializeDatabase = async () => {
         sessionToken VARCHAR(255) NULL
       );
     `;
-    await dbConnection.execute(createTableQuery);
+    await dbConnection.execute(createUsersTableQuery);
     console.log('Users table created or already exists');
+
+    // Create tenants table if it doesn't exist
+    const createTenantsTableQuery = `
+      CREATE TABLE IF NOT EXISTS tenants (
+        tenant_id INT(11) AUTO_INCREMENT PRIMARY KEY,
+        tenant_name VARCHAR(255) NOT NULL,
+        birthday DATE NULL,
+        email_address VARCHAR(255) NULL UNIQUE,
+        guardian_name VARCHAR(255) NULL,
+        home_address VARCHAR(255) NULL,
+        rental_start DATE NULL,
+        lease_end DATE NULL,
+        contact_no VARCHAR(255) NOT NULL UNIQUE
+      );
+    `;
+    await dbConnection.execute(createTenantsTableQuery);
+    console.log('Tenants table created or already exists');
+
+    // Get the maximum tenant_id value
+    const [rows] = await dbConnection.execute('SELECT MAX(tenant_id) AS max_id FROM tenants');
+    const maxId = rows[0].max_id || 0;
+
+    // Set the new AUTO_INCREMENT value
+    const newAutoIncrement = maxId + 1;
+
+    // Construct and execute the ALTER TABLE query to adjust the AUTO_INCREMENT
+    if (maxId > 0) {
+      const alterTableQuery = `ALTER TABLE tenants AUTO_INCREMENT = ${newAutoIncrement}`;
+      await dbConnection.execute(alterTableQuery);
+      console.log('AUTO_INCREMENT for tenants table adjusted');
+    }
+
   } catch (error) {
     console.error('Error connecting to the MySQL database:', error.message);
     process.exit(1); // Exit the process if database connection fails
   }
 };
+
+
+
 
 // Ensure database is initialized before starting the server
 initializeDatabase().then(() => {
@@ -461,6 +497,39 @@ app.post('/api/tenants', async (req, res) => {
   }
 });
 
+app.get('/api/tenants/:tenantId', async (req, res) => {
+  try {
+    // Extract tenantId from the route parameters
+    const { tenantId } = req.params;
+
+    // Validate tenantId to ensure it's a number
+    if (isNaN(tenantId)) {
+      return res.status(400).json({ error: 'Invalid tenant ID provided' });
+    }
+
+    // Construct the query to fetch a specific tenant by tenant_id
+    const query = 'SELECT * FROM tenants WHERE tenant_id = ?';
+    const params = [tenantId];
+
+    // Execute the query and wait for the result
+    const [rows] = await dbConnection.execute(query, params);
+
+    // Check if a tenant with the given ID exists
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Tenant not found' });
+    }
+
+    // Send the result as a JSON response
+    res.status(200).json(rows[0]); // Send only the first record (should be unique due to the primary key)
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error('Error fetching tenant by ID:', error);
+
+    // Return a 500 status with an appropriate error message
+    res.status(500).json({ error: 'Failed to fetch tenant' });
+  }
+});
+
 app.get('/api/tenants', async (req, res) => {
   try {
     const { id } = req.query; // Use 'id' to filter the data
@@ -468,7 +537,7 @@ app.get('/api/tenants', async (req, res) => {
     const params = [];
 
     if (id) {
-      query += ' WHERE id = ?';
+      query += ' WHERE tenant_id = ?';
       params.push(id);
     }
 
@@ -488,39 +557,110 @@ app.get('/api/tenants', async (req, res) => {
 });
 
 
-app.put('/api/tenants', async (req, res) => {
-  try {
-    const { contactNo, ...updateData } = req.body; // Destructure contactNo and the rest of the data
 
-    if (!contactNo) {
-      return res.status(400).json({ error: 'Contact number is required to update' });
+
+app.put('/api/tenants/editInfo', async (req, res) => {
+  try {
+    const {
+      tenantId, // Unique identifier for the tenant
+      name,
+      birthday,
+      email,
+      guardianName,
+      homeAddress,
+      rentalStart,
+      leaseEnd,
+      contactNo, // Contact number to be updated
+    } = req.body;
+
+    // Validate that the tenantId is provided
+    if (!tenantId) {
+      return res.status(400).json({ error: 'Tenant ID is required to update.' });
     }
 
-    // Construct the SQL update query
-    const updateQuery = `UPDATE tenants SET tenant_name = ?, birthday = ?, email_address = ?, guardian_name = ?, home_address = ?, rental_start = ?, lease_end = ? WHERE contact_no = ?`;
+    // Prepare the SQL query dynamically
+    let updateQuery = 'UPDATE tenants SET ';
+    const values = [];
+    const updateFields = [];
 
-    // Values to update
-    const values = [
-      updateData.name,
-      updateData.birthday,
-      updateData.email,
-      updateData.guardianName,
-      updateData.homeAddress,
-      updateData.rentalStart,
-      updateData.leaseEnd,
-      contactNo, // This is used to identify which record to update
-    ];
+    // Check for each field and add to the query and values array if it's provided
+    if (name !== undefined) {
+      updateFields.push('tenant_name = ?');
+      values.push(name);
+    }
+    if (birthday !== undefined) {
+      updateFields.push('birthday = ?');
+      values.push(birthday);
+    }
+    if (email !== undefined) {
+      updateFields.push('email_address = ?');
+      values.push(email);
+    }
+    if (guardianName !== undefined) {
+      updateFields.push('guardian_name = ?');
+      values.push(guardianName);
+    }
+    if (homeAddress !== undefined) {
+      updateFields.push('home_address = ?');
+      values.push(homeAddress);
+    }
+    if (rentalStart !== undefined) {
+      updateFields.push('rental_start = ?');
+      values.push(rentalStart);
+    }
+    if (leaseEnd !== undefined) {
+      updateFields.push('lease_end = ?');
+      values.push(leaseEnd);
+    }
+    if (contactNo !== undefined) {
+      updateFields.push('contact_no = ?');
+      values.push(contactNo);
+    }
+
+    // If no fields were provided, return an error
+    if (updateFields.length === 0) {
+      return res.status(400).json({ error: 'No fields provided to update.' });
+    }
+
+    // Combine the query with the updated fields and the WHERE clause
+    updateQuery += updateFields.join(', ') + ' WHERE tenant_id = ?';
+    values.push(tenantId); // Add the tenantId as the last value
 
     // Execute the query
     const [results] = await dbConnection.execute(updateQuery, values);
+
     if (results.affectedRows > 0) {
-      res.status(200).json({ message: 'Tenant updated successfully' });
+      res.status(200).json({ message: 'Tenant updated successfully.' });
     } else {
-      res.status(404).json({ error: 'Tenant not found' });
+      res.status(404).json({ error: 'Tenant not found.' });
     }
   } catch (error) {
     console.error('Error updating tenant:', error);
-    res.status(500).json({ error: 'Failed to update tenant' });
+    res.status(500).json({ error: 'Failed to update tenant.' });
+  }
+});
+
+
+app.put('/api/tenants/terminateLease/:tenantId', async (req, res) => {
+  const { tenantId } = req.params;
+  const { terminationDate } = req.body;
+
+  try {
+    const updateQuery = `
+      UPDATE tenants 
+      SET lease_end = ? 
+      WHERE tenant_id = ?
+    `;
+    const [result] = await dbConnection.execute(updateQuery, [terminationDate, tenantId]);
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: 'Lease terminated successfully.' });
+    } else {
+      res.status(404).json({ error: 'Tenant not found.' });
+    }
+  } catch (error) {
+    console.error('Error updating tenant lease:', error);
+    res.status(500).json({ error: 'Failed to terminate lease.' });
   }
 });
 

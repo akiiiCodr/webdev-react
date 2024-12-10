@@ -19,7 +19,7 @@ function TenantMenu() {
     rentalStart: '',
     leaseEnd: ''
   });
-  const [hasLeaseEnd, setHasLeaseEnd] = useState(false); // State for lease end toggle
+  const [showLeaseEndModal, setShowLeaseEndModal] = useState(false); // State for lease end toggle
 
   // Toggle the menu open state
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
@@ -29,6 +29,10 @@ function TenantMenu() {
 
     // Toggle the edit modal open state
     const toggleEditModal = () => setIsEditModalOpen((prev) => !prev);
+
+
+    // Toggle the Lease modal open state
+    const setLeaseModalEnd = () => setHasLeaseEnd((prev) => !prev);
 
     const formatDateForInput = (date) => {
       if (!date) return ''; // Handle null or undefined date
@@ -79,26 +83,99 @@ function TenantMenu() {
     }
   };
 
-    // Submit form data to the backend API
-    const handleEditFormSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await axios.post('http://localhost:5001/api/tenants' , tenantData);
-        console.log('Tenant added successfully:', response.data);
-        alert('Tenant registered successfully!');
-        setIsEditModalOpen(false); // Close modal after successful submission
-        // Optionally, refresh the tenant list here
-      } catch (error) {
-        console.error('Error registering tenant:', error);
-        alert('Failed to register tenant. Please try again.');
+  const handleEditFormSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      // Create a payload that only includes fields that have changed
+      const payload = {};
+      if (tenantData.name) payload.name = tenantData.name;
+      if (tenantData.birthday) payload.birthday = tenantData.birthday;
+      if (tenantData.email) payload.email = tenantData.email;
+      if (tenantData.guardianName) payload.guardianName = tenantData.guardianName;
+      if (tenantData.homeAddress) payload.homeAddress = tenantData.homeAddress;
+      if (tenantData.rentalStart) payload.rentalStart = tenantData.rentalStart;
+      if (tenantData.leaseEnd) payload.leaseEnd = tenantData.leaseEnd;
+      if (tenantData.contactNo) payload.contactNo = tenantData.contactNo;
+  
+      // Include the tenant ID in the payload for identification
+      payload.tenantId = tenantData.tenant_id;
+  
+      // Send PUT request to update tenant information
+      const response = await axios.put('http://localhost:5001/api/tenants/editInfo', payload);
+  
+      // Log and notify the user of success
+      console.log('Tenant updated successfully:', response.data);
+      alert('Tenant updated successfully!');
+  
+      // Close the modal and optionally reset state
+      setIsEditModalOpen(false);
+  
+      // Optional: Trigger a refresh for the tenant list if applicable
+      // fetchTenantList(); // Example function call
+    } catch (error) {
+      console.error('Error updating tenant:', error);
+  
+      // Provide a user-friendly error message
+      if (error.response && error.response.data && error.response.data.error) {
+        alert(`Failed to update tenant: ${error.response.data.error}`);
+      } else {
+        alert('An unexpected error occurred. Please try again.');
       }
-    };
+    }
+  };
+  
+
 
 
   
   
 
 
+
+
+  // Handle button click to show the lease termination modal
+  const handleLeaseButtonClick = () => {
+    if (selectedTenant) {
+      setShowLeaseEndModal(true);
+    }
+  };
+
+// Function to handle the lease termination confirmation
+const handleTerminateLease = async (tenantId) => {
+
+  
+  // Set the selected tenant ID
+  setSelectedTenant(tenantId);
+
+  // Find the tenant name from the tenants list or data source
+  const tenant = tenants.find(t => t.tenant_id === tenantId);
+  if (!tenant) {
+    console.error('Tenant not found');
+    alert('Tenant not found. Please try again.');
+    return;
+  }
+
+  try {
+    // Get current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    // Send the termination date and tenant ID to the backend to update the database
+    await axios.put(`http://localhost:5001/api/tenants/terminateLease/${tenantId}`, {
+      terminationDate: currentDate,
+    });
+
+    console.log('Lease terminated successfully.');
+    alert(`The lease of ${tenant.tenant_name} has been terminated on ${currentDate}.`);
+
+    // Close the modal after confirmation
+    setShowLeaseEndModal(false);
+    setSelectedTenant(null);
+  } catch (error) {
+    console.error('Error terminating lease:', error);
+    alert('Failed to terminate the lease. Please try again.');
+  }
+};
 
 
   const handleEditModalOpen = async () => {
@@ -126,12 +203,13 @@ function TenantMenu() {
     setSelectedTenant(tenantId);
   
     try {
-      const response = await axios.get(`http://localhost:5001/api/tenants?id=${tenantId}`);
+      // Fetch tenant data using the tenant ID as a route parameter
+      const response = await axios.get(`http://localhost:5001/api/tenants/${tenantId}`);
       console.log('Response data:', response.data);
   
-      if (response.data && response.data.length > 0) {
-        console.log('Fetched tenant data:', response.data[0]);
-        setTenantData(response.data[0]); // Setting the first item from the response
+      if (response.data) {
+        console.log('Fetched tenant data:', response.data);
+        setTenantData(response.data); // Set the fetched tenant data
       } else {
         alert('Tenant data not found.');
         setTenantData({});
@@ -142,6 +220,15 @@ function TenantMenu() {
       setTenantData({});
     }
   };
+  
+  // const handleEditInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setTenantData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value,
+  //   }));
+  // };
+  
   
   
   const handleEditInputChange = (e) => {
@@ -170,9 +257,10 @@ function TenantMenu() {
           >
             Edit Info
           </button>
-          <button className={`menu-item ${!selectedTenant ? 'not-clickable' : ''}`} disabled={!selectedTenant}>
+          {/* Button to trigger the lease termination modal */}
+          <button className={`menu-item ${!selectedTenant ? 'not-clickable' : ''}`} disabled={!selectedTenant} onClick={handleLeaseButtonClick}>
             Lease Tenant
-          </button>
+          </button> 
           <button className={`menu-item ${!selectedTenant ? 'not-clickable' : ''}`} disabled={!selectedTenant}>
             Extend Tenancy
           </button>
@@ -298,7 +386,7 @@ function TenantMenu() {
                   <option value="">-- Select a Tenant --</option>
                   {tenants.length > 0 ? (
                     tenants.map((tenant) => (
-                      <option key={tenant.id} value={tenant.id}>
+                      <option key={tenant.tenant_id} value={tenant.tenant_id}>
                         {tenant.tenant_name}
                       </option>
                     ))
@@ -314,7 +402,7 @@ function TenantMenu() {
                 <input
                   type="text"
                   name="tenant_name"
-                  value={tenantData.tenant_name}
+                  value={tenantData.tenant_name || ''}
                   onChange={handleEditInputChange}
                   required
                 />
@@ -418,6 +506,21 @@ function TenantMenu() {
           </div>
         </div>
       ) : null} {/* Removed the <p>Loading tenant data...</p> */}
+
+
+
+
+          {/* Modal for lease termination confirmation */}
+          {showLeaseEndModal && (
+            <div className="modal">
+              <div className="modal-content">
+                <h2>Are you sure you want to terminate the lease of {tenantData.tenant_name}?</h2>
+                <button onClick={handleTerminateLease}>Confirm</button>
+                <button onClick={() => setShowLeaseEndModal(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+
 
 
 
