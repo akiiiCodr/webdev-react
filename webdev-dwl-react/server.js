@@ -71,10 +71,6 @@ app.use(cookieParser());
 // Port configuration
 const PORT = 5001;
 
-// Store the last message and bot's state
-let lastMessage = "";
-let isBotResponding = false;
-
 const dbConfig = {
   host: "localhost",
   user: "root", // Change this as needed
@@ -174,6 +170,13 @@ initializeDatabase()
     process.exit(1);
   });
 
+// Function to send a message to Telegram //
+
+// Store the last message and bot's state
+let lastMessage = "";
+let isBotResponding = false;
+const botId = process.env.TELEGRAM_BOT_ID; // Bot ID from environment
+
 // Function to send a message to Telegram
 const sendMessageToTelegram = async (message, chatId) => {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -205,7 +208,7 @@ const deleteMessage = async (chatId, messageId) => {
   }
 };
 
-// Set up the webhook URL for Telegram
+// Set up the webhook URL
 const setWebhook = async () => {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const webhookUrl = `${process.env.WEBHOOK}/telegram-webhook`;
@@ -223,6 +226,95 @@ const setWebhook = async () => {
 // Initialize webhook setup
 setWebhook();
 
+// Route to handle incoming updates from Telegram
+app.post("/telegram-webhook", async (req, res) => {
+  try {
+    const update = req.body;
+
+    if (update.message) {
+      const { chat, text, from, message_id } = update.message;
+      const chatId = chat.id;
+
+      if (from && from.id === botId) {
+        return res.status(200).send("OK"); // Ignore messages from the bot
+      }
+
+      // Check for duplicate messages
+      if (text !== lastMessage && !isBotResponding) {
+        io.emit("newMessage", {
+          name: "Dwell-o",
+          message: text,
+          sender: "Dwell-o",
+        });
+
+        const messageId = await sendMessageToTelegram(text, chatId);
+        lastMessage = text;
+
+        setTimeout(() => {
+          if (messageId) {
+            deleteMessage(chatId, messageId);
+          }
+        }, 5000); // Adjust as needed
+      }
+    }
+
+    res.status(200).send("OK");
+  } catch (error) {
+    console.error("Error handling Telegram update:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Route for sending messages from the frontend to Telegram
+app.post("/send", async (req, res) => {
+  const { name, email, message } = req.body;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!chatId) {
+    return res.status(500).json({ error: "Chat ID not set" });
+  }
+
+  try {
+    if (message !== lastMessage && !isBotResponding) {
+      const messageId = await sendMessageToTelegram(message, chatId);
+      io.emit("newMessage", { name, email, message, sender: "user" });
+      lastMessage = message;
+    }
+
+    res.status(200).json({ status: "Message sent successfully" });
+  } catch (error) {
+    console.error("Error in /send endpoint:", error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// WebSocket connection handling
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  socket.on("sendMessage", async (messageData) => {
+    const { name, message } = messageData;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    try {
+      if (message !== lastMessage && !isBotResponding) {
+        io.emit("newMessage", { ...messageData, sender: "user" });
+
+        isBotResponding = true;
+        const messageId = await sendMessageToTelegram(message, chatId);
+
+        setTimeout(() => {
+          isBotResponding = false;
+        }, 500); // Adjust delay as needed
+      }
+    } catch (err) {
+      console.error("Error sending message to Telegram:", err.message);
+    }
+  });
+});
+
+// -------------------------------------------------------------------- //
+
 // OAuth2 authentication URL
 const authUrl = oauth2Client.generateAuthUrl({
   access_type: "offline",
@@ -238,6 +330,8 @@ const authUrl = oauth2Client.generateAuthUrl({
 app.get("/auth", (req, res) => {
   res.redirect(authUrl);
 });
+
+// API CALLS //
 
 app.get("/oauthcallbackdwl", async (req, res) => {
   const { code } = req.query;
@@ -714,3 +808,37 @@ app.put("/api/tenants/terminateLease/:tenantId", async (req, res) => {
     res.status(500).json({ error: "Failed to terminate lease." });
   }
 });
+
+app.put("/api/tenants/extendLease/:tenantId", async (req, res) => {
+  const { tenantId } = req.params;
+  const { leaseExtendDate } = req.body;
+
+  try {
+    // If no leaseEndDate is provided, set lease_end to NULL
+    const newLeaseDate = leaseExtendDate ? leaseExtendDate : null;
+
+    const updateQuery = `
+      UPDATE tenants 
+      SET rental_start = ?, lease_end = NULL
+      WHERE tenant_id = ?
+    `;
+
+    const [result] = await dbConnection.execute(updateQuery, [
+      newLeaseDate,
+      tenantId,
+    ]);
+
+    if (result.affectedRows > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(400).json({ success: false, message: "Tenant not found." });
+    }
+  } catch (error) {
+    console.error("Error updating lease:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+//ADD HERE IF you will add APIs
+
+//-------------------------------------------------------------------------------------------------//
