@@ -19,7 +19,7 @@ function TenantMenu() {
     rentalStart: '',
     leaseEnd: ''
   });
-  const [showLeaseEndModal, setShowLeaseEndModal] = useState(false); // State for lease end toggle
+  const [hasLeaseEnd, setHasLeaseEnd] = useState(false); // State for lease end toggle
 
   // Toggle the menu open state
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
@@ -30,9 +30,6 @@ function TenantMenu() {
     // Toggle the edit modal open state
     const toggleEditModal = () => setIsEditModalOpen((prev) => !prev);
 
-
-    // Toggle the Lease modal open state
-    const setLeaseModalEnd = () => setHasLeaseEnd((prev) => !prev);
 
     const formatDateForInput = (date) => {
       if (!date) return ''; // Handle null or undefined date
@@ -133,14 +130,6 @@ function TenantMenu() {
 
 
 
-
-  // Handle button click to show the lease termination modal
-  const handleLeaseButtonClick = () => {
-    if (selectedTenant) {
-      setShowLeaseEndModal(true);
-    }
-  };
-
 // Function to handle the lease termination confirmation
 const handleTerminateLease = async (tenantId) => {
 
@@ -169,7 +158,7 @@ const handleTerminateLease = async (tenantId) => {
     alert(`The lease of ${tenant.tenant_name} has been terminated on ${currentDate}.`);
 
     // Close the modal after confirmation
-    setShowLeaseEndModal(false);
+    // setShowLeaseEndModal(false);
     setSelectedTenant(null);
   } catch (error) {
     console.error('Error terminating lease:', error);
@@ -258,9 +247,9 @@ const handleTerminateLease = async (tenantId) => {
             Edit Info
           </button>
           {/* Button to trigger the lease termination modal */}
-          <button className={`menu-item ${!selectedTenant ? 'not-clickable' : ''}`} disabled={!selectedTenant} onClick={handleLeaseButtonClick}>
+          <button className={`menu-item ${!selectedTenant ? 'not-clickable' : ''}`} disabled={!selectedTenant}>
             Lease Tenant
-          </button> 
+          </button > 
           <button className={`menu-item ${!selectedTenant ? 'not-clickable' : ''}`} disabled={!selectedTenant}>
             Extend Tenancy
           </button>
@@ -511,15 +500,15 @@ const handleTerminateLease = async (tenantId) => {
 
 
           {/* Modal for lease termination confirmation */}
-          {showLeaseEndModal && (
-            <div className="modal">
-              <div className="modal-content">
-                <h2>Are you sure you want to terminate the lease of {tenantData.tenant_name}?</h2>
-                <button onClick={handleTerminateLease}>Confirm</button>
-                <button onClick={() => setShowLeaseEndModal(false)}>Cancel</button>
-              </div>
-            </div>
-          )}
+          { 
+            // <div className="modal">
+            //   <div className="modal-content">
+            //     <h2>Are you sure you want to terminate the lease of {tenantData.tenant_name}?</h2>
+            //     <button onClick={handleTerminateLease}>Confirm</button>
+            //     <button onClick={() => setLeaseModalEnd(false)}>Cancel</button>
+            //   </div>
+            // </div>
+          }
 
 
 

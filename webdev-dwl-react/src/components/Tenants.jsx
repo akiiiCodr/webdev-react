@@ -14,7 +14,6 @@ function Tenants({ selectedTenant, onSelectTenant }) {
         setTenants(response.data);
       } catch (err) {
         console.error('Error fetching tenants:', err);
-        setError('Failed to load tenants');
       }
     };
 
@@ -30,18 +29,18 @@ function Tenants({ selectedTenant, onSelectTenant }) {
     });
   };
 
-  // const handleTenantClick = (tenant) => {
-  //   // Pass the tenant name to the onSelectTenant function
-  //   onSelectTenant(tenant.tenant_name); // Pass the name to trigger the API call in TenantMenu
-  //   console.log(`Tenant Name: ${tenant.tenant_name}`);
-  // };
-
-
-
   const handleTenantClick = (tenant) => {
-    console.log('Clicked Tenant ID:', tenant.tenant_id); // Log the tenant ID for debugging
-    onSelectTenant(tenant.tenant_id); // Pass the ID to trigger the API call in the parent component
+    // Pass the tenant name to the onSelectTenant function
+    onSelectTenant(tenant.tenant_name); // Pass the name to trigger the API call in TenantMenu
+    console.log(`Tenant Name: ${tenant.tenant_name}`);
   };
+
+
+
+  // const handleTenantClick = (tenant) => {
+  //   console.log('Clicked Tenant ID:', tenant.tenant_id); // Log the tenant ID for debugging
+  //   onSelectTenant(tenant.tenant_id); // Pass the ID to trigger the API call in the parent component
+  // };
   
   
 
