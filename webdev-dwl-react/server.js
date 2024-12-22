@@ -714,3 +714,33 @@ app.put("/api/tenants/terminateLease/:tenantId", async (req, res) => {
     res.status(500).json({ error: "Failed to terminate lease." });
   }
 });
+
+app.put("/api/tenants/extendLease/:tenantId", async (req, res) => {
+  const { tenantId } = req.params;
+  const { leaseExtendDate } = req.body;
+
+  try {
+    // If no leaseEndDate is provided, set lease_end to NULL
+    const newLeaseDate = leaseExtendDate ? leaseExtendDate : null;
+
+    const updateQuery = `
+      UPDATE tenants 
+      SET rental_start = ?, lease_end = NULL
+      WHERE tenant_id = ?
+    `;
+
+    const [result] = await dbConnection.execute(updateQuery, [
+      newLeaseDate,
+      tenantId,
+    ]);
+
+    if (result.affectedRows > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(400).json({ success: false, message: "Tenant not found." });
+    }
+  } catch (error) {
+    console.error("Error updating lease:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
