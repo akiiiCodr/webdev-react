@@ -838,7 +838,10 @@ app.put("/api/tenants/extendLease/:tenantId", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
+<<<<<<< HEAD
 
 //ADD HERE IF you will add APIs
 
 //-------------------------------------------------------------------------------------------------//
+=======
+>>>>>>> e98e550bcf018a6ce1a3aefa6f62da267fe3435b

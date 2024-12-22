@@ -125,6 +125,7 @@ function Tenants({ selectedTenant, onSelectTenant }) {
                 ) : (
                   <p>Lease End: Not specified</p>
                 )}
+<<<<<<< HEAD
                 {stayDuration && (
                 <span
                   style={{
@@ -144,6 +145,26 @@ function Tenants({ selectedTenant, onSelectTenant }) {
                 </span>
               )}
 
+=======
+                {stayDuration && tenant.lease_end && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      bottom: '10px',
+                      right: '10px',
+                      padding: '8px 12px',
+                      backgroundColor: '#ffad38',
+                      color: '#000',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '30px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {`${stayDuration.years}y ${stayDuration.months}m ${stayDuration.days}d`}
+                  </span>
+                )}
+>>>>>>> e98e550bcf018a6ce1a3aefa6f62da267fe3435b
               </li>
             );
           })}
