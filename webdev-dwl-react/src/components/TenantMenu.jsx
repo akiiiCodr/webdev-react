@@ -42,8 +42,12 @@ function TenantMenu() {
 
     const formatDateForInput = (date) => {
       if (!date) return ''; // Handle null or undefined date
-      return new Date(date).toISOString().split('T')[0]; // Extract yyyy-MM-dd
+      const localDate = new Date(date);
+      const offset = localDate.getTimezoneOffset(); // Get the time zone offset in minutes
+      localDate.setMinutes(localDate.getMinutes() - offset); // Adjust the date to the local time zone
+      return localDate.toISOString().split('T')[0]; // Extract yyyy-MM-dd
     };
+    
     
 
   // Handle form input changes

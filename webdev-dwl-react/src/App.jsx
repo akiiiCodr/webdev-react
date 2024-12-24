@@ -8,6 +8,7 @@ import Login from './components/Login.jsx'; // Import the Login component
 import Reservation from './components/Reservation.jsx'; // Import the Reservation and Payment
 import Admin from './components/Admin.jsx'; // Import the Admin
 import Contact from './components/Contact.jsx'; // Import the Contact
+import TenantLounge from './components/TenantLounge.jsx';
 
 function App() {
   return (
@@ -35,6 +36,10 @@ function App() {
 
           {/* Contact Page */}
           <Route path="/contact-us" element={<Contact/>} />
+
+          {/* Tenant Page */}
+          <Route path="/tenant/:tenant_id/:username" element={<TenantLounge />} />
+
 
         </Routes>
 

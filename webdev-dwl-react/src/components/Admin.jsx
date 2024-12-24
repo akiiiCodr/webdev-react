@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import TenantMenu from './TenantMenu'; // Import the TenantMenu component
+import PaymentAdmin from './PaymentAdmin';
 
 
 function Admin() {
@@ -42,7 +43,7 @@ function Admin() {
           id="content2"
           className={`viewer-content ${activeContent === 'content2' ? 'active' : ''}`}
         >
-          Payments
+          <PaymentAdmin/>
         </div>
         <div
           id="content3"

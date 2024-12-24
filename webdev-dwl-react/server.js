@@ -14,6 +14,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import crypto from "crypto";
+import moment from "moment";
+import multer from "multer";
 
 // Load environment variables
 dotenv.config();
@@ -68,6 +70,19 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(cookieParser());
 
+// Set up storage configuration for multer (you can customize the storage path and file naming)
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Store files in the 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Generate a unique filename
+  },
+});
+
+// Create the multer upload instance
+const upload = multer({ storage: storage });
+
 // Port configuration
 const PORT = 5001;
 
@@ -120,20 +135,39 @@ const initializeDatabase = async () => {
     await dbConnection.execute(createUsersTableQuery);
     console.log("Users table created or already exists");
 
+    // SQL query to create the payments table with payment status
+    const createPaymentsTableQuery = `
+    CREATE TABLE IF NOT EXISTS payments (
+    payment_id VARCHAR(20) PRIMARY KEY,  -- Changed to VARCHAR for custom format (e.g., 20241220-0001)
+    tenant_id INT(11),  -- Foreign key referencing tenant_id
+    payment_amount DECIMAL(10, 2) NOT NULL,  -- Payment amount in Peso
+    payment_date DATE NOT NULL,  -- Date of the payment
+    payment_status ENUM('paid', 'unpaid') DEFAULT 'unpaid',  -- Payment status (paid or unpaid)
+    proof_of_payment VARCHAR(255),  -- Store file path of the image
+    FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id)  -- Foreign key to tenants table
+  );
+  `;
+
+    await dbConnection.execute(createPaymentsTableQuery);
+    console.log("Payment table created or already exists");
+
     // Create `tenants` table if it doesn't exist
     const createTenantsTableQuery = `
-      CREATE TABLE IF NOT EXISTS tenants (
-        tenant_id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        tenant_name VARCHAR(255) NOT NULL,
-        birthday DATE NULL,
-        email_address VARCHAR(255) NULL UNIQUE,
-        guardian_name VARCHAR(255) NULL,
-        home_address VARCHAR(255) NULL,
-        rental_start DATE NULL,
-        lease_end DATE NULL,
-        contact_no VARCHAR(255) NOT NULL UNIQUE
-      );
-    `;
+   CREATE TABLE IF NOT EXISTS tenants (
+    tenant_id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    tenant_name VARCHAR(255) NULL,
+    birthday DATE NULL,
+    email_address VARCHAR(255) NULL UNIQUE,
+    guardian_name VARCHAR(255) NULL,
+    home_address VARCHAR(255) NULL,
+    rental_start DATE NULL,
+    lease_end DATE NULL,
+    contact_no VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) NULL,  -- NULL allowed here
+    password VARCHAR(255) NULL
+  );
+  `;
+
     await dbConnection.execute(createTenantsTableQuery);
     console.log("Tenants table created or already exists");
 
@@ -622,10 +656,14 @@ app.post("/api/tenants", async (req, res) => {
       homeAddress = null,
       rentalStart = null,
       leaseEnd = null,
+      username = "", // Default username to an empty string if not provided
+      password = "",
     } = req.body;
 
-    const query = `INSERT INTO tenants (tenant_name, birthday, contact_no, email_address, guardian_name, home_address, rental_start, lease_end)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    // Ensure that 'username' is either empty string or properly set
+    const query = `INSERT INTO tenants (tenant_name, birthday, contact_no, email_address, guardian_name, home_address, rental_start, lease_end, username, password)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
     await dbConnection.execute(query, [
       name,
       birthday,
@@ -635,7 +673,10 @@ app.post("/api/tenants", async (req, res) => {
       homeAddress,
       rentalStart,
       leaseEnd,
+      username || "", // Ensure it's an empty string if no username provided
+      password,
     ]);
+
     res.status(201).json({ message: "Tenant added successfully" });
   } catch (error) {
     console.error("Error adding tenant:", error);
@@ -678,13 +719,16 @@ app.get("/api/tenants/:tenantId", async (req, res) => {
 
 app.get("/api/tenants", async (req, res) => {
   try {
-    const { id } = req.query; // Use 'id' to filter the data
+    const { id, username } = req.query; // Get 'id' or 'username' from query parameters
     let query = "SELECT * FROM tenants";
     const params = [];
 
     if (id) {
-      query += " WHERE tenant_id = ?";
+      query += " WHERE tenant_id = ?"; // Filter by tenant_id if provided
       params.push(id);
+    } else if (username) {
+      query += " WHERE username = ?"; // Filter by username if provided
+      params.push(username);
     }
 
     const [rows] = await dbConnection.execute(query, params);
@@ -838,10 +882,228 @@ app.put("/api/tenants/extendLease/:tenantId", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
-<<<<<<< HEAD
+
+app.post("/api/tenant-create/:tenantId", async (req, res) => {
+  const { tenantId } = req.params;
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ error: "Username and password are required" });
+  }
+
+  try {
+    // SQL query to update username and password for the specific tenant
+    const query = `
+      UPDATE tenants
+      SET username = ?, password = ?
+      WHERE tenant_id = ?;
+    `;
+
+    const result = await dbConnection.execute(query, [
+      username,
+      password,
+      tenantId,
+    ]);
+
+    // Check if the tenant with the given tenant_id was found and updated
+    if (result[0].affectedRows > 0) {
+      res.status(200).json({ message: "Tenant account created successfully" });
+    } else {
+      res.status(404).json({ error: "Tenant not found" });
+    }
+  } catch (error) {
+    console.error("Error updating tenant:", error);
+    res.status(500).json({ error: "Failed to update tenant" });
+  }
+});
+
+// TENANTS DASHBOARD //
+
+app.post("/api/login/:username", async (req, res) => {
+  const { username } = req.params; // Get the username from the URL params
+  const { password } = req.body; // Get the password from the request body
+
+  // Check if password is provided
+  if (!password) {
+    return res.status(400).json({
+      success: false,
+      message: "Password is required",
+    });
+  }
+
+  try {
+    // Fetch tenant by username (from MySQL in your case)
+    const [rows] = await dbConnection.execute(
+      "SELECT * FROM tenants WHERE username = ?",
+      [username]
+    );
+
+    if (rows.length > 0) {
+      const tenant = rows[0]; // Assuming the username is unique, take the first result
+
+      // Check if the password matches
+      if (tenant.password === password) {
+        // Return success and tenant data including tenant_id
+        return res.json({
+          success: true,
+          message: "Login successful",
+          tenant: {
+            tenant_id: tenant.tenant_id,
+            username: tenant.username,
+            // other relevant tenant data you want to send back
+          },
+        });
+      } else {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid username or password",
+        });
+      }
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "Tenant not found",
+      });
+    }
+  } catch (error) {
+    console.error("Error during login process:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred during login",
+    });
+  }
+});
+
+app.get("/api/user/tenants", async (req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+  if (!username) {
+    return res.status(400).json({ message: "Username is required" }); // Handle case where username is not provided
+  }
+
+  try {
+    const tenant = await dbConnection.query(
+      "SELECT * FROM tenants WHERE username = ?",
+      [username]
+    );
+
+    console.log("Fetched tenant data:", tenant); // Log the raw tenant data
+
+    if (tenant.length > 0) {
+      const tenantData = tenant[0]; // Get the first record (assuming only one tenant matches)
+
+      // Define fields to exclude (e.g., password, internal fields)
+      const excludeFields = ["password", "internal_field1", "internal_field2"];
+
+      // Filter the tenant data by excluding the fields
+      const cleanedData = Object.keys(tenantData).reduce((result, key) => {
+        if (
+          !excludeFields.includes(key) &&
+          tenantData[key] !== null &&
+          tenantData[key] !== undefined
+        ) {
+          result[key] = tenantData[key];
+        }
+        return result;
+      }, {});
+
+      // Return the cleaned data in the desired format
+      const responseData = {
+        tenant: cleanedData,
+      };
+
+      res.json(responseData); // Return the transformed data as a JSON response
+    } else {
+      res.status(404).json({ message: "Tenant not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching tenant data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// PAYMENTS API //
+
+// POST endpoint for adding a payment
+app.post(
+  "/api/payments",
+  upload.single("proof_of_payment"),
+  async (req, res) => {
+    const { tenant_id, payment_amount, payment_date } = req.body;
+    const proofOfPayment = req.file ? req.file.path : null;
+
+    // Ensure all required fields are provided
+    if (!tenant_id || !payment_amount || !payment_date) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    try {
+      // Format the payment_date to YYYYMMDD
+      const formattedDate = new Date(payment_date)
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, "");
+
+      // Query the database to get the highest payment_id for the same date
+      const [rows] = await dbConnection.query(
+        `SELECT payment_id FROM payments WHERE payment_id LIKE ? ORDER BY payment_id DESC LIMIT 1`,
+        [`${formattedDate}-%`]
+      );
+
+      // If there are no existing payments for this date, start with 0001
+      const latestPaymentId =
+        rows.length > 0 ? rows[0].payment_id.split("-")[1] : "0000";
+      const newPaymentId = `${formattedDate}-${(
+        parseInt(latestPaymentId, 10) + 1
+      )
+        .toString()
+        .padStart(4, "0")}`;
+
+      // Insert the new payment
+      const [result] = await dbConnection.query(
+        `INSERT INTO payments (payment_id, tenant_id, payment_amount, payment_date, proof_of_payment, payment_status) VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          newPaymentId,
+          tenant_id,
+          payment_amount,
+          payment_date,
+          proofOfPayment,
+          "paid",
+        ]
+      );
+
+      // Send response
+      res.status(201).json({
+        message: "Payment added successfully",
+        tenant_id,
+        payment_amount,
+        payment_date,
+        proof_of_payment: proofOfPayment,
+        payment_status: "paid",
+        payment_id: newPaymentId,
+      });
+    } catch (error) {
+      console.error("Error adding payment:", error);
+      res.status(500).json({ message: "Failed to add payment" });
+    }
+  }
+);
+
+// Define the GET API route to fetch payments
+app.get("/api/payments", async (req, res) => {
+  try {
+    // Use await to wait for the query to complete
+    const results = await dbConnection.query("SELECT * FROM payments");
+
+    // Wrap the results within a 'payment' object
+    res.json({ payment: results }); // Send the payments data wrapped inside 'payment'
+  } catch (err) {
+    console.error("Error fetching payments:", err);
+    return res.status(500).json({ message: "Error fetching payments" });
+  }
+});
 
 //ADD HERE IF you will add APIs
 
 //-------------------------------------------------------------------------------------------------//
-=======
->>>>>>> e98e550bcf018a6ce1a3aefa6f62da267fe3435b

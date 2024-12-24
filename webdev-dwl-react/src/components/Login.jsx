@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import GoogleAuth from './GoogleAuth'; // Ensure this component is correctly created and imported
 import UserInfo from './UserInfo'; // Ensure this component is correctly created and imported
 import Logout from './Logout'; // Ensure this component is correctly created and imported
@@ -7,17 +8,51 @@ import Logout from './Logout'; // Ensure this component is correctly created and
 function Login() {
   // Simulated authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const navigate = useNavigate(); // For redirection
 
-  // Function to simulate user login
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Add logic to check authentication here (e.g., API call)
-    setIsAuthenticated(true); // Set to true if authentication is successful
+  
+    if (!username || !password) {
+      // setError("Please enter both username and password.");
+      return;
+    }
+  
+    try {
+      const response = await axios.post(`http://localhost:5001/api/login/${username}`, {
+        password,
+      });
+  
+      if (response.data.success) {
+        // Assuming response data has tenant object
+        const { tenant_id, username } = response.data.tenant;
+  
+        // Redirect to the tenant dashboard
+        navigate(`/tenant/${tenant_id}/${username}`);
+      } else {
+        setError(response.data.message || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      // setError("An error occurred during login. Please try again.");
+      console.error("Login error:", error);
+    }
+  };
+  
+  // Function to handle redirection based on user's choice
+  const handleRedirect = (choice) => {
+    if (choice === 'dashboard') {
+      navigate(`/tenant/${username}`); // Redirect to tenant dashboard using username
+    } else {
+      navigate('/'); // Redirect to main website
+    }
+    setShowModal(false); // Close modal after redirection
   };
 
   return (
     <>
-      {/* Login Section */}
       <div className="login-section">
         <div className="login-box">
           <h1>Dwell-o</h1>
@@ -30,13 +65,18 @@ function Login() {
                 <input
                   type="text"
                   placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
                 <input
                   type="password"
                   placeholder="Enter at least 8+ characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                {/* {loginError && <p style={{ color: 'red' }}>{loginError}</p>} */}
                 <Link to="/forgot-password" className="forgot-password">
                   Forgot password?
                 </Link>
