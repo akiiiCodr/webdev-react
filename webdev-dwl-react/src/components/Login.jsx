@@ -10,36 +10,45 @@ function Login() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
-  const navigate = useNavigate(); // For redirection
+  const [loggedIn, setLoggedIn] = useState(false); // State to track login status
+  const [error, setError] = useState(''); // State to handle errors
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
   
     if (!username || !password) {
-      // setError("Please enter both username and password.");
+      setError("Please enter both username and password.");
       return;
     }
   
     try {
-      const response = await axios.post(`http://localhost:5001/api/login/${username}`, {
-        password,
-      });
+      // Call the API to authenticate and set tenant as active
+      const response = await axios.get(`http://localhost:5001/api/login?username=${username}&password=${password}`);
   
-      if (response.data.success) {
-        // Assuming response data has tenant object
+      if (response.data.success && response.data.loggedIn) {
         const { tenant_id, username } = response.data.tenant;
+  
+        // Set the login state to true
+        setLoggedIn(true);
+  
+        // Optionally store the tenant details in local storage or context
+        localStorage.setItem('tenant_id', tenant_id);
+        localStorage.setItem('tenant_username', username);
   
         // Redirect to the tenant dashboard
         navigate(`/tenant/${tenant_id}/${username}`);
       } else {
         setError(response.data.message || "Login failed. Please try again.");
+        setLoggedIn(false); // Set loggedIn to false on failure
       }
     } catch (error) {
-      // setError("An error occurred during login. Please try again.");
+      setError("An error occurred during login. Please try again.");
+      setLoggedIn(false); // Set loggedIn to false on error
       console.error("Login error:", error);
     }
   };
+  
   
   // Function to handle redirection based on user's choice
   const handleRedirect = (choice) => {

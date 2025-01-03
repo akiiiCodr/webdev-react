@@ -70,19 +70,6 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(cookieParser());
 
-// Set up storage configuration for multer (you can customize the storage path and file naming)
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Store files in the 'uploads' folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Generate a unique filename
-  },
-});
-
-// Create the multer upload instance
-const upload = multer({ storage: storage });
-
 // Port configuration
 const PORT = 5001;
 
@@ -164,7 +151,9 @@ const initializeDatabase = async () => {
     lease_end DATE NULL,
     contact_no VARCHAR(255) NOT NULL UNIQUE,
     username VARCHAR(255) NULL,  -- NULL allowed here
-    password VARCHAR(255) NULL
+    password VARCHAR(255) NULL,
+    active VARCHAR(255) NULL,
+    avatar VARCHAR(255) NULL
   );
   `;
 
@@ -976,17 +965,82 @@ app.post("/api/login/:username", async (req, res) => {
   }
 });
 
-app.get("/api/user/tenants", async (req, res) => {
-  const { username } = req.query; // Get the username from the query parameters
-  if (!username) {
-    return res.status(400).json({ message: "Username is required" }); // Handle case where username is not provided
+// Backend: POST login API to set tenant as active (logged in)
+app.get("/api/login", async (req, res) => {
+  const { username, password } = req.query; // Get username and password from the query string
+
+  if (!username || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Username and password are required",
+    });
   }
 
   try {
-    const tenant = await dbConnection.query(
-      "SELECT * FROM tenants WHERE username = ?",
-      [username]
+    // Check if the tenant exists and if the password matches
+    const [rows] = await dbConnection.execute(
+      "SELECT * FROM tenants WHERE username = ? AND password = ?",
+      [username, password]
     );
+
+    if (rows.length > 0) {
+      const tenant = rows[0]; // Assuming the username is unique
+
+      // Set tenant's active status to true (mark as logged in)
+      await dbConnection.execute(
+        "UPDATE tenants SET active = ? WHERE tenant_id = ?",
+        [true, tenant.tenant_id]
+      );
+
+      return res.json({
+        success: true,
+        loggedIn: true,
+        message: "Login successful",
+        tenant: {
+          tenant_id: tenant.tenant_id,
+          username: tenant.username,
+          tenant_name: tenant.tenant_name, // include other tenant data you want to send
+        },
+      });
+    } else {
+      return res.status(401).json({
+        success: false,
+        loggedIn: false,
+        message: "Invalid username or password",
+      });
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).json({
+      success: false,
+      loggedIn: false,
+      message: "An error occurred during login",
+    });
+  }
+});
+
+app.get("/api/user/tenants", async (req, res) => {
+  const { username, id } = req.query; // Get both username and id from query parameters
+
+  let query = "SELECT * FROM tenants WHERE ";
+  let params = [];
+
+  if (username) {
+    query += "username = ?";
+    params.push(username);
+  }
+
+  if (id) {
+    // If both username and id are provided, add an OR condition
+    if (username) {
+      query += " OR ";
+    }
+    query += "tenant_id = ?";
+    params.push(id);
+  }
+
+  try {
+    const tenant = await dbConnection.query(query, params); // Execute query with dynamic conditions
 
     console.log("Fetched tenant data:", tenant); // Log the raw tenant data
 
@@ -1092,17 +1146,164 @@ app.post(
 
 // Define the GET API route to fetch payments
 app.get("/api/payments", async (req, res) => {
+  const { tenant_id } = req.query; // Get tenant_id from query parameters
+
   try {
-    // Use await to wait for the query to complete
-    const results = await dbConnection.query("SELECT * FROM payments");
+    let query = "SELECT * FROM payments";
+    let queryParams = [];
+
+    // If tenant_id is provided, filter the payments by tenant_id
+    if (tenant_id) {
+      query += " WHERE tenant_id = ?";
+
+      queryParams.push(tenant_id);
+    }
+    // Execute the query with the appropriate parameters
+    const results = await dbConnection.query(query, queryParams);
 
     // Wrap the results within a 'payment' object
-    res.json({ payment: results }); // Send the payments data wrapped inside 'payment'
+    res.json({ payment: results["0"] }); // Send the payments data wrapped inside 'payment'
   } catch (err) {
     console.error("Error fetching payments:", err);
     return res.status(500).json({ message: "Error fetching payments" });
   }
 });
+
+// Endpoint to set tenant status as inactive (logged out)
+app.post("/api/tenants/logout", async (req, res) => {
+  const { username } = req.body;
+
+  if (!username) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Username is required" });
+  }
+
+  try {
+    // Use a promise with async/await to handle the database query
+    const query = "UPDATE tenants SET active = 0 WHERE username = ?";
+
+    // Use dbConnection.execute with async/await
+    const [result] = await dbConnection.execute(query, [username]);
+
+    // If the tenant is found and updated successfully
+    if (result.affectedRows > 0) {
+      return res
+        .status(200)
+        .json({ success: true, message: "Tenant logged out successfully" });
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, message: "Tenant not found" });
+    }
+  } catch (error) {
+    console.error("Error during logout:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "An error occurred while logging out" });
+  }
+});
+
+// Route to check if a tenant is active
+app.get("/api/tenant/active", async (req, res) => {
+  const tenantId = req.query.tenantId; // Get tenantId from query parameters
+
+  if (!tenantId) {
+    return res.status(400).json({ message: "Tenant ID is required" });
+  }
+
+  try {
+    // Query the database to get the tenant's active status
+    const [rows] = await dbConnection.execute(
+      "SELECT active FROM tenants WHERE tenant_id = ?",
+      [tenantId] // Pass tenantId as a parameter
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Tenant not found" });
+    }
+
+    const tenant = rows[0];
+    const isActive = tenant.active === "1"; // Assuming 'active' is the string value for active tenants
+
+    return res.status(200).json({ isActive });
+  } catch (err) {
+    console.error("Error querying the database:", err);
+    return res.status(500).json({ message: "Error querying the database" });
+  }
+});
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // Directory to store files
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Create a unique file name
+  },
+});
+
+const upload = multer({ storage: storage }).single("profile_image"); // Ensure this matches the input field name
+
+app.put(
+  "/api/tenants/update/:tenant_id",
+  upload.single("avatar"),
+  async (req, res) => {
+    const tenant_id = req.params.tenant_id;
+    const { tenant_name, username, birthday } = req.body;
+    const avatar = req.file ? req.file.path : null; // Capture avatar file path
+
+    try {
+      if (!tenant_id) {
+        return res
+          .status(400)
+          .json({ error: "Tenant ID is required to update." });
+      }
+
+      let updateQuery = "UPDATE tenants SET ";
+      const values = [];
+      const updateFields = [];
+
+      // Check for each field and add to the query and values array if it's provided
+      if (tenant_name && tenant_name.trim() !== "") {
+        updateFields.push("tenant_name = ?");
+        values.push(tenant_name);
+      }
+      if (username && username.trim() !== "") {
+        updateFields.push("username = ?");
+        values.push(username);
+      }
+      if (birthday) {
+        updateFields.push("birthday = ?");
+        values.push(birthday);
+      }
+      if (avatar) {
+        updateFields.push("avatar = ?");
+        values.push(avatar);
+      }
+
+      if (updateFields.length === 0) {
+        return res.status(400).json({ error: "No fields provided to update." });
+      }
+
+      updateQuery += updateFields.join(", ") + " WHERE tenant_id = ?";
+      values.push(tenant_id); // Add tenant_id at the end
+
+      const [results] = await dbConnection.execute(updateQuery, values);
+
+      if (results.affectedRows > 0) {
+        return res.status(200).json({
+          message: "Tenant updated successfully.",
+          avatarPath: avatar || "No avatar updated", // Include file path (destination) in the response
+        });
+      } else {
+        return res.status(404).json({ error: "Tenant not found." });
+      }
+    } catch (error) {
+      console.error("Error updating tenant:", error);
+      return res.status(500).json({ error: "Failed to update tenant." });
+    }
+  }
+);
 
 //ADD HERE IF you will add APIs
 

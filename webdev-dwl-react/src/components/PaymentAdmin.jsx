@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const PaymentAdmin = () => {
+const PaymentAdmin = (props) => {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentDate, setPaymentDate] = useState('');
   const [tenantId, setTenantId] = useState('');
@@ -15,7 +15,6 @@ const PaymentAdmin = () => {
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState('');
 
-  // Fetch tenants and payments on component mount
   useEffect(() => {
     const fetchTenants = async () => {
       try {
@@ -31,8 +30,8 @@ const PaymentAdmin = () => {
     const fetchPayments = async () => {
       try {
         const response = await axios.get('http://localhost:5001/api/payments');
-        if (response.data && response.data.payment) {
-          setPayments(response.data.payment["0"]); // Directly set payments data
+        if (response.data && Array.isArray(response.data.payment)) {
+          setPayments(response.data.payment);
         } else {
           setError("Payment details not found.");
         }
@@ -45,7 +44,13 @@ const PaymentAdmin = () => {
     fetchPayments();
   }, []);
 
-  // Handle filter by date
+  const tenantMap = tenants.reduce((acc, tenant) => {
+    acc[tenant.tenant_id] = tenant.tenant_name || tenant.username;
+    return acc;
+  }, {});
+
+  const filteredPayments = payments.filter((payment) => tenantMap[payment.tenant_id]);
+
   const handleFilterDate = () => {
     setFilterActive(!filterActive);
   };
@@ -59,48 +64,27 @@ const PaymentAdmin = () => {
     }
   };
 
-  // Filter payments based on selected date range
-  const filteredPayments = payments.filter((payment) => {
-    const paymentDate = new Date(payment.payment_date);
-    if (startDate && endDate) {
-      return paymentDate >= new Date(startDate) && paymentDate <= new Date(endDate);
-    }
-    return true; // If no filter, show all payments
-  });
-
-  // Create a mapping of tenant_id to tenant object for fast lookup
-  const tenantMap = tenants.reduce((acc, tenant) => {
-    acc[tenant.tenant_id] = tenant;
-    return acc;
-  }, {});
-
-  // Handle adding a new payment
   const handleAddPayment = async () => {
-    if (!tenantId || !paymentAmount || !paymentDate) {
-      setError("Please fill all the required fields.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('tenant_id', tenantId);
-    formData.append('payment_amount', paymentAmount);
-    formData.append('payment_status', 'paid'); // Add payment status as "paid"
-    formData.append('payment_date', paymentDate);
-    if (proofOfPayment) {
-      formData.append('proof_of_payment', proofOfPayment);
-    }
-
     try {
-      const response = await axios.post('http://localhost:5001/api/payments', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (response.data) {
-        setPayments((prevPayments) => [...prevPayments, response.data]); // Add the new payment to the list
-        setIsModalOpen(false); // Close modal after successful payment
+      const formData = new FormData();
+      formData.append('tenantId', tenantId);
+      formData.append('paymentAmount', paymentAmount);
+      formData.append('paymentDate', paymentDate);
+      if (proofOfPayment) {
+        formData.append('proofOfPayment', proofOfPayment);
+      }
+
+      const response = await axios.post('http://localhost:5001/api/payments', formData);
+      if (response.status === 200) {
+        setPayments((prev) => [...prev, response.data]);
+        setIsModalOpen(false);
+        setError('');
+      } else {
+        setError('Failed to add payment.');
       }
     } catch (error) {
       console.error("Error adding payment:", error);
-      setError("Error adding payment.");
+      setError('Failed to add payment.');
     }
   };
 
@@ -116,7 +100,6 @@ const PaymentAdmin = () => {
         </div>
       </div>
 
-      {/* Date Filter Modal */}
       {filterActive && (
         <div className="filter-container">
           <div>
@@ -143,14 +126,14 @@ const PaymentAdmin = () => {
       <div className="payments-container">
         {filteredPayments.length > 0 ? (
           filteredPayments.map((payment) => {
-            const tenant = tenantMap[payment.tenant_id]; // Use tenantMap for fast lookup
+            const tenant = tenantMap[payment.tenant_id];
             return (
               <div className="payment-card" key={payment.payment_id}>
                 {payment.payment_status === 'paid' && (
                   <div className="paid-label">Paid</div>
                 )}
                 <div className="payment-card-content">
-                  <h4>{tenant ? tenant.tenant_name : "Unknown Tenant"}</h4>
+                  <h4>{tenant ? tenant : "Unknown Tenant"}</h4>
                   <p>Amount: ₱{payment.payment_amount}</p>
                   <p>Date: {new Date(payment.payment_date).toLocaleDateString('en-US', {
                     weekday: 'long',
