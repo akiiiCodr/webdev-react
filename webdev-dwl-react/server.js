@@ -28,6 +28,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// Set up multer with memory storage to store files in memory (binary buffer)
+const uploadCF = multer({ storage: multer.memoryStorage() });
+
 // Load environment variables
 dotenv.config();
 
@@ -170,6 +173,23 @@ const initializeDatabase = async () => {
 
     await dbConnection.execute(createTenantsTableQuery);
     console.log("Tenants table created or already exists");
+
+    // Create `contract_tenant` table if it doesn't exist
+    const createContractTenantTableQuery = `
+  CREATE TABLE IF NOT EXISTS contract_tenant (
+  tenant_id INT NOT NULL,               -- Tenant ID, linked to the tenants table
+  contract_id VARCHAR(255) NOT NULL,     -- Unique contract ID
+  contract_file BLOB,                   -- The contract file stored as binary data
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Record creation timestamp
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Record update timestamp
+  PRIMARY KEY (contract_id),            -- Contract ID as the primary key
+  FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id) -- Linking to the tenants table
+);
+
+`;
+
+    await dbConnection.execute(createContractTenantTableQuery);
+    console.log("Tenants contract table created or already exists");
 
     // Get the maximum tenant_id value
     const [rows] = await dbConnection.execute(
@@ -660,9 +680,19 @@ app.post("/api/tenants", async (req, res) => {
       password = "",
     } = req.body;
 
-    // Ensure that 'username' is either empty string or properly set
     const query = `INSERT INTO tenants (tenant_name, birthday, contact_no, email_address, guardian_name, home_address, rental_start, lease_end, username, password)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                   ON DUPLICATE KEY UPDATE
+                   tenant_name = VALUES(tenant_name),
+                   birthday = VALUES(birthday),
+                   contact_no = VALUES(contact_no),
+                   email_address = VALUES(email_address),
+                   guardian_name = VALUES(guardian_name),
+                   home_address = VALUES(home_address),
+                   rental_start = VALUES(rental_start),
+                   lease_end = VALUES(lease_end),
+                   username = VALUES(username),
+                   password = VALUES(password)`;
 
     await dbConnection.execute(query, [
       name,
@@ -673,11 +703,11 @@ app.post("/api/tenants", async (req, res) => {
       homeAddress,
       rentalStart,
       leaseEnd,
-      username || "", // Ensure it's an empty string if no username provided
+      username || "",
       password,
     ]);
 
-    res.status(201).json({ message: "Tenant added successfully" });
+    res.status(201).json({ message: "Tenant added or updated successfully" });
   } catch (error) {
     console.error("Error adding tenant:", error);
     res.status(500).json({ error: "Failed to add tenant" });
@@ -1090,7 +1120,6 @@ app.get("/api/user/tenants", async (req, res) => {
 
 // PAYMENTS API //
 
-// POST endpoint for adding a payment
 app.post(
   "/api/payments",
   upload.single("proof_of_payment"),
@@ -1138,7 +1167,7 @@ app.post(
         ]
       );
 
-      // Send response
+      // Send response with added payment data
       res.status(201).json({
         message: "Payment added successfully",
         tenant_id,
@@ -1336,6 +1365,111 @@ app.get("/api/tenants/avatar/:tenant_id", async (req, res) => {
   } catch (error) {
     console.error("Error retrieving avatar:", error);
     return res.status(500).json({ error: "Failed to retrieve avatar." });
+  }
+});
+
+app.post(
+  "/api/uploadContract",
+  uploadCF.single("contractFile"),
+  async (req, res) => {
+    const { tenant_id } = req.body;
+    const contractFileBuffer = req.file.buffer; // The file data in binary form
+
+    // Get the current date in YYYYMMDD format
+    const currentDate = new Date();
+    const dateStr = currentDate.toISOString().slice(0, 10).replace(/-/g, ""); // Format YYYYMMDD
+
+    try {
+      // Generate the new contract_id by checking existing entries
+      let newContractNumber = 1;
+      let contract_id = `${dateStr}CONTRACT${String(newContractNumber).padStart(
+        4,
+        "0"
+      )}`;
+
+      // Loop to ensure unique contract_id
+      let contractExists = true;
+      while (contractExists) {
+        const [result] = await dbConnection.query(
+          "SELECT contract_id FROM contract_tenant WHERE contract_id = ?",
+          [contract_id]
+        );
+
+        if (result.length === 0) {
+          contractExists = false; // No duplicate, use this contract_id
+        } else {
+          // Increment the contract number and regenerate the contract_id
+          newContractNumber++;
+          contract_id = `${dateStr}CONTRACT${String(newContractNumber).padStart(
+            4,
+            "0"
+          )}`;
+        }
+      }
+
+      // Insert contract data into contract_tenant table
+      const insertQuery =
+        "INSERT INTO contract_tenant (tenant_id, contract_id, contract_file) VALUES (?, ?, ?)";
+      await dbConnection.query(insertQuery, [
+        tenant_id,
+        contract_id,
+        contractFileBuffer,
+      ]);
+
+      res.status(200).json({
+        message: "Contract uploaded successfully",
+        contract_id: contract_id,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error storing contract" });
+    }
+  }
+);
+
+app.get("/api/downloadContract/:contract_id", async (req, res) => {
+  const { contract_id } = req.params;
+
+  try {
+    // Fetch the contract data from the database
+    const [result] = await dbConnection.query(
+      "SELECT contract_file FROM contract_tenant WHERE contract_id = ?",
+      [contract_id]
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Contract not found" });
+    }
+
+    const contractFileBuffer = result[0].contract_file; // The binary file data
+
+    // Set appropriate headers to indicate a file download for Word (.docx)
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${contract_id}.docx"`
+    );
+
+    // Send the file as a response
+    res.send(contractFileBuffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching contract" });
+  }
+});
+
+// Route to fetch contracts
+app.get("/api/contracts", async (req, res) => {
+  const query = "SELECT * FROM contract_tenant"; // Replace with your table name
+  try {
+    const [results] = await dbConnection.query(query); // Using await with promise-based query
+    res.json(results); // Send contracts as JSON
+  } catch (err) {
+    console.error("Error fetching contracts:", err);
+    return res.status(500).json({ message: "Failed to fetch contracts" });
   }
 });
 

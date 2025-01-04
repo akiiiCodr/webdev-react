@@ -137,75 +137,63 @@ function TenantMenu() {
   
 
   const handleTerminateLease = async (tenantId) => {
-
+    // Ensure tenantData is an array before using .find
+    if (Array.isArray(tenantData)) {
+      const tenant = tenantData.find(tenant => tenant.tenant_id === tenantId);
+      console.log('Received Tenant ID for Lease Termination:', tenant);
   
-    // Check if tenantData is available and contains the tenantId
-    const tenant = tenantData?.find(tenant => tenant.tenant_id === tenantId);
-
-    console.log('Received Tenant ID for Lease Termination:', tenant);
+      if (!tenant) {
+        try {
+          const response = await axios.get(`http://localhost:5001/api/tenants/${tenantId}`);
+          const tenantFromApi = response.data;
   
-    if (!tenant) {
-      // If tenant is not found in tenantData, make the API call
-      try {
-        const response = await axios.get(`http://localhost:5001/api/tenants/${tenantId}`);
-        const tenantFromApi = response.data;
+          if (!tenantFromApi) {
+            console.error('Tenant not found');
+            alert('Tenant not found. Please try again.');
+            return;
+          }
   
-        // Check if the tenant data is valid
-        if (!tenantFromApi) {
-          console.error('Tenant not found');
-          alert('Tenant not found. Please try again.');
-          return;
+          console.log('Fetched tenant data:', tenantFromApi);
+          setTenantData(tenantId);
+  
+          const currentDate = new Date().toISOString().split('T')[0];
+  
+          await axios.put(`http://localhost:5001/api/tenants/terminateLease/${tenantId}`, {
+            terminationDate: currentDate,
+          });
+  
+          console.log('Lease terminated successfully.');
+          alert(`The lease for tenant ${tenantFromApi.tenant_name} (ID: ${tenantId}) has been terminated on ${currentDate}.`);
+          setSelectedTenant(null);
+        } catch (error) {
+          console.error('Error terminating lease:', error);
+          alert('Failed to terminate the lease. Please try again.');
         }
+      } else {
+        console.log('Using tenant data from state:', tenant);
+        setSelectedTenant(tenantId);
   
-        console.log('Fetched tenant data:', tenantFromApi);
-  
-        // Set the selected tenant to the tenant ID (this should be after the tenant data is fetched)
-        setTenantData(tenantId);
-  
-        // Get the current date in YYYY-MM-DD format
         const currentDate = new Date().toISOString().split('T')[0];
   
-        // Send the termination request to the backend
-        await axios.put(`http://localhost:5001/api/tenants/terminateLease/${tenantId}`, {
-          terminationDate: currentDate,
-        });
+        try {
+          await axios.put(`http://localhost:5001/api/tenants/terminateLease/${tenantId}`, {
+            terminationDate: currentDate,
+          });
   
-        console.log('Lease terminated successfully.');
-        alert(`The lease for tenant ${tenantFromApi.tenant_name} (ID: ${tenantId}) has been terminated on ${currentDate}.`);
-  
-        // Reset selected tenant after termination
-        setSelectedTenant(null);
-      } catch (error) {
-        console.error('Error terminating lease:', error);
-        alert('Failed to terminate the lease. Please try again.');
+          console.log('Lease terminated successfully.');
+          alert(`The lease for tenant ${tenant.tenant_name} (ID: ${tenantId}) has been terminated on ${currentDate}.`);
+          setSelectedTenant(null);
+        } catch (error) {
+          console.error('Error terminating lease:', error);
+          alert('Failed to terminate the lease. Please try again.');
+        }
       }
     } else {
-      // If tenant is found in tenantData, use that directly
-      console.log('Using tenant data from state:', tenant);
-  
-      // Set the selected tenant to the tenant ID
-      setSelectedTenant(tenantId);
-  
-      // Get the current date in YYYY-MM-DD format
-      const currentDate = new Date().toISOString().split('T')[0];
-  
-      // Send the termination request to the backend
-      try {
-        await axios.put(`http://localhost:5001/api/tenants/terminateLease/${tenantId}`, {
-          terminationDate: currentDate,
-        });
-  
-        console.log('Lease terminated successfully.');
-        alert(`The lease for tenant ${tenant.tenant_name} (ID: ${tenantId}) has been terminated on ${currentDate}.`);
-  
-        // Reset selected tenant after termination
-        setSelectedTenant(null);
-      } catch (error) {
-        console.error('Error terminating lease:', error);
-        alert('Failed to terminate the lease. Please try again.');
-      }
+      console.error('tenantData is not an array:', tenantData);
+      alert('Invalid tenant data format.');
     }
   };
+  
 
 
 
@@ -347,7 +335,7 @@ function TenantMenu() {
         {/* Modal for adding a tenant */}
         {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal">
+          <div className="add_modal">
             <h2>Register Tenant</h2>
             <form onSubmit={handleFormSubmit}>
               
@@ -449,7 +437,7 @@ function TenantMenu() {
       {/* Edit Modal */}
       {isEditModalOpen ? (
         <div className="modal-overlay">
-          <div className="modal">
+          <div className="edit_modal">
             <h2>Edit Tenant</h2>
             <form onSubmit={handleEditFormSubmit}>
               {/* Select Tenant Dropdown */}

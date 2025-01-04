@@ -67,15 +67,16 @@ const PaymentAdmin = (props) => {
   const handleAddPayment = async () => {
     try {
       const formData = new FormData();
-      formData.append('tenantId', tenantId);
-      formData.append('paymentAmount', paymentAmount);
-      formData.append('paymentDate', paymentDate);
+      formData.append('tenant_id', tenantId); // Ensure field name matches backend
+      formData.append('payment_amount', paymentAmount); // Ensure field name matches backend
+      formData.append('payment_date', paymentDate); // Ensure field name matches backend
+  
       if (proofOfPayment) {
-        formData.append('proofOfPayment', proofOfPayment);
+        formData.append('proof_of_payment', proofOfPayment); // Ensure field name matches backend
       }
-
+  
       const response = await axios.post('http://localhost:5001/api/payments', formData);
-      if (response.status === 200) {
+      if (response.status === 201) { // 201 indicates successful resource creation
         setPayments((prev) => [...prev, response.data]);
         setIsModalOpen(false);
         setError('');
@@ -87,6 +88,7 @@ const PaymentAdmin = (props) => {
       setError('Failed to add payment.');
     }
   };
+  
 
   return (
     <div>
