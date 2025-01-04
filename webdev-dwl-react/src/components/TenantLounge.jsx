@@ -63,7 +63,7 @@ function TenantLounge() {
         >
           Payments
         </div>
-        <div
+        {/* <div
           className={`rectangle_tenant ${activeContent === 'content2' ? 'active' : ''}`}
           onClick={() => showContent('content2')}
         >
@@ -74,7 +74,7 @@ function TenantLounge() {
           onClick={() => showContent('content3')}
         >
           Information
-        </div>
+        </div> */}
       </div>
 
       <div className="content-viewer-tenant">
@@ -86,7 +86,7 @@ function TenantLounge() {
             <PaymentTenant tenantId={tenantDetails.tenant_id} username={username} />
           )}
         </div>
-        <div
+        {/* <div
           id="content2"
           className={`viewer-content ${activeContent === 'content2' ? 'active' : ''}`}
         >
@@ -99,7 +99,7 @@ function TenantLounge() {
         >
           <h3>Information</h3>
           <p>General tenant information will be displayed here.</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

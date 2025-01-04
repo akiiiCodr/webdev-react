@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TenantMenu from './TenantMenu'; // Import the TenantMenu component
 import PaymentAdmin from './PaymentAdmin';
+import Contracts from './Contracts';
 
 
 function Admin() {
@@ -28,7 +29,7 @@ function Admin() {
         <div className="rectangle" onClick={() => showContent('content1')}>Tenants</div>
         <div className="rectangle" onClick={() => showContent('content2')}>Payments</div>
         <div className="rectangle" onClick={() => showContent('content3')}>Contracts</div>
-        <div className="rectangle" onClick={() => showContent('content4')}>Informations</div>
+        {/* <div className="rectangle" onClick={() => showContent('content4')}>Informations</div> */}
       </div>
       {/* Content Viewer beside Sidebar */}
       <div className="content-viewer">
@@ -49,14 +50,14 @@ function Admin() {
           id="content3"
           className={`viewer-content ${activeContent === 'content3' ? 'active' : ''}`}
         >
-          Contracts
+          <Contracts/>
         </div>
-        <div
+        {/* <div
           id="content4"
           className={`viewer-content ${activeContent === 'content4' ? 'active' : ''}`}
         >
           Informations
-        </div>
+        </div> */}
       </div>
     </>
   );
