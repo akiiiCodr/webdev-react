@@ -3,20 +3,6 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ToastNotification from "./ToastNotification.jsx"; // Import your ToastNotification component
 
-// Helper function to format the date in Month Day, Year format
-const formatDate = (date) => {
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  const formattedDate = new Date(date).toLocaleDateString("en-US", options);
-  return formattedDate;
-};
-
-const formatBirthdayToUTC = (birthday) => {
-  if (birthday) {
-    const date = new Date(birthday);
-    return date.toISOString().substring(0, 10); // Converts to ISO format (YYYY-MM-DD)
-  }
-  return "";
-};
 
 
 const TenantProfile = ({ username }) => {
@@ -30,6 +16,27 @@ const TenantProfile = ({ username }) => {
   const [updatedDetails, setUpdatedDetails] = useState({}); // State to store updated details for editing
   const [imagePreview, setImagePreview] = useState(null);  // State to store image preview
   const { tenant_id } = useParams(); // Get tenant details from the URL
+  const [avatar, setAvatar] = useState({});
+
+
+  // Helper function to format the date in Month Day, Year format
+const formatDate = (date) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const formattedDate = new Date(date).toLocaleDateString("en-US", options);
+  return formattedDate;
+};
+
+const formatBirthdayToUTC = (birthday) => {
+  if (!birthday) return "";
+  
+  // Create a Date object from the birthday string
+  const date = new Date(birthday);
+  
+  // Ensure the date is correctly formatted as YYYY-MM-DD
+  const formattedDate = date.toISOString().split('T')[0]; // Get the date part (YYYY-MM-DD)
+  
+  return formattedDate;
+};
 
   // Helper function to calculate age
   const calculateAge = (birthday) => {
@@ -111,64 +118,95 @@ const TenantProfile = ({ username }) => {
   };
 
   const handleEditChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
   
     // Handle special case for birthday (since it's a date input)
     if (name === "birthday") {
-      // Ensure the value is in the correct format (YYYY-MM-DD)
       setUpdatedDetails(prevState => ({
         ...prevState,
         [name]: value, // Set date as string in YYYY-MM-DD format
       }));
+    } else if (name === "avatar" && files && files.length > 0) {
+      // Handle avatar file upload
+      setUpdatedDetails(prevState => ({
+        ...prevState,
+        [name]: files[0], // Store the file object for avatar
+      }));
     } else {
+      // For other fields (text inputs, etc.)
       setUpdatedDetails(prevState => ({
         ...prevState,
-        [name]: value,
+        [name]: value, // Update the state with the new value
       }));
     }
   };
   
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
     if (file) {
-      // Create a preview of the selected image
+      const formData = new FormData();
+      formData.append('avatar', file); // Append the avatar file to the form data
       setImagePreview(URL.createObjectURL(file));
-      setUpdatedDetails(prevState => ({
-        ...prevState,
-        profile_image: file, // Save the file in the updatedDetails state for form submission
-      }));
+  
+      fetch(`http://localhost:5001/api/tenants/update/${tenant_id}`, {
+        method: 'PUT',
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Image uploaded successfully:", data);
+      })
+      .catch(error => {
+        console.error("Error uploading image:", error);
+      });
     }
   };
-  
+
+
 
   const handleSaveChanges = async () => {
     const formData = new FormData();
-    for (const key in updatedDetails) {
-      if (updatedDetails[key] !== null && updatedDetails[key] !== "" && updatedDetails[key] !== undefined) {
-        formData.append(key, updatedDetails[key]);
-      }
+    
+    // Debugging - log the updatedDetails
+    console.log(updatedDetails);
+    
+    if (updatedDetails.tenant_name && updatedDetails.tenant_name.trim() !== "") {
+      formData.append("tenant_name", updatedDetails.tenant_name);
+    }
+    
+    if (updatedDetails.username && updatedDetails.username.trim() !== "") {
+      formData.append("username", updatedDetails.username);
+    }
+    
+    if (updatedDetails.birthday) {
+      formData.append("birthday", updatedDetails.birthday);
+    }
+    
+    if (updatedDetails.avatar && updatedDetails.avatar instanceof File) {
+      formData.append("avatar", updatedDetails.avatar);
     }
   
     try {
-      const response = await axios.put(`http://localhost:5001/api/tenants/update/${tenant_id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        `http://localhost:5001/api/tenants/update/${tenant_id}`,
+        formData
+      );
   
-      if (response.data.success) {
+      console.log(response.data);  // Debugging the response
+  
+      if (response.data) {
         setToastMessage("Tenant details updated successfully!");
         setToastType("success");
         setShowToast(true);
   
-        // If avatar was updated, update the tenant image preview with the new avatar path
-        const avatarPath = response.data.avatarPath; // Get the avatar path from the response
-        if (avatarPath !== "No avatar updated") {
-          setImagePreview(avatarPath); // Update the image preview with the new file path
+        const avatarPath = response.data.avatarPath;
+        if (avatarPath && avatarPath !== "No avatar updated") {
+          setImagePreview(avatarPath);
         }
   
-        setTenantDetails(updatedDetails); // Update the tenant details
-        setIsEditing(false); // Exit edit mode
+        setTenantDetails(updatedDetails);
+        setIsEditing(false);
       } else {
         setToastMessage(response.data.message || "Error updating tenant details.");
         setToastType("error");
@@ -181,6 +219,37 @@ const TenantProfile = ({ username }) => {
       setShowToast(true);
     }
   };
+  
+  useEffect(() => {
+    if (tenant_id) {
+      fetchAvatar(tenant_id);
+    }
+  }, [tenant_id]);
+  
+  const fetchAvatar = async (tenant_id) => {
+    try {
+      const response = await axios.get(`http://localhost:5001/api/tenants/avatar/${tenant_id}`);
+  
+      if (response.data.avatarPath) {
+        console.log("Avatar path:", response.data.avatarPath);
+        // Update the imagePreview state with the fetched avatar path
+        setAvatar(response.data.avatarPath);
+      } else {
+        // Handle the case where avatarPath is not found in the response
+        console.log("Avatar not found for this tenant.");
+        setAvatar("/assets/ike.jpg"); // Set a default avatar
+      }
+    } catch (err) {
+      console.error("Error fetching avatar:", err);
+      // Set a default avatar in case of error
+      setAvatar("/assets/ike.jpg");
+    }
+  };
+  
+
+
+
+
   
   
   
@@ -195,7 +264,7 @@ const TenantProfile = ({ username }) => {
   return (
     <div style={styles.card}>
       <img
-        src={imagePreview || tenantDetails.avatar || "/src/assets/ike.jpg"} // Show the uploaded image or the default one
+        src={`/${avatar}` || "/assets/ike.jpg"} // Show the uploaded image, the updated avatar path, or the default one
         alt="Tenant"
         style={styles.image}
       />

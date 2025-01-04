@@ -17,6 +17,17 @@ import crypto from "crypto";
 import moment from "moment";
 import multer from "multer";
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // Directory to store files
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Create a unique file name
+  },
+});
+
+const upload = multer({ storage: storage });
+
 // Load environment variables
 dotenv.config();
 
@@ -1233,17 +1244,6 @@ app.get("/api/tenant/active", async (req, res) => {
   }
 });
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Directory to store files
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Create a unique file name
-  },
-});
-
-const upload = multer({ storage: storage }).single("profile_image"); // Ensure this matches the input field name
-
 app.put(
   "/api/tenants/update/:tenant_id",
   upload.single("avatar"),
@@ -1304,6 +1304,40 @@ app.put(
     }
   }
 );
+
+// Route to get tenant avatar
+app.get("/api/tenants/avatar/:tenant_id", async (req, res) => {
+  const tenant_id = req.params.tenant_id;
+
+  if (!tenant_id) {
+    return res.status(400).json({ error: "Tenant ID is required." });
+  }
+
+  try {
+    // Query the database to get the avatar path for the given tenant_id
+    const [rows] = await dbConnection.execute(
+      "SELECT avatar FROM tenants WHERE tenant_id = ?",
+      [tenant_id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Tenant not found." });
+    }
+
+    const tenant = rows[0];
+    let avatarPath = tenant.avatar;
+
+    // Ensure the avatar path uses forward slashes
+    if (avatarPath) {
+      avatarPath = avatarPath.replace(/\\/g, "/"); // Replace backslashes with forward slashes
+    }
+
+    return res.status(200).json({ avatarPath });
+  } catch (error) {
+    console.error("Error retrieving avatar:", error);
+    return res.status(500).json({ error: "Failed to retrieve avatar." });
+  }
+});
 
 //ADD HERE IF you will add APIs
 
