@@ -3,6 +3,7 @@ import { saveAs } from 'file-saver';
 import { Document, Packer, Paragraph, TextRun, Alignment } from 'docx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faPrint, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import ContractCard from './ContractCard';
 
 const CreateContractModal = ({ show, handleClose, setGeneratedContract, tenants }) => {
   const [selectedTenant, setSelectedTenant] = useState('');
@@ -12,205 +13,214 @@ const CreateContractModal = ({ show, handleClose, setGeneratedContract, tenants 
   const [endDate, setEndDate] = useState('');
   const [rentFee, setRentFee] = useState('');
 
-
-
-    const generateContract = () => {
+  const generateContract = () => {
     if (!landlordName || !selectedTenant || !startDate || !rentFee) {
-        alert('Please fill in all the required fields.');
-        return;
-        }
+      alert('Please fill in all the required fields.');
+      return;
+    }
 
-        const tenant = tenants.find((t) => t.tenant_id === selectedTenant);
+    const tenant = tenants.find((t) => t.tenant_id === selectedTenant);
     const doc = new Document({
-        sections: [
+      sections: [
         {
-            properties: {},
-            children: [
+          properties: {},
+          children: [
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: 'RENTAL AGREEMENT',
-                    font: 'Times New Roman',
-                    size: 48, // 24pt
-                    bold: true,
-                    color: '000000', // Black color
+                  text: 'RENTAL AGREEMENT',
+                  font: 'Times New Roman',
+                  size: 48, // 24pt
+                  bold: true,
+                  color: '000000', // Black color
                 }),
-                ],
-                alignment: Alignment.CENTER,
-                spacing: { after: 400 },
+              ],
+              alignment: Alignment.CENTER,
+              spacing: { after: 400 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `This Rental Agreement ("Agreement") is made and entered into on ${new Date().toLocaleDateString()}, by and between:`,
-                    font: 'Times New Roman',
-                    size: 30, 
-                    bold: true,
+                  text: `This Rental Agreement ("Agreement") is made and entered into on ${new Date().toLocaleDateString()}, by and between:`,
+                  font: 'Times New Roman',
+                  size: 30,
+                  bold: true,
                 }),
-                ],
-                spacing: { after: 600 },
+              ],
+              spacing: { after: 600 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `Landlord: ${landlordName}`,
-                    font: 'Times New Roman',
-                    size: 30, 
+                  text: `Landlord: ${landlordName}`,
+                  font: 'Times New Roman',
+                  size: 30,
                 }),
-                ],
-                alignment: Alignment.LEFT,
+              ],
+              alignment: Alignment.LEFT,
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `Rentee: ${renteeName}`,
-                    font: 'Times New Roman',
-                    size: 30, 
+                  text: `Rentee: ${renteeName}`,
+                  font: 'Times New Roman',
+                  size: 30,
                 }),
-                ],
-                alignment: Alignment.LEFT,
+              ],
+              alignment: Alignment.LEFT,
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `Property: San Vicente East, Urdaneta City- Eldwins Apartment San Vicente, Urdaneta City, Pangasinan`,
-                    font: 'Times New Roman',
-                    size: 28, 
+                  text: `Property: San Vicente East, Urdaneta City- Eldwins Apartment San Vicente, Urdaneta City, Pangasinan`,
+                  font: 'Times New Roman',
+                  size: 28,
                 }),
-                ],
-                alignment: Alignment.LEFT,
+              ],
+              alignment: Alignment.LEFT,
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `1. Term of Rental: The rental term will begin on ${startDate} and will end on ${endDate}.`,
-                    font: 'Times New Roman',
-                    size: 28,
+                  text: `1. Term of Rental: The rental term will begin on ${startDate} and will end on ${endDate}.`,
+                  font: 'Times New Roman',
+                  size: 28,
                 }),
-                ],
-                spacing: { before: 300 },
+              ],
+              spacing: { before: 300 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `2. Rent Fee: The monthly rent is Php ${rentFee}.00 payable on the due date of each month.`,
-                    font: 'Times New Roman',
-                    size: 28,
+                  text: `2. Rent Fee: The monthly rent is Php ${rentFee}.00 payable on the due date of each month.`,
+                  font: 'Times New Roman',
+                  size: 28,
                 }),
-                ],
-                spacing: { before: 300 },
+              ],
+              spacing: { before: 300 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `3. Payment Terms: Rent payments will be made to the Landlord by either cash or electronic payment modes. The rent is due on the due date of each month.`,
-                    font: 'Times New Roman',
-                    size: 28,
+                  text: `3. Payment Terms: Rent payments will be made to the Landlord by either cash or electronic payment modes. The rent is due on the due date of each month.`,
+                  font: 'Times New Roman',
+                  size: 28,
                 }),
-                ],
-                spacing: { before: 300 },
+              ],
+              spacing: { before: 300 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `4. Security Deposit: A security deposit of Php 1300.00 is required at the signing of this agreement.`,
-                    font: 'Times New Roman',
-                    size: 28,
+                  text: `4. Security Deposit: A security deposit of Php 1300.00 is required at the signing of this agreement.`,
+                  font: 'Times New Roman',
+                  size: 28,
                 }),
-                ],
-                spacing: { before: 300 },
+              ],
+              spacing: { before: 300 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `5. Responsibilities: The Rentee agrees to maintain the property in good condition and notify the Landlord of any necessary repairs.`,
-                    font: 'Times New Roman',
-                    size: 28,
+                  text: `5. Responsibilities: The Rentee agrees to maintain the property in good condition and notify the Landlord of any necessary repairs.`,
+                  font: 'Times New Roman',
+                  size: 28,
                 }),
-                ],
-                spacing: { before: 300 },
+              ],
+              spacing: { before: 300 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `6. Early Termination: Either party may terminate this contract by notifying the landlord written notice to the other party.`,
-                    font: 'Times New Roman',
-                    size: 28,
+                  text: `6. Early Termination: Either party may terminate this contract by notifying the landlord written notice to the other party.`,
+                  font: 'Times New Roman',
+                  size: 28,
                 }),
-                ],
-                spacing: { before: 300 },
+              ],
+              spacing: { before: 300 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: `7. Additional Clauses: Any additional clauses regarding electricity bill and internet bill are excluded in the rent , etc.`,
-                    font: 'Times New Roman',
-                    size: 28,
+                  text: `7. Additional Clauses: Any additional clauses regarding electricity bill and internet bill are excluded in the rent , etc.`,
+                  font: 'Times New Roman',
+                  size: 28,
                 }),
-                ],
-                spacing: { before: 300 },
+              ],
+              spacing: { before: 300 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: 'Signature of Landlord: ________________________',
-                    font: 'Times New Roman',
-                    size: 30, // 15pt
+                  text: 'Signature of Landlord: ________________________',
+                  font: 'Times New Roman',
+                  size: 30, // 15pt
                 }),
-                ],
-                spacing: { before: 400 },
+              ],
+              spacing: { before: 400 },
             }),
 
             new Paragraph({
-                children: [
+              children: [
                 new TextRun({
-                    text: 'Signature of Rentee: ________________________',
-                    font: 'Times New Roman',
-                    size: 30, // 15pt
+                  text: 'Signature of Rentee: ________________________',
+                  font: 'Times New Roman',
+                  size: 30, // 15pt
                 }),
-                ],
-                spacing: { before: 400 },
+              ],
+              spacing: { before: 400 },
             }),
-            ],
+          ],
         },
-        ],
+      ],
     });
 
-        // Get the current date in YYYYMMDD format
-        const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // e.g., "20250104"
+     const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // e.g., "20250104"
+    let lastContractNumber = localStorage.getItem('lastContractNumber');
+    lastContractNumber = lastContractNumber ? parseInt(lastContractNumber) + 1 : 1;
+    const formattedContractNumber = String(lastContractNumber).padStart(4, '0');
+    const filename = `EApt${currentDate}${formattedContractNumber}.docx`;
+    localStorage.setItem('lastContractNumber', lastContractNumber);
 
-        // Fetch the last generated contract number from local storage (or backend if needed)
-        let lastContractNumber = localStorage.getItem('lastContractNumber');
-        lastContractNumber = lastContractNumber ? parseInt(lastContractNumber) + 1 : 1;
-    
-        // Format the contract number as a four-digit number
-        const formattedContractNumber = String(lastContractNumber).padStart(4, '0');
-    
-        // Construct the filename in the desired format
-        const filename = `EApt${currentDate}${formattedContractNumber}.docx`;
-    
-            // Increment and save the contract number in localStorage
-            localStorage.setItem('lastContractNumber', lastContractNumber);
-    
-
-    // Generate the contract and trigger download after successful creation
     Packer.toBlob(doc).then((blob) => {
-        saveAs(blob, filename);
-        setGeneratedContract(renteeName); // Only set this after the contract is generated
+      saveAs(blob, filename); // Trigger file download
+
+      const formData = new FormData();
+      formData.append('tenant_id', selectedTenant); // Send the tenant_id
+      formData.append('contractFile', blob, filename); // Append the generated file
+
+      fetch('http://localhost:5001/api/uploadContract', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message === 'Contract uploaded successfully') {
+            console.log(`Contract uploaded successfully: ${data.contract_id}`);
+          } else {
+            console.error('Failed to upload contract');
+          }
+        })
+        .catch((error) => {
+          console.error('Error uploading contract:', error);
+        });
+
+      setGeneratedContract(renteeName);
     });
-    };
+  };
+
 
   if (!show) return null;
 
@@ -255,12 +265,12 @@ const CreateContractModal = ({ show, handleClose, setGeneratedContract, tenants 
             </select>
           </div>
           <input
-              type="text"
-              placeholder="Enter Rentee's Name"
-              value={renteeName}
-              onChange={(e) => setRenteeName(e.target.value)}
-              style={inputStyle}
-            />
+            type="text"
+            placeholder="Enter Rentee's Name"
+            value={renteeName}
+            onChange={(e) => setRenteeName(e.target.value)}
+            style={inputStyle}
+          />
           <div style={formGroupStyle}>
             <label>Start Date</label>
             <input
@@ -336,22 +346,7 @@ const RentalContractApp = () => {
         tenants={tenants}
       />
 
-      {generatedContract && (
-        <div style={cardStyle}>
-          <h3>Contract Generated for: {generatedContract}</h3>
-          <div>
-            <button
-              style={iconButtonStyle}
-              onClick={() => saveAs('Rental_Agreement.docx')}
-            >
-              <FontAwesomeIcon icon={faDownload} />
-            </button>
-            <button style={iconButtonStyle} onClick={() => window.print()}>
-              <FontAwesomeIcon icon={faPrint} />
-            </button>
-          </div>
-        </div>
-      )}
+      <ContractCard/>
     </div>
   );
 };
@@ -413,6 +408,7 @@ const modalContainerStyle = {
   borderRadius: '5px',
   width: '90%',
   maxWidth: '500px',
+  position: 'relative', // Ensure the close button is properly positioned
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
 };
 
@@ -422,20 +418,22 @@ const closeButtonStyle = {
   right: '10px',
   backgroundColor: 'transparent',
   border: 'none',
-  fontSize: '20px',
+  fontSize: '24px',
+  color: '#333',
   cursor: 'pointer',
 };
 
 const formGroupStyle = {
-  marginBottom: '15px',
+  marginBottom: '10px',
 };
 
 const inputStyle = {
   width: '100%',
   padding: '10px',
+  fontSize: '16px',
+  marginTop: '5px',
   border: '1px solid #ccc',
   borderRadius: '5px',
 };
-
 
 export default RentalContractApp;
