@@ -136,58 +136,54 @@ const initializeDatabase = async () => {
     await dbConnection.execute(createUsersTableQuery);
     console.log("Users table created or already exists");
 
-    // SQL query to create the payments table with payment status
-    const createPaymentsTableQuery = `
-    CREATE TABLE IF NOT EXISTS payments (
-    payment_id VARCHAR(20) PRIMARY KEY,  -- Changed to VARCHAR for custom format (e.g., 20241220-0001)
-    tenant_id INT(11),  -- Foreign key referencing tenant_id
-    payment_amount DECIMAL(10, 2) NOT NULL,  -- Payment amount in Peso
-    payment_date DATE NOT NULL,  -- Date of the payment
-    payment_status ENUM('paid', 'unpaid') DEFAULT 'unpaid',  -- Payment status (paid or unpaid)
-    proof_of_payment VARCHAR(255),  -- Store file path of the image
-    FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id)  -- Foreign key to tenants table
-  );
-  `;
-
-    await dbConnection.execute(createPaymentsTableQuery);
-    console.log("Payment table created or already exists");
-
-    // Create `tenants` table if it doesn't exist
+    // Create `tenants` table first since other tables depend on it
     const createTenantsTableQuery = `
-   CREATE TABLE IF NOT EXISTS tenants (
-    tenant_id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    tenant_name VARCHAR(255) NULL,
-    birthday DATE NULL,
-    email_address VARCHAR(255) NULL UNIQUE,
-    guardian_name VARCHAR(255) NULL,
-    home_address VARCHAR(255) NULL,
-    rental_start DATE NULL,
-    lease_end DATE NULL,
-    contact_no VARCHAR(255) NOT NULL UNIQUE,
-    username VARCHAR(255) NULL,  -- NULL allowed here
-    password VARCHAR(255) NULL,
-    active VARCHAR(255) NULL,
-    avatar VARCHAR(255) NULL
-  );
-  `;
-
+      CREATE TABLE IF NOT EXISTS tenants (
+        tenant_id INT(11) AUTO_INCREMENT PRIMARY KEY,
+        tenant_name VARCHAR(255) NULL,
+        birthday DATE NULL,
+        email_address VARCHAR(255) NULL UNIQUE,
+        guardian_name VARCHAR(255) NULL,
+        home_address VARCHAR(255) NULL,
+        rental_start DATE NULL,
+        lease_end DATE NULL,
+        contact_no VARCHAR(255) NOT NULL UNIQUE,
+        username VARCHAR(255) NULL,
+        password VARCHAR(255) NULL,
+        active VARCHAR(255) NULL,
+        avatar VARCHAR(255) NULL
+      );
+    `;
     await dbConnection.execute(createTenantsTableQuery);
     console.log("Tenants table created or already exists");
 
-    // Create `contract_tenant` table if it doesn't exist
+    // Create `payments` table after `tenants` table is created
+    const createPaymentsTableQuery = `
+      CREATE TABLE IF NOT EXISTS payments (
+        payment_id VARCHAR(20) PRIMARY KEY,  -- Changed to VARCHAR for custom format (e.g., 20241220-0001)
+        tenant_id INT(11),  -- Foreign key referencing tenant_id
+        payment_amount DECIMAL(10, 2) NOT NULL,
+        payment_date DATE NOT NULL,
+        payment_status ENUM('paid', 'unpaid') DEFAULT 'unpaid',
+        proof_of_payment VARCHAR(255),
+        FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id)  -- Foreign key to tenants table
+      );
+    `;
+    await dbConnection.execute(createPaymentsTableQuery);
+    console.log("Payments table created or already exists");
+
+    // Create `contract_tenant` table after `tenants` table is created
     const createContractTenantTableQuery = `
-  CREATE TABLE IF NOT EXISTS contract_tenant (
-  tenant_id INT NOT NULL,               -- Tenant ID, linked to the tenants table
-  contract_id VARCHAR(255) NOT NULL,     -- Unique contract ID
-  contract_file BLOB,                   -- The contract file stored as binary data
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Record creation timestamp
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Record update timestamp
-  PRIMARY KEY (contract_id),            -- Contract ID as the primary key
-  FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id) -- Linking to the tenants table
-);
-
-`;
-
+      CREATE TABLE IF NOT EXISTS contract_tenant (
+        tenant_id INT NOT NULL,
+        contract_id VARCHAR(255) NOT NULL,
+        contract_file BLOB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (contract_id),
+        FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id)
+      );
+    `;
     await dbConnection.execute(createContractTenantTableQuery);
     console.log("Tenants contract table created or already exists");
 
