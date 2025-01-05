@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ToastNotification from './ToastNotification.jsx';  // Assuming this is the correct path
 
 const PaymentAdmin = (props) => {
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -13,7 +14,8 @@ const PaymentAdmin = (props) => {
   const [filterActive, setFilterActive] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [error, setError] = useState('');
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');  // success, error, info, etc.
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -23,7 +25,8 @@ const PaymentAdmin = (props) => {
         setLoadingTenants(false);
       } catch (error) {
         console.error("Error fetching tenants:", error);
-        setLoadingTenants(false);
+        setToastMessage('Error fetching tenants.');
+        setToastType('error');
       }
     };
 
@@ -33,10 +36,13 @@ const PaymentAdmin = (props) => {
         if (response.data && Array.isArray(response.data.payment)) {
           setPayments(response.data.payment);
         } else {
-          setError("Payment details not found.");
+          setToastMessage('Payment details not found.');
+          setToastType('error');
         }
       } catch (error) {
         console.error("Error fetching payments:", error);
+        setToastMessage('Error fetching payments.');
+        setToastType('error');
       }
     };
 
@@ -88,19 +94,30 @@ const PaymentAdmin = (props) => {
       if (response.status === 201) { // 201 indicates successful resource creation
         setPayments((prev) => [...prev, response.data]);
         setIsModalOpen(false);
-        setError('');
+        setToastMessage('Payment added successfully.');
+        setToastType('success');
       } else {
-        setError('Failed to add payment.');
+        setToastMessage('Failed to add payment.');
+        setToastType('error');
       }
     } catch (error) {
       console.error("Error adding payment:", error);
-      setError('Failed to add payment.');
+      setToastMessage('Failed to add payment.');
+      setToastType('error');
     }
   };
-  
 
   return (
     <div>
+      {/* ToastNotification component to show messages */}
+      {toastMessage && (
+        <ToastNotification
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setToastMessage('')}  // Reset the toast message when it is closed
+        />
+      )}
+
       <div className="navbar">
         <div className="navbar-title">Payment Management</div>
         <div className="navbar-buttons">
@@ -165,7 +182,6 @@ const PaymentAdmin = (props) => {
         <div className="modal">
           <div className="modal-content">
             <h3>Payment Information</h3>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
             <form>
               <div>
                 <label htmlFor="tenantId">Select Tenant: </label>
@@ -222,7 +238,7 @@ const PaymentAdmin = (props) => {
         </div>
       )}
 
-      <style>
+<style>
         {`
           html, body {
             height: 100%;

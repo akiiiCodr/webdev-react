@@ -3,8 +3,6 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ToastNotification from "./ToastNotification.jsx"; // Import your ToastNotification component
 
-
-
 const TenantProfile = ({ username }) => {
   const [tenantDetails, setTenantDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,25 +16,24 @@ const TenantProfile = ({ username }) => {
   const { tenant_id } = useParams(); // Get tenant details from the URL
   const [avatar, setAvatar] = useState({});
 
-
   // Helper function to format the date in Month Day, Year format
-const formatDate = (date) => {
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  const formattedDate = new Date(date).toLocaleDateString("en-US", options);
-  return formattedDate;
-};
+  const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = new Date(date).toLocaleDateString("en-US", options);
+    return formattedDate;
+  };
 
-const formatBirthdayToUTC = (birthday) => {
-  if (!birthday) return "";
+  const formatBirthdayToUTC = (birthday) => {
+    if (!birthday) return "";
   
-  // Create a Date object from the birthday string
-  const date = new Date(birthday);
+    // Create a Date object from the birthday string
+    const date = new Date(birthday);
   
-  // Ensure the date is correctly formatted as YYYY-MM-DD
-  const formattedDate = date.toISOString().split('T')[0]; // Get the date part (YYYY-MM-DD)
+    // Ensure the date is correctly formatted as YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0]; // Get the date part (YYYY-MM-DD)
   
-  return formattedDate;
-};
+    return formattedDate;
+  };
 
   // Helper function to calculate age
   const calculateAge = (birthday) => {
@@ -80,29 +77,28 @@ const formatBirthdayToUTC = (birthday) => {
   
     fetchTenantDetails();
   }, [username]);
-  
 
   const handleLogout = async () => {
     setLoading(true);  // Start loading state
-
+  
     try {
       // Make the API request to set the tenant as inactive
       const response = await axios.post("http://localhost:5001/api/tenants/logout", {
         username: tenantDetails.username,
       });
-
-      if (response.data.success) {
+  
+      if (response.data) {
         // Show a success toast message
         setToastMessage("Successfully logged out! Redirecting...");
         setToastType("success");
         setShowToast(true); // Show toast
-
-        // Wait a bit before redirecting
+  
+        // Wait a bit before redirecting (e.g., 1500ms)
         setTimeout(() => {
           window.location.href = "/login"; // Redirect to login page
         }, 1500); // Adjust delay as needed
       } else {
-        setError(response.data.message || "Error logging out");
+        setError(response.data || "Error logging out");
         setToastMessage("Error logging out.");
         setToastType("error");
         setShowToast(true); // Show error toast
@@ -140,8 +136,7 @@ const formatBirthdayToUTC = (birthday) => {
       }));
     }
   };
-  
-  
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -162,8 +157,6 @@ const formatBirthdayToUTC = (birthday) => {
       });
     }
   };
-
-
 
   const handleSaveChanges = async () => {
     const formData = new FormData();
@@ -219,13 +212,13 @@ const formatBirthdayToUTC = (birthday) => {
       setShowToast(true);
     }
   };
-  
+
   useEffect(() => {
     if (tenant_id) {
       fetchAvatar(tenant_id);
     }
   }, [tenant_id]);
-  
+
   const fetchAvatar = async (tenant_id) => {
     try {
       const response = await axios.get(`http://localhost:5001/api/tenants/avatar/${tenant_id}`);
@@ -245,14 +238,6 @@ const formatBirthdayToUTC = (birthday) => {
       setAvatar("/assets/ike.jpg");
     }
   };
-  
-
-
-
-
-  
-  
-  
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -262,89 +247,82 @@ const formatBirthdayToUTC = (birthday) => {
   const formattedBirthday = tenantDetails.birthday ? formatDate(tenantDetails.birthday) : "N/A";
 
   return (
-    <div style={styles.card}>
-      <img
-        src={`/${avatar}` || "/assets/ike.jpg"} // Show the uploaded image, the updated avatar path, or the default one
-        alt="Tenant"
-        style={styles.image}
-      />
-      <div style={styles.cardBody}>
-        {/* Modal for Editing */}
-        {isEditing && (
-          <div style={styles.modal}>
-            <div style={styles.modalContent}>
-            <h2>Edit Profile</h2>
+    <>
+      {/* Conditionally render ToastNotification outside of the card */}
+      {showToast && (
+        <ToastNotification
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
 
-            <label>Name:</label>
-            <input
-              type="text"
-              name="tenant_name"
-              value={updatedDetails.tenant_name || ""}
-              onChange={handleEditChange}
-              style={styles.input}
-            />
-
-            <label>Username:</label>
-            <input
-              type="text"
-              name="username"
-              value={updatedDetails.username || ""}
-              onChange={handleEditChange}
-              disabled
-              style={styles.input}
-            />
-
-            <label>Birthday:</label>
-            <input
-              type="date"
-              name="birthday"
-              value={formatBirthdayToUTC(updatedDetails.birthday) || ""}
-              onChange={handleEditChange}
-              style={styles.input}
-            />
-
-            <label>Profile Image:</label>
-            <input
-              type="file"
-              onChange={handleImageChange}
-              style={styles.input}
-            />
-
-              <div>
-                <button onClick={handleSaveChanges} style={styles.saveButton}>Save Changes</button>
-                <button onClick={() => setIsEditing(false)} style={styles.cancelButton}>Cancel</button>
+      <div style={styles.card}>
+        <img
+          src={`/${avatar}` || "/assets/ike.jpg"} // Show the uploaded image, the updated avatar path, or the default one
+          alt="Tenant"
+          style={styles.image}
+        />
+        <div style={styles.cardBody}>
+          {/* Modal for Editing */}
+          {isEditing && (
+            <div style={styles.modal}>
+              <div style={styles.modalContent}>
+                <h2>Edit Profile</h2>
+                <label>Name:</label>
+                <input
+                  type="text"
+                  name="tenant_name"
+                  value={updatedDetails.tenant_name || ""}
+                  onChange={handleEditChange}
+                  style={styles.input}
+                />
+                <label>Username:</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={updatedDetails.username || ""}
+                  onChange={handleEditChange}
+                  disabled
+                  style={styles.input}
+                />
+                <label>Birthday:</label>
+                <input
+                  type="date"
+                  name="birthday"
+                  value={formatBirthdayToUTC(updatedDetails.birthday) || ""}
+                  onChange={handleEditChange}
+                  style={styles.input}
+                />
+                <label>Profile Image:</label>
+                <input
+                  type="file"
+                  onChange={handleImageChange}
+                  style={styles.input}
+                />
+                <div>
+                  <button onClick={handleSaveChanges} style={styles.saveButton}>Save Changes</button>
+                  <button onClick={() => setIsEditing(false)} style={styles.cancelButton}>Cancel</button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Regular View Mode */}
-        {!isEditing && (
-          <div>
-            <h2 style={styles.title}>Name: {tenantDetails.tenant_name || "N/A"}</h2>
-            <h2 style={styles.title}>Username: {tenantDetails.username || "N/A"}</h2>
-            <p style={styles.text}>Age: {age}</p>
-            <p style={styles.text}>Birthday: {formattedBirthday}</p>
-            <p style={styles.text}>Duration: {rentalDuration !== "N/A" ? `${rentalDuration} days` : "N/A"}</p>
-
-            {/* Edit Button */}
-            <button style={styles.editButton} onClick={() => setIsEditing(true)}>Edit</button>
-
-            {/* Logout Button */}
-            <button style={styles.logoutButton} onClick={handleLogout}>Logout</button>
-          </div>
-        )}
-
-        {/* Conditionally render ToastNotification */}
-        {showToast && (
-          <ToastNotification
-            message={toastMessage}
-            type={toastType}
-            onClose={() => setShowToast(false)}
-          />
-        )}
+          {/* Regular View Mode */}
+          {!isEditing && (
+            <div>
+              <h2 style={styles.title}>Name: {tenantDetails.tenant_name || "N/A"}</h2>
+              <h2 style={styles.title}>Username: {tenantDetails.username || "N/A"}</h2>
+              <p style={styles.text}>Age: {age}</p>
+              <p style={styles.text}>Birthday: {formattedBirthday}</p>
+              <p style={styles.text}>Duration: {rentalDuration !== "N/A" ? `${rentalDuration} days` : "N/A"}</p>
+              <button style={styles.editButton} onClick={() => setIsEditing(true)}>Edit</button>
+              <button style={styles.logoutButton} onClick={handleLogout}>Logout</button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -443,9 +421,8 @@ const styles = {
     padding: '20px',
     borderRadius: '8px',
     width: '400px',
-    zIndex: 10000, /* Makes sure content within the modal is on top of the modal overlay */
+    zIndex: 1000, /* Makes sure content within the modal is on top of the modal overlay */
   },
 };
-
 
 export default TenantProfile;

@@ -1,52 +1,47 @@
 import React, { useState } from 'react';
 import ToastNotification from './ToastNotification'; // Import ToastNotification component
-import { ToastContainer } from 'react-toastify';
 
 function ToastContainer() {
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('');
-  const [showToast, setShowToast] = useState(false);
+  const [toasts, setToasts] = useState([]); // Array to store multiple toasts
 
-  // Function to show success toast
-  const handleSuccessToast = () => {
-    setToastMessage('Success! Your action was successful.');
-    setToastType('success');
-    setShowToast(true);
+  // Function to show a new toast
+  const showToast = (message, type) => {
+    const newToast = {
+      id: Date.now(), // Unique id for each toast
+      message,
+      type,
+    };
+
+    // Add the new toast to the list
+    setToasts((prevToasts) => [...prevToasts, newToast]);
+
+    // Log the new state to ensure it's updating
+    console.log("Toast added:", newToast);
+    console.log("Current toasts:", [...toasts, newToast]);
   };
 
-  // Function to show error toast
-  const handleErrorToast = () => {
-    setToastMessage('Error! Something went wrong.');
-    setToastType('error');
-    setShowToast(true);
-  };
-
-  // Function to show warning toast
-  const handleWarningToast = () => {
-    setToastMessage('Warning! Please check your input.');
-    setToastType('warning');
-    setShowToast(true);
-  };
-
-  // Function to close the toast
-  const closeToast = () => {
-    setShowToast(false);
+  // Function to close a toast by its id
+  const closeToast = (id) => {
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+    console.log("Toast removed:", id);
   };
 
   return (
     <div>
-      <button onClick={handleSuccessToast}>Show Success Toast</button>
-      <button onClick={handleErrorToast}>Show Error Toast</button>
-      <button onClick={handleWarningToast}>Show Warning Toast</button>
+      <button onClick={() => showToast('Success! Your action was successful.', 'success')}>Show Success Toast</button>
+      <button onClick={() => showToast('Error! Something went wrong.', 'error')}>Show Error Toast</button>
+      <button onClick={() => showToast('Warning! Please check your input.', 'warning')}>Show Warning Toast</button>
 
-      {/* Conditionally render the ToastNotification only when showToast is true */}
-      {showToast && (
+      {/* Render toasts with unique index */}
+      {toasts.map((toast, index) => (
         <ToastNotification
-          message={toastMessage}
-          type={toastType}
-          onClose={closeToast} // Close the toast after the timeout or when clicked
+          key={toast.id} // Unique key for each toast
+          message={toast.message}
+          type={toast.type}
+          index={index} // Pass index to handle stacking
+          onClose={() => closeToast(toast.id)} // Close toast by id
         />
-      )}
+      ))}
     </div>
   );
 }

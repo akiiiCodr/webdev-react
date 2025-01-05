@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ToastNotification from "./ToastNotification.jsx";
 
 const BedAvailability = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState(""); // State for toast message
+  const [toastType, setToastType] = useState("");       // State for toast type (success, error, warning)
+  const [showToast, setShowToast] = useState(false);    // State to control whether to show toast
   const [showEditModal, setShowEditModal] = useState(false);
   const [newRoom, setNewRoom] = useState({
     room_number: "",
@@ -20,7 +24,6 @@ const BedAvailability = () => {
     image_room: null,
   });
 
-  // Fetch room data from the backend
   useEffect(() => {
     fetchRooms();
   }, []);
@@ -31,54 +34,56 @@ const BedAvailability = () => {
       setRooms(response.data);
     } catch (error) {
       console.error("Error fetching rooms:", error);
+      setToastMessage("Failed to fetch rooms.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
   const handleAddRoom = async (event) => {
     event.preventDefault();
 
-    // Validate that all required fields are filled
     if (!newRoom.room_number || !newRoom.total_beds || !newRoom.available_beds) {
-      alert("Please fill in all required fields.");
+      setToastMessage("Please fill in all required fields.");
+      setToastType("warning");
+      setShowToast(true);
       return;
     }
 
-    // Prepare the form data
     const formData = new FormData();
     formData.append("room_number", newRoom.room_number);
     formData.append("total_beds", newRoom.total_beds);
     formData.append("available_beds", newRoom.available_beds);
 
-    // Append image if it exists
     if (newRoom.image_room) {
       formData.append("image_room", newRoom.image_room);
     }
 
     try {
-      // Send POST request to add the room
       await axios.post("http://localhost:5001/rooms", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      setToastMessage("Room added successfully.");
+      setToastType("success");
+      setShowToast(true);
 
-      // Refresh room data after adding
       fetchRooms();
-
-      // Close modal and reset form
       setShowModal(false);
       setNewRoom({ room_number: "", total_beds: "", available_beds: "", image_room: null });
     } catch (error) {
       console.error("Error adding new room:", error);
-      alert("An error occurred while adding the room. Please try again.");
+      setToastMessage("Failed to add room.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
-  // Handle opening the edit modal
   const handleEditRoom = (room) => {
     setEditedRoom({
       room_number: room.room_number,
       total_beds: room.total_beds,
       available_beds: room.available_beds,
-      image_room: room.image_room, // Keep the existing image
+      image_room: room.image_room,
     });
     setShowEditModal(true);
   };
@@ -86,63 +91,62 @@ const BedAvailability = () => {
   const handleUpdateRoom = async (event) => {
     event.preventDefault();
 
-    // Validate required fields
     if (!editedRoom.room_number || !editedRoom.total_beds || !editedRoom.available_beds) {
-      alert("Please fill in all required fields.");
+      setToastMessage("Please fill in all required fields.");
+      setToastType("warning");
+      setShowToast(true);
       return;
     }
 
-    // Prepare form data
     const formData = new FormData();
     formData.append("room_number", editedRoom.room_number);
     formData.append("total_beds", editedRoom.total_beds);
     formData.append("available_beds", editedRoom.available_beds);
 
-    // Append image if exists
     if (editedRoom.image_room) {
       formData.append("image_room", editedRoom.image_room);
     }
 
     try {
-      // Send PUT request to update the room
       const response = await axios.put(
         `http://localhost:5001/rooms/${editedRoom.room_number}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      // Check if the response is successful
       if (response.status === 200) {
-        // Refresh room data after update
         fetchRooms();
-
-        // Close the edit modal
         setShowEditModal(false);
-
-        // Reset editedRoom state
         setEditedRoom({
           room_number: "",
           total_beds: "",
           available_beds: "",
           image_room: null,
         });
-
-        alert("Room updated successfully!");
+        setToastMessage("Room updated successfully.");
+        setToastType("success");
+        setShowToast(true);
       }
     } catch (error) {
       console.error("Error updating room:", error);
-      alert("An error occurred while updating the room. Please try again.");
+      setToastMessage("Failed to update room.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
-  // Function to remove a room
   const handleRemoveRoom = async (room_number) => {
     try {
       await axios.delete(`http://localhost:5001/rooms/${room_number}`);
-      fetchRooms(); // Refresh room list after deletion
+      fetchRooms();
+      setToastMessage("Room removed successfully.");
+      setToastType("success");
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting room:", error);
-      alert("An error occurred while deleting the room. Please try again.");
+      setToastMessage("Failed to remove room.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -184,16 +188,13 @@ const BedAvailability = () => {
                   <span style={styles.occupied}>Occupied</span>
                 )}
               </p>
-              {/* Check if the image exists */}
               {room.image_filename && (
                 <img
-                  src={`${room.image_filename}`} // URL to fetch image
+                  src={`${room.image_filename}`}
                   alt="Room"
                   style={{ width: "100%", height: "auto" }}
                 />
               )}
-
-              {/* Edit and Remove Room Buttons */}
               <div style={styles.cardButtonsContainer}>
                 <button style={styles.removeButton} onClick={() => handleRemoveRoom(room.room_number)}>
                   Remove Room
@@ -316,6 +317,15 @@ const BedAvailability = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <ToastNotification
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );
@@ -447,6 +457,5 @@ const styles = {
       marginTop: "15px",
     },
   };
-  
 
 export default BedAvailability;

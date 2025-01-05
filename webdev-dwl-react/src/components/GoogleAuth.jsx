@@ -1,4 +1,6 @@
 import React from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGoogle } from '@fortawesome/free-brands-svg-icons'; // Importing the Google icon from FontAwesome
 
 function GoogleAuth() {
   // Function to handle the button click that redirects to the authorization URL
@@ -13,7 +15,7 @@ function GoogleAuth() {
         onClick={handleAuthClick}
         style={{
           padding: '10px 20px',
-          backgroundColor: '#4285F4', // Google's blue color
+          backgroundColor: 'tomato', // Google's blue color
           color: 'white',
           border: 'none',
           borderRadius: '5px',
@@ -37,6 +39,10 @@ function GoogleAuth() {
           e.currentTarget.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
         }}
       >
+        <FontAwesomeIcon
+          icon={faGoogle}
+          style={{ fontSize: '20px', marginRight: '10px' }} // Font Awesome icon styling
+        />
         Sign in with Google
       </button>
     </div>
@@ -44,4 +50,3 @@ function GoogleAuth() {
 }
 
 export default GoogleAuth;
-

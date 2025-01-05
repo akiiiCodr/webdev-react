@@ -8,6 +8,7 @@ const PaymentTenant = () => {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentDate, setPaymentDate] = useState('');
   const [tenants, setTenants] = useState(null); // Store tenant details
+  const [selectedTenant, setSelectedTenant] = useState(null); // To store the selected tenant
   const [proofOfPayment, setProofOfPayment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState([]);
@@ -94,35 +95,6 @@ const PaymentTenant = () => {
     return true; // If no filter, show all payments
   });
 
-  // Handle adding a new payment
-  const handleAddPayment = async () => {
-    if (!tenant_id || !paymentAmount || !paymentDate) {
-      setError("Please fill all the required fields.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('tenant_id', tenant_id);
-    formData.append('payment_amount', paymentAmount);
-    formData.append('payment_status', 'paid'); // Add payment status as "paid"
-    formData.append('payment_date', paymentDate);
-    if (proofOfPayment) {
-      formData.append('proof_of_payment', proofOfPayment);
-    }
-
-    try {
-      const response = await axios.post('http://localhost:5001/api/payments', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (response.data) {
-        setPaymentDetails((prevPayments) => [...prevPayments, response.data]); // Add the new payment to the list
-        setIsModalOpen(false); // Close modal after successful payment
-      }
-    } catch (error) {
-      console.error("Error adding payment:", error);
-      setError("Error adding payment.");
-    }
-  };
 
   // Display message if tenant is not active
   if (tenantStatus === false) {
@@ -134,7 +106,6 @@ const PaymentTenant = () => {
       <div className="navbar">
         <div className="navbar-title">Payment Management</div>
         <div className="navbar-buttons">
-          <button onClick={() => setIsModalOpen(true)}>Add Payment</button>
           <button onClick={handleFilterDate} className="filter-button">
             {filterActive ? 'Hide Filter' : 'Filter By Date'}
           </button>
@@ -195,21 +166,22 @@ const PaymentTenant = () => {
             <h3>Payment Information</h3>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <form>
-              <div>
-                <label htmlFor="tenantId">Select Tenant: </label>
-                <select
-                  id="tenantId"
-                  value={tenant_id}
-                  onChange={(e) => setTenantId(e.target.value)}
-                >
-                  <option value="">Select Tenant</option>
-                  {tenants && tenants.map((tenant) => (
-                    <option key={tenant.tenant_id} value={tenant.tenant_id}>
-                      {tenant.tenant_name} ({tenant.tenant_id})
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div>
+            <label htmlFor="tenantId">Select Tenant: </label>
+            <select
+              id="tenantId"
+              value={tenant_id}
+              onChange={(e) => setTenantId(e.target.value)}
+            >
+              <option value="">Select Tenant</option>
+              {Array.isArray(tenants) && tenants.map((tenant) => (
+                <option key={tenant.tenant_id} value={tenant.tenant_id}>
+                  {tenant.tenant_name} ({tenant.tenant_id})
+                </option>
+              ))}
+            </select>
+          </div>
+
               <div>
                 <label htmlFor="amount">Payment Amount (Peso): </label>
                 <input
