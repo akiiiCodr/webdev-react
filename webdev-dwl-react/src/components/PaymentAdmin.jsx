@@ -49,7 +49,16 @@ const PaymentAdmin = (props) => {
     return acc;
   }, {});
 
-  const filteredPayments = payments.filter((payment) => tenantMap[payment.tenant_id]);
+  const filteredPayments = payments.filter((payment) => {
+    const tenantMatch = tenantMap[payment.tenant_id];
+    
+    // Check if the payment is within the date range if the filter is active
+    const paymentDate = new Date(payment.payment_date);
+    const startDateValid = startDate ? paymentDate >= new Date(startDate) : true;
+    const endDateValid = endDate ? paymentDate <= new Date(endDate) : true;
+  
+    return tenantMatch && startDateValid && endDateValid;
+  });
 
   const handleFilterDate = () => {
     setFilterActive(!filterActive);

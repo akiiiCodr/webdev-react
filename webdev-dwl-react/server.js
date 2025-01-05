@@ -16,6 +16,8 @@ import { dirname } from "path";
 import crypto from "crypto";
 import moment from "moment";
 import multer from "multer";
+import sharp from "sharp";
+import mime from "mime";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -66,7 +68,7 @@ const jsonContentTypeMiddleware = (req, res, next) => {
 app.use(
   cors({
     origin: ["http://localhost:5173"], // Allow both frontend URLs
-    methods: ["GET", "POST", "OPTIONS", "PUT"],
+    methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     credentials: true,
   })
 );
@@ -92,6 +94,7 @@ const dbConfig = {
   user: "root", // Change this as needed
   password: "", // Add your MySQL password if any
   database: "dwll_react", // Replace with your database name
+  // Set max_allowed_packet in connection options
 };
 
 let dbConnection;
@@ -136,60 +139,71 @@ const initializeDatabase = async () => {
     await dbConnection.execute(createUsersTableQuery);
     console.log("Users table created or already exists");
 
-    // SQL query to create the payments table with payment status
-    const createPaymentsTableQuery = `
-    CREATE TABLE IF NOT EXISTS payments (
-    payment_id VARCHAR(20) PRIMARY KEY,  -- Changed to VARCHAR for custom format (e.g., 20241220-0001)
-    tenant_id INT(11),  -- Foreign key referencing tenant_id
-    payment_amount DECIMAL(10, 2) NOT NULL,  -- Payment amount in Peso
-    payment_date DATE NOT NULL,  -- Date of the payment
-    payment_status ENUM('paid', 'unpaid') DEFAULT 'unpaid',  -- Payment status (paid or unpaid)
-    proof_of_payment VARCHAR(255),  -- Store file path of the image
-    FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id)  -- Foreign key to tenants table
-  );
-  `;
-
-    await dbConnection.execute(createPaymentsTableQuery);
-    console.log("Payment table created or already exists");
-
-    // Create `tenants` table if it doesn't exist
+    // Create `tenants` table first since other tables depend on it
     const createTenantsTableQuery = `
-   CREATE TABLE IF NOT EXISTS tenants (
-    tenant_id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    tenant_name VARCHAR(255) NULL,
-    birthday DATE NULL,
-    email_address VARCHAR(255) NULL UNIQUE,
-    guardian_name VARCHAR(255) NULL,
-    home_address VARCHAR(255) NULL,
-    rental_start DATE NULL,
-    lease_end DATE NULL,
-    contact_no VARCHAR(255) NOT NULL UNIQUE,
-    username VARCHAR(255) NULL,  -- NULL allowed here
-    password VARCHAR(255) NULL,
-    active VARCHAR(255) NULL,
-    avatar VARCHAR(255) NULL
-  );
-  `;
-
+      CREATE TABLE IF NOT EXISTS tenants (
+        tenant_id INT(11) AUTO_INCREMENT PRIMARY KEY,
+        tenant_name VARCHAR(255) NULL,
+        birthday DATE NULL,
+        email_address VARCHAR(255) NULL UNIQUE,
+        guardian_name VARCHAR(255) NULL,
+        home_address VARCHAR(255) NULL,
+        rental_start DATE NULL,
+        lease_end DATE NULL,
+        contact_no VARCHAR(255) NOT NULL UNIQUE,
+        username VARCHAR(255) NULL,
+        password VARCHAR(255) NULL,
+        active VARCHAR(255) NULL,
+        avatar VARCHAR(255) NULL
+      );
+    `;
     await dbConnection.execute(createTenantsTableQuery);
     console.log("Tenants table created or already exists");
 
-    // Create `contract_tenant` table if it doesn't exist
+    // Create `payments` table after `tenants` table is created
+    const createPaymentsTableQuery = `
+      CREATE TABLE IF NOT EXISTS payments (
+        payment_id VARCHAR(20) PRIMARY KEY,  -- Changed to VARCHAR for custom format (e.g., 20241220-0001)
+        tenant_id INT(11),  -- Foreign key referencing tenant_id
+        payment_amount DECIMAL(10, 2) NOT NULL,
+        payment_date DATE NOT NULL,
+        payment_status ENUM('paid', 'unpaid') DEFAULT 'unpaid',
+        proof_of_payment VARCHAR(255),
+        FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id)  -- Foreign key to tenants table
+      );
+    `;
+    await dbConnection.execute(createPaymentsTableQuery);
+    console.log("Payments table created or already exists");
+
+    // Create `contract_tenant` table after `tenants` table is created
     const createContractTenantTableQuery = `
-  CREATE TABLE IF NOT EXISTS contract_tenant (
-  tenant_id INT NOT NULL,               -- Tenant ID, linked to the tenants table
-  contract_id VARCHAR(255) NOT NULL,     -- Unique contract ID
-  contract_file BLOB,                   -- The contract file stored as binary data
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Record creation timestamp
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Record update timestamp
-  PRIMARY KEY (contract_id),            -- Contract ID as the primary key
-  FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id) -- Linking to the tenants table
-);
-
-`;
-
+      CREATE TABLE IF NOT EXISTS contract_tenant (
+        tenant_id INT NOT NULL,
+        contract_id VARCHAR(255) NOT NULL,
+        contract_file BLOB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (contract_id),
+        FOREIGN KEY (tenant_id) REFERENCES tenants(tenant_id)
+      );
+    `;
     await dbConnection.execute(createContractTenantTableQuery);
     console.log("Tenants contract table created or already exists");
+
+    // Create `contract_tenant` table after `tenants` table is created
+    const createRoomAvailabilityQuery = `
+      CREATE TABLE IF NOT EXISTS rooms (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      room_number VARCHAR(50) NOT NULL UNIQUE,
+      total_beds INT NOT NULL,
+      available_beds INT NOT NULL,
+      status VARCHAR(255) NOT NULL,
+      image_room VARCHAR(255) NULL,
+      image_filename VARCHAR(255) NULL
+    );
+    `;
+    await dbConnection.execute(createRoomAvailabilityQuery);
+    console.log("Tenants room availability created or already exists");
 
     // Get the maximum tenant_id value
     const [rows] = await dbConnection.execute(
@@ -1470,6 +1484,170 @@ app.get("/api/contracts", async (req, res) => {
   } catch (err) {
     console.error("Error fetching contracts:", err);
     return res.status(500).json({ message: "Failed to fetch contracts" });
+  }
+});
+
+// Fetch all rooms
+app.get("/rooms", async (req, res) => {
+  try {
+    const [rows] = await dbConnection.query("SELECT * FROM rooms");
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
+    res.status(500).send("Error fetching rooms");
+  }
+});
+
+// Ensure the uploads directory exists
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+app.post("/rooms", upload.single("image_room"), async (req, res) => {
+  const { room_number, total_beds, available_beds } = req.body;
+  const uploadedImagePath = req.file ? req.file.path : null;
+
+  // Set a default image filename in case no image is uploaded
+  let imageFileName = "default_image.png"; // Default image if none uploaded
+  let outputPath = null;
+
+  // Process uploaded image if present
+  if (uploadedImagePath) {
+    imageFileName = `${Date.now()}.png`; // Create a unique name for the uploaded image
+    outputPath = path.join("uploads", imageFileName); // Store image path
+
+    try {
+      // Resize and process the uploaded image
+      await sharp(uploadedImagePath)
+        .resize(800) // Adjust size as needed
+        .toFile(outputPath);
+
+      // Remove the temporary image uploaded by multer
+      fs.unlinkSync(uploadedImagePath);
+    } catch (error) {
+      console.error("Error processing image:", error);
+      return res.status(500).json({ message: "Error processing image" });
+    }
+  }
+
+  try {
+    // Check if the room number already exists in the database
+    const [existingRoom] = await dbConnection.query(
+      "SELECT * FROM rooms WHERE room_number = ?",
+      [room_number]
+    );
+
+    if (existingRoom.length > 0) {
+      return res.status(400).json({ message: "Room number already exists" });
+    }
+
+    // Determine the room status based on available beds
+    const status = available_beds > 0 ? "Available" : "Occupied";
+
+    // Insert the new room into the database with the image filename (default or uploaded)
+    const [result] = await dbConnection.query(
+      "INSERT INTO rooms (room_number, total_beds, available_beds, image_filename, status) VALUES (?, ?, ?, ?, ?)",
+      [
+        room_number,
+        total_beds,
+        available_beds,
+        `/uploads/${imageFileName}`, // Path to the image (default or uploaded)
+        status,
+      ]
+    );
+
+    // Send response back with the inserted room details
+    res.status(201).json({
+      id: result.insertId,
+      room_number,
+      total_beds,
+      available_beds,
+      image_room: `/uploads/${imageFileName}`, // Image path (default or uploaded)
+      status,
+    });
+  } catch (error) {
+    console.error("Error adding room:", error);
+    res.status(500).send("Error adding room");
+  }
+});
+
+app.put(
+  "/rooms/:room_number",
+  upload.single("image_room"),
+  async (req, res) => {
+    const { room_number } = req.params;
+    const { total_beds, available_beds } = req.body;
+    const image_room = req.file ? req.file.path : null; // Ensure image path is available
+
+    try {
+      const [room] = await dbConnection.query(
+        "SELECT * FROM rooms WHERE room_number = ?",
+        [room_number]
+      );
+      if (!room.length) {
+        return res.status(404).send("Room not found");
+      }
+
+      const updatedFields = {
+        total_beds: total_beds || room[0].total_beds,
+        available_beds: available_beds || room[0].available_beds,
+        image_room: image_room || room[0].image_room,
+        status: available_beds > 0 ? "Available" : "Occupied",
+      };
+
+      // Log the updated fields
+      console.log("Updated Fields:", updatedFields);
+
+      await dbConnection.query(
+        "UPDATE rooms SET total_beds = ?, available_beds = ?, image_room = ?, status = ? WHERE room_number = ?",
+        [
+          updatedFields.total_beds,
+          updatedFields.available_beds,
+          updatedFields.image_room,
+          updatedFields.status,
+          room_number,
+        ]
+      );
+
+      res.send("Room updated successfully");
+    } catch (error) {
+      console.error("Error updating room:", error);
+      res.status(500).send("Error updating room");
+    }
+  }
+);
+
+// Delete a room
+app.delete("/rooms/:room_number", async (req, res) => {
+  const { room_number } = req.params;
+
+  try {
+    // Fetch the room's current details
+    const [room] = await dbConnection.query(
+      "SELECT * FROM rooms WHERE room_number = ?",
+      [room_number]
+    );
+
+    if (!room.length) {
+      return res.status(404).send("Room not found");
+    }
+
+    // Optionally: If you want to delete the room's image file from the server
+    const imagePath = room[0].image_filename;
+    if (imagePath && fs.existsSync(path.join(__dirname, imagePath))) {
+      fs.unlinkSync(path.join(__dirname, imagePath)); // Delete the image file
+    }
+
+    // Delete the room from the database
+    await dbConnection.query("DELETE FROM rooms WHERE room_number = ?", [
+      room_number,
+    ]);
+
+    res.send("Room deleted successfully");
+  } catch (error) {
+    console.error("Error deleting room:", error);
+    res.status(500).send("Error deleting room");
   }
 });
 
