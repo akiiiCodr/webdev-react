@@ -67,7 +67,7 @@ const jsonContentTypeMiddleware = (req, res, next) => {
 
 app.use(
   cors({
-    origin: ["https://eapt-dwl.netlify.app"], // Allow both frontend URLs
+    origin: ["http://localhost:5173"], // Allow both frontend URLs
     methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     credentials: true,
   })
@@ -76,7 +76,7 @@ app.use(
 // Initialize Socket.IO with the HTTP server instance
 const io = new Server(server, {
   cors: {
-    origin: "https://eapt-dwl.netlify.app", // Replace with your frontend's URL for security
+    origin: "http://localhost:5173", // Replace with your frontend's URL for security
     methods: ["GET", "POST"],
     credentials: true,
   },
