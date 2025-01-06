@@ -67,7 +67,7 @@ const jsonContentTypeMiddleware = (req, res, next) => {
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"], // Allow both frontend URLs
+    origin: ["https://eapt-dwl.netlify.app"], // Allow both frontend URLs
     methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     credentials: true,
   })
@@ -76,7 +76,7 @@ app.use(
 // Initialize Socket.IO with the HTTP server instance
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Replace with your frontend's URL for security
+    origin: "https://eapt-dwl.netlify.app", // Replace with your frontend's URL for security
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -90,10 +90,10 @@ app.use(cookieParser());
 const PORT = 5001;
 
 const dbConfig = {
-  host: "localhost",
-  user: "root", // Change this as needed
-  password: "", // Add your MySQL password if any
-  database: "dwll_react", // Replace with your database name
+  host: process.env.DB_HOST,
+  user: process.env.USER, // Change this as needed
+  password: process.env.DB_PASSWORD, // Add your MySQL password if any
+  database: process.env.DB_NAME, // Replace with your database name
   // Set max_allowed_packet in connection options
 };
 
