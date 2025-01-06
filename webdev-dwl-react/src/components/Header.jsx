@@ -1,40 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUserGraduate,
-  faChalkboardTeacher,
-  faUserCircle,
-} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios"; // Import axios for HTTP requests
 import UserInfo from "./UserInfo";
 import Logout from "./Logout";
+import Register from "./Register"; // Import Register component
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Add this state
   const [tenantStatus, setTenantStatus] = useState(null); // Track tenant status (active/inactive)
-  const modalRef = useRef(null);
   const navigate = useNavigate();
 
   // Toggle the navigation menu
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
-  // Open the sign-up modal
-  const handleSignUpClick = () => setShowModal(true);
-
-  // Handle role selection and redirect
-  const handleRoleSelect = (role) => {
-    setShowModal(false);
-    navigate(`/signup?role=${role}`);
-  };
-
-  // Close the modal if clicked outside
-  const handleClickOutside = (event) => {
-    if (modalRef.current && !modalRef.current.contains(event.target)) {
-      setShowModal(false);
-    }
+  // Open the sign-up page (navigate to /register)
+  const handleSignUpClick = () => {
+    navigate("/register");
   };
 
   useEffect(() => {
@@ -44,8 +26,7 @@ function Header() {
         const authResponse = await axios.get("http://localhost:5001/api/current-user", {
           withCredentials: true,
         });
-        console.log("Auth Response:", authResponse);
-        
+
         if (authResponse.data && authResponse.data.user) {
           setIsAuthenticated(true); // User is authenticated
           
@@ -73,11 +54,8 @@ function Header() {
     };
   
     checkAuthenticationAndTenantStatus();
-  }, [showModal]);  // Include any necessary dependencies here
-  
-  console.log("isAuthenticated:", isAuthenticated);
-  console.log("tenantStatus:", tenantStatus);
-  
+  }, []);  // Empty dependency array so this only runs once after the component mounts
+
   return (
     <div className="container-nav">
       {/* Left Side: Navigation Menu */}
@@ -114,7 +92,7 @@ function Header() {
           </ul>
         </div>
       </div>
-  
+
       {/* Center: Title and Subtitle */}
       <div className="title-section">
         <h1>
@@ -122,7 +100,7 @@ function Header() {
         </h1>
         <p>A Better Way to Dwell</p>
       </div>
-  
+
       {/* Right Side: Actions */}
       <div className="right-header">
         <div className="header-actions">
@@ -131,7 +109,7 @@ function Header() {
             <i className="fa fa-user"></i>
             <div className="availability-text">2 Bed Availability</div>
           </button>
-  
+
           {/* Calendar Button */}
           <button className="calendar-button">
             <div className="calendar-icon">&#128197;</div>
@@ -144,7 +122,7 @@ function Header() {
             </div>
           </button>
         </div>
-  
+
         {/* Show UserInfo and Logout if authenticated and active */}
         {isAuthenticated && tenantStatus === "active" ? (
           <div className="auth-logged-in">
@@ -154,52 +132,17 @@ function Header() {
         ) : (
           // Show Login & Sign Up buttons if not authenticated or inactive
           <div className="auth-buttons">
-            
             <Link to="/login" className="login">
               Log In
             </Link>
-
             <button className="sign-up" onClick={handleSignUpClick}>
               Sign Up
             </button>
           </div>
         )}
       </div>
-  
-      {/* Modal for Role Selection */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-card" ref={modalRef}>
-            <h3>Select your role</h3>
-            <div className="modal-buttons">
-              <button
-                onClick={() => handleRoleSelect("Student")}
-                className="modal-button"
-              >
-                <FontAwesomeIcon icon={faUserGraduate} size="3x" />
-                <span>Student</span>
-              </button>
-              <button
-                onClick={() => handleRoleSelect("Admin")}
-                className="modal-button"
-              >
-                <FontAwesomeIcon icon={faChalkboardTeacher} size="3x" />
-                <span>Admin</span>
-              </button>
-              <button
-                onClick={() => handleRoleSelect("Guest")}
-                className="modal-button"
-              >
-                <FontAwesomeIcon icon={faUserCircle} size="3x" />
-                <span>Guest</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-  
 }
 
 export default Header;

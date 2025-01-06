@@ -18,6 +18,7 @@ import moment from "moment";
 import multer from "multer";
 import sharp from "sharp";
 import mime from "mime";
+import bcrypt from "bcryptjs";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -204,6 +205,24 @@ const initializeDatabase = async () => {
   `;
 
     await dbConnection.execute(createRoomAvailabilityQuery);
+    console.log("Tenants room availability created or already exists");
+
+    const createAccountQuery = `
+  CREATE TABLE IF NOT EXISTS accounts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(20) NOT NULL,
+    dob DATE NOT NULL,
+    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    account_type VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,  -- Added password field
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`;
+
+    await dbConnection.execute(createAccountQuery);
     console.log("Tenants room availability created or already exists");
 
     // Get the maximum tenant_id value
@@ -1653,6 +1672,105 @@ app.delete("/rooms/:room_number", async (req, res) => {
   } catch (error) {
     console.error("Error deleting room:", error);
     res.status(500).send("Error deleting room");
+  }
+});
+
+// POST route for signup
+app.post("/signup", async (req, res) => {
+  const { username, name, email, phone, dob, gender, account_type, password } =
+    req.body;
+
+  // Check if any required field is undefined or null and replace with null if needed
+  if (
+    !username ||
+    !name ||
+    !email ||
+    !phone ||
+    !dob ||
+    !gender ||
+    !account_type ||
+    !password
+  ) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+    // Check if the username already exists
+    const [results] = await dbConnection.execute(
+      "SELECT * FROM accounts WHERE username = ?",
+      [username]
+    );
+
+    // If username already exists, return an error
+    if (results.length > 0) {
+      return res.status(400).json({ message: "Username already exists" });
+    }
+
+    // Hash the password before storing it in the database
+    const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password with salt rounds
+
+    // Insert the new account into the database
+    const query = `
+      INSERT INTO accounts (username, name, email, phone, dob, gender, account_type, password)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const [insertResults] = await dbConnection.execute(query, [
+      username,
+      name,
+      email,
+      phone,
+      dob,
+      gender,
+      account_type,
+      hashedPassword, // Store the hashed password
+    ]);
+
+    res.status(200).json({ message: "Account created successfully" });
+  } catch (err) {
+    console.error("Error:", err);
+    res
+      .status(500)
+      .json({ message: "Error creating account", error: err.message });
+  }
+});
+
+// POST route for login
+app.post("/account/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ message: "Username and password are required." });
+  }
+
+  try {
+    // Fetch the user data (including hashed password) from the database
+    const [results] = await dbConnection.execute(
+      "SELECT password FROM accounts WHERE username = ?",
+      [username]
+    );
+
+    if (results.length === 0) {
+      return res.status(400).json({ message: "Username not found." });
+    }
+
+    const hashedPassword = results[0].password;
+
+    // Compare the provided password with the stored hashed password
+    const isMatch = await bcrypt.compare(password, hashedPassword);
+
+    if (isMatch) {
+      // Passwords match, user is authenticated
+      res.status(200).json({ message: "Login successful" });
+    } else {
+      // Passwords do not match
+      res.status(400).json({ message: "Invalid password" });
+    }
+  } catch (err) {
+    console.error("Error during login:", err);
+    res.status(500).json({ message: "Error logging in", error: err.message });
   }
 });
 

@@ -22,7 +22,7 @@ function ToastNotification({ message, onClose, type, index }) {
       case 'warning':
         return { backgroundColor: '#fff', color: '#000' }; // Orange for warning
       default:
-        return 
+        return { color: 'white' }; // Fallback to white text
     }
   };
 
@@ -35,6 +35,8 @@ function ToastNotification({ message, onClose, type, index }) {
         return <FontAwesomeIcon icon={faTimes} />; // Error icon
       case 'warning':
         return <FontAwesomeIcon icon={faExclamationTriangle} />; // Warning icon
+      default:
+        return <FontAwesomeIcon icon={faGoogle} />; // Default info icon
     }
   };
 

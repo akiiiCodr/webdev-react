@@ -149,7 +149,7 @@ function Reservation() {
         {/* Total Amount */}
         <div className="form-group">
           <label>Total</label>
-          <div className="total-amount">{selectedRoom ? `$${selectedRoom.price}` : '$0.00'}</div>
+          <div className="total-amount">{selectedRoom ? `Php ${selectedRoom.price}` : 'Php 0.00'}</div>
         </div>
 
         {/* Submit Button */}
