@@ -90,10 +90,10 @@ app.use(cookieParser());
 const PORT = 5001;
 
 const dbConfig = {
-  host: process.env.DB_HOST,
-  user: process.env.USER, // Change this as needed
-  password: process.env.DB_PASSWORD, // Add your MySQL password if any
-  database: process.env.DB_NAME, // Replace with your database name
+  host: "localhost",
+  user: "root", // Change this as needed
+  password: "", // Add your MySQL password if any
+  database: "dwll_react", // Replace with your database name
   // Set max_allowed_packet in connection options
 };
 
