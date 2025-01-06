@@ -14,6 +14,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Add this state
+  const [tenantStatus, setTenantStatus] = useState(null); // Track tenant status (active/inactive)
   const modalRef = useRef(null);
   const navigate = useNavigate();
 
@@ -37,31 +38,46 @@ function Header() {
   };
 
   useEffect(() => {
-    const checkAuthentication = async () => {
+    const checkAuthenticationAndTenantStatus = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/api/current-user", {
+        // Check if the user is authenticated
+        const authResponse = await axios.get("http://localhost:5001/api/current-user", {
           withCredentials: true,
         });
-        console.log("Response from /api/current-user:", response);
-        setIsAuthenticated(response.data?.user);
-      } catch (error) {
-        console.error(
-          "Error checking authentication status:",
-          error.response || error.message
-        );
+        console.log("Auth Response:", authResponse);
+        
+        if (authResponse.data && authResponse.data.user) {
+          setIsAuthenticated(true); // User is authenticated
+          
+          // Fetch tenant details if user is authenticated
+          const tenantResponse = await axios.get(`http://localhost:5001/api/tenants`);
+          if (tenantResponse.data && tenantResponse.data.tenant && tenantResponse.data.tenant["0"]) {
+            const tenantData = tenantResponse.data.tenant["0"];
+            if (tenantData.active === "1") {
+              setTenantStatus("active");
+            } else {
+              setTenantStatus("inactive");
+            }
+          } else {
+            setTenantStatus("inactive"); // No tenant found
+          }
+        } else {
+          setIsAuthenticated(false); // User is not authenticated
+          setTenantStatus("inactive"); // If user isn't authenticated, set tenant as inactive
+        }
+      } catch (err) {
+        console.error("Error:", err);
         setIsAuthenticated(false);
+        setTenantStatus("inactive");
       }
     };
   
-    checkAuthentication();
+    checkAuthenticationAndTenantStatus();
+  }, [showModal]);  // Include any necessary dependencies here
   
-    // Attach and clean up event listener for outside clicks
-    if (showModal) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showModal]);
-
+  console.log("isAuthenticated:", isAuthenticated);
+  console.log("tenantStatus:", tenantStatus);
+  
   return (
     <div className="container-nav">
       {/* Left Side: Navigation Menu */}
@@ -98,7 +114,7 @@ function Header() {
           </ul>
         </div>
       </div>
-
+  
       {/* Center: Title and Subtitle */}
       <div className="title-section">
         <h1>
@@ -106,7 +122,7 @@ function Header() {
         </h1>
         <p>A Better Way to Dwell</p>
       </div>
-
+  
       {/* Right Side: Actions */}
       <div className="right-header">
         <div className="header-actions">
@@ -115,7 +131,7 @@ function Header() {
             <i className="fa fa-user"></i>
             <div className="availability-text">2 Bed Availability</div>
           </button>
-
+  
           {/* Calendar Button */}
           <button className="calendar-button">
             <div className="calendar-icon">&#128197;</div>
@@ -128,9 +144,9 @@ function Header() {
             </div>
           </button>
         </div>
-
+  
         {/* Show UserInfo and Logout if authenticated and active */}
-        {isAuthenticated ? (
+        {isAuthenticated && tenantStatus === "active" ? (
           <div className="auth-logged-in">
             <UserInfo />
             <Logout />
@@ -138,16 +154,18 @@ function Header() {
         ) : (
           // Show Login & Sign Up buttons if not authenticated or inactive
           <div className="auth-buttons">
-            <button className="sign-up" onClick={handleSignUpClick}>
-              Sign Up
-            </button>
+            
             <Link to="/login" className="login">
               Log In
             </Link>
+
+            <button className="sign-up" onClick={handleSignUpClick}>
+              Sign Up
+            </button>
           </div>
         )}
       </div>
-
+  
       {/* Modal for Role Selection */}
       {showModal && (
         <div className="modal-overlay">
@@ -181,6 +199,7 @@ function Header() {
       )}
     </div>
   );
+  
 }
 
 export default Header;

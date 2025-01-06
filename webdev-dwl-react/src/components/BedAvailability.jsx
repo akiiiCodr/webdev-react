@@ -14,6 +14,7 @@ const BedAvailability = () => {
     room_number: "",
     total_beds: "",
     available_beds: "",
+    price: "",
     image_room: null,
   });
 
@@ -21,6 +22,7 @@ const BedAvailability = () => {
     room_number: "",
     total_beds: "",
     available_beds: "",
+    price: "",
     image_room: null,
   });
 
@@ -43,7 +45,7 @@ const BedAvailability = () => {
   const handleAddRoom = async (event) => {
     event.preventDefault();
 
-    if (!newRoom.room_number || !newRoom.total_beds || !newRoom.available_beds) {
+    if (!newRoom.room_number || !newRoom.total_beds || !newRoom.available_beds || !newRoom.price) {
       setToastMessage("Please fill in all required fields.");
       setToastType("warning");
       setShowToast(true);
@@ -54,6 +56,7 @@ const BedAvailability = () => {
     formData.append("room_number", newRoom.room_number);
     formData.append("total_beds", newRoom.total_beds);
     formData.append("available_beds", newRoom.available_beds);
+    formData.append("price", newRoom.price);
 
     if (newRoom.image_room) {
       formData.append("image_room", newRoom.image_room);
@@ -69,7 +72,7 @@ const BedAvailability = () => {
 
       fetchRooms();
       setShowModal(false);
-      setNewRoom({ room_number: "", total_beds: "", available_beds: "", image_room: null });
+      setNewRoom({ room_number: "", total_beds: "", available_beds: "", price: "", image_room: null });
     } catch (error) {
       console.error("Error adding new room:", error);
       setToastMessage("Failed to add room.");
@@ -83,6 +86,7 @@ const BedAvailability = () => {
       room_number: room.room_number,
       total_beds: room.total_beds,
       available_beds: room.available_beds,
+      price: room.price,
       image_room: room.image_room,
     });
     setShowEditModal(true);
@@ -91,7 +95,7 @@ const BedAvailability = () => {
   const handleUpdateRoom = async (event) => {
     event.preventDefault();
 
-    if (!editedRoom.room_number || !editedRoom.total_beds || !editedRoom.available_beds) {
+    if (!editedRoom.room_number || !editedRoom.total_beds || !editedRoom.available_beds || !editedRoom.price) {
       setToastMessage("Please fill in all required fields.");
       setToastType("warning");
       setShowToast(true);
@@ -102,6 +106,7 @@ const BedAvailability = () => {
     formData.append("room_number", editedRoom.room_number);
     formData.append("total_beds", editedRoom.total_beds);
     formData.append("available_beds", editedRoom.available_beds);
+    formData.append("price", editedRoom.price);
 
     if (editedRoom.image_room) {
       formData.append("image_room", editedRoom.image_room);
@@ -121,6 +126,7 @@ const BedAvailability = () => {
           room_number: "",
           total_beds: "",
           available_beds: "",
+          price: "",
           image_room: null,
         });
         setToastMessage("Room updated successfully.");
@@ -180,6 +186,7 @@ const BedAvailability = () => {
               <h3>Room: {room.room_number}</h3>
               <p>Total Beds: {room.total_beds}</p>
               <p>Available Beds: {room.available_beds}</p>
+              <p>Price: Php {room.price}</p>
               <p>
                 Status:{" "}
                 {room.available_beds > 0 ? (
@@ -238,6 +245,14 @@ const BedAvailability = () => {
                 required
                 style={styles.modalInput}
               />
+              <label style={styles.modalLabel}>Price:</label>
+              <input
+                type="number"
+                value={newRoom.price}
+                onChange={(e) => setNewRoom({ ...newRoom, price: e.target.value })}
+                required
+                style={styles.modalInput}
+              />
               <label style={styles.modalLabel}>Room Image:</label>
               <input
                 type="file"
@@ -293,6 +308,14 @@ const BedAvailability = () => {
                 required
                 style={styles.modalInput}
               />
+              <label style={styles.modalLabel}>Price:</label>
+              <input
+                type="number"
+                value={editedRoom.price}
+                onChange={(e) => setEditedRoom({ ...editedRoom, price: e.target.value })}
+                required
+                style={styles.modalInput}
+              />
               <label style={styles.modalLabel}>Room Image:</label>
               <input
                 type="file"
@@ -332,130 +355,116 @@ const BedAvailability = () => {
 };
 
 const styles = {
-    navbar: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      backgroundColor: "#333",
-      color: "#fff",
-      padding: "10px 20px",
-    },
-    navTitle: {
-      fontSize: "24px",
-      fontWeight: "bold",
-    },
-    navButtons: {
-      display: "flex",
-      alignItems: "center",
-    },
-    navButton: {
-      backgroundColor: "#4CAF50",
-      color: "#fff",
-      border: "none",
-      padding: "10px 20px",
-      cursor: "pointer",
-      marginLeft: "10px",
-      borderRadius: "5px",
-      fontSize: "14px",
-      transition: "background-color 0.3s",
-    },
-    container: {
-      padding: "20px",
-    },
-    cardContainer: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-      gap: "20px",
-      marginTop: "20px",
-    },
-    card: {
-      border: "1px solid #ddd",
-      padding: "15px",
-      borderRadius: "5px",
-      textAlign: "center",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-      minHeight: "250px",
-      backgroundColor: "#fff",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      transition: "transform 0.3s, box-shadow 0.3s",
-    },
-    available: {
-      color: "green",
-      fontWeight: "bold",
-    },
-    occupied: {
-      color: "red",
-      fontWeight: "bold",
-    },
-    removeButton: {
-      backgroundColor: "#f44336",
-      color: "#fff",
-      border: "none",
-    //   padding: "10px 20px",
-      cursor: "pointer",
-      borderRadius: "5px",
-      fontSize: "14px",
-      marginRight: "10px",
-    //   flex: 1, // Ensures the button occupies equal space
-      transition: "background-color 0.3s",
-    },
-    editButton: {
-      backgroundColor: "#ff9800",
-      color: "#fff",
-      border: "none",
-      padding: "10px 20px",
-      cursor: "pointer",
-      borderRadius: "5px",
-      fontSize: "14px",
-      marginLeft: "10px",
-      flex: 1, // Ensures the button occupies equal space
-      transition: "background-color 0.3s",
-    },
-    cardButtonsContainer: {
-      display: "flex",
-      justifyContent: "space-between", // Space buttons equally
-      marginTop: "auto", // Push buttons to the bottom of the card
-      width: "100%", // Ensure buttons take full width
-      gap: "10px", // Space between buttons
-    },
-    modalOverlay: {
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    modal: {
-      backgroundColor: "#fff",
-      padding: "30px",
-      borderRadius: "5px",
-      width: "500px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    },
-    modalLabel: {
-      display: "block",
-      marginBottom: "8px",
-      fontWeight: "bold",
-    },
-    modalInput: {
-      width: "100%",
-      padding: "12px",
-      marginBottom: "15px",
-      borderRadius: "5px",
-      border: "1px solid #ddd",
-      fontSize: "14px",
-    },
-    modalActions: {
-      display: "flex",
-      justifyContent: "space-between",
-      marginTop: "15px",
-    },
-  };
+  navbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#333",
+    color: "#fff",
+    padding: "10px 20px",
+  },
+  navTitle: {
+    fontSize: "24px",
+    fontWeight: "bold",
+  },
+  navButtons: {
+    display: "flex",
+    alignItems: "center",
+  },
+  navButton: {
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    border: "none",
+    padding: "10px 20px",
+    cursor: "pointer",
+    marginLeft: "10px",
+    borderRadius: "5px",
+    fontSize: "14px",
+    transition: "background-color 0.3s",
+  },
+  container: {
+    padding: "20px",
+  },
+  cardContainer: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gap: "20px",
+    marginTop: "20px",
+  },
+  card: {
+    border: "1px solid #ddd",
+    padding: "15px",
+    borderRadius: "5px",
+    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    minHeight: "250px",
+    backgroundColor: "#fff",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    transition: "transform 0.3s, box-shadow 0.3s",
+  },
+  available: {
+    color: "green",
+    fontWeight: "bold",
+  },
+  occupied: {
+    color: "red",
+    fontWeight: "bold",
+  },
+  removeButton: {
+    backgroundColor: "#f44336",
+    color: "#fff",
+    border: "none",
+    cursor: "pointer",
+    borderRadius: "5px",
+    fontSize: "14px",
+    marginRight: "10px",
+    transition: "background-color 0.3s",
+  },
+  cardButtonsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "auto",
+    width: "100%",
+    gap: "10px",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modal: {
+    backgroundColor: "#fff",
+    padding: "30px",
+    borderRadius: "5px",
+    width: "500px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  modalLabel: {
+    display: "block",
+    marginBottom: "8px",
+    fontWeight: "bold",
+  },
+  modalInput: {
+    width: "100%",
+    padding: "12px",
+    marginBottom: "15px",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
+    fontSize: "14px",
+  },
+  modalActions: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "15px",
+  },
+};
 
 export default BedAvailability;

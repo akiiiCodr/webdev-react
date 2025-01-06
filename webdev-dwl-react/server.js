@@ -190,18 +190,19 @@ const initializeDatabase = async () => {
     await dbConnection.execute(createContractTenantTableQuery);
     console.log("Tenants contract table created or already exists");
 
-    // Create `contract_tenant` table after `tenants` table is created
     const createRoomAvailabilityQuery = `
-      CREATE TABLE IF NOT EXISTS rooms (
+    CREATE TABLE IF NOT EXISTS rooms (
       id INT AUTO_INCREMENT PRIMARY KEY,
       room_number VARCHAR(50) NOT NULL UNIQUE,
       total_beds INT NOT NULL,
       available_beds INT NOT NULL,
       status VARCHAR(255) NOT NULL,
       image_room VARCHAR(255) NULL,
-      image_filename VARCHAR(255) NULL
+      image_filename VARCHAR(255) NULL,
+      price DECIMAL(10, 2) NOT NULL  -- Assuming price is a decimal value, with 2 decimal places for currency
     );
-    `;
+  `;
+
     await dbConnection.execute(createRoomAvailabilityQuery);
     console.log("Tenants room availability created or already exists");
 
@@ -1505,7 +1506,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.post("/rooms", upload.single("image_room"), async (req, res) => {
-  const { room_number, total_beds, available_beds } = req.body;
+  const { room_number, total_beds, available_beds, price } = req.body; // Added price to the destructuring
   const uploadedImagePath = req.file ? req.file.path : null;
 
   // Set a default image filename in case no image is uploaded
@@ -1545,19 +1546,20 @@ app.post("/rooms", upload.single("image_room"), async (req, res) => {
     // Determine the room status based on available beds
     const status = available_beds > 0 ? "Available" : "Occupied";
 
-    // Insert the new room into the database with the image filename (default or uploaded)
+    // Insert the new room into the database with the image filename (default or uploaded) and price
     const [result] = await dbConnection.query(
-      "INSERT INTO rooms (room_number, total_beds, available_beds, image_filename, status) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO rooms (room_number, total_beds, available_beds, image_filename, status, price) VALUES (?, ?, ?, ?, ?, ?)",
       [
         room_number,
         total_beds,
         available_beds,
         `/uploads/${imageFileName}`, // Path to the image (default or uploaded)
         status,
+        price, // Added price to the database insertion
       ]
     );
 
-    // Send response back with the inserted room details
+    // Send response back with the inserted room details, including the price
     res.status(201).json({
       id: result.insertId,
       room_number,
@@ -1565,6 +1567,7 @@ app.post("/rooms", upload.single("image_room"), async (req, res) => {
       available_beds,
       image_room: `/uploads/${imageFileName}`, // Image path (default or uploaded)
       status,
+      price, // Included price in the response
     });
   } catch (error) {
     console.error("Error adding room:", error);
@@ -1577,7 +1580,7 @@ app.put(
   upload.single("image_room"),
   async (req, res) => {
     const { room_number } = req.params;
-    const { total_beds, available_beds } = req.body;
+    const { total_beds, available_beds, price } = req.body; // Include price here
     const image_room = req.file ? req.file.path : null; // Ensure image path is available
 
     try {
@@ -1594,18 +1597,20 @@ app.put(
         available_beds: available_beds || room[0].available_beds,
         image_room: image_room || room[0].image_room,
         status: available_beds > 0 ? "Available" : "Occupied",
+        price: price !== undefined ? price : room[0].price, // Update price if provided, otherwise keep existing
       };
 
       // Log the updated fields
       console.log("Updated Fields:", updatedFields);
 
       await dbConnection.query(
-        "UPDATE rooms SET total_beds = ?, available_beds = ?, image_room = ?, status = ? WHERE room_number = ?",
+        "UPDATE rooms SET total_beds = ?, available_beds = ?, image_room = ?, status = ?, price = ? WHERE room_number = ?",
         [
           updatedFields.total_beds,
           updatedFields.available_beds,
           updatedFields.image_room,
           updatedFields.status,
+          updatedFields.price, // Include price in the update
           room_number,
         ]
       );
