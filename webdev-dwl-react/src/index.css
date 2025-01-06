@@ -1744,7 +1744,7 @@ button .availability-text, button .date-text {
 
 .modal input,
 .modal textarea {
-  width: 100%;
+  width: 60%;
   padding: 8px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
