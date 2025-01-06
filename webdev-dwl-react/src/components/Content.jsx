@@ -113,6 +113,7 @@ function Content() {
           height: '600px',
           margin: '0 auto 30px',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          
           borderRadius: '8px',
           overflow: 'hidden',
           backdropFilter: 'blur(10px)',
