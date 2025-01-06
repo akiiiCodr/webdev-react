@@ -1974,3 +1974,37 @@ h4 {
 }
 
 
+
+
+/* CONTENT ANIMATION */
+
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.room-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  background-color: #fff;
+  text-align: center;
+  animation: slide-in 0.5s ease-out;
+  opacity: 1;
+}
+
+.room-card-visible {
+  opacity: 1;
+  animation: slideIn 0.5s ease-out;
+}
+
+
+

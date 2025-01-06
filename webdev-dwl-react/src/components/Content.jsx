@@ -25,14 +25,6 @@ function Content() {
     setIsChatOpen((prevIsChatOpen) => !prevIsChatOpen);
   };
 
-  const goToNextImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-  };
-
-  const goToPreviousImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-  };
-
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -48,29 +40,64 @@ function Content() {
     };
 
     fetchRooms();
+
+    // Auto slide every 3 seconds
+    const intervalId = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000); // 3000ms = 3 seconds
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
+  const texts = [
+    "",  
+    "Our dorm has two well-designed rooms to choose from.",
+    "Take a look at the room layout, designed for comfort and convenience.",
+    "The first deck of our double-deck room provides a great space for both work and rest.",
+    "The second deck offers additional space and a great view.",
+    "The living room is a shared space for relaxation and socializing.",
+    "The sink on the first floor is designed for easy use and practicality.",
+    "The second-floor sink follows the same practical design as the first.",
+    "The restroom on the first floor is simple, clean, and functional.",
+    "The restroom on the second floor is designed for comfort and convenience.",
+    "The open area for laundry is spacious"
+  ];
+
+  const textOverlayStyle = {
+    position: 'absolute',
+    bottom: '10%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    color: 'white',
+    fontSize: '24px',
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    padding: '10px 20px',
+    borderRadius: '5px',
+    textAlign: 'center',
+  };
+
   const boxContainerStyle = {
-    backgroundColor: '#f9f9f9',
+    width: '50%',
+    margin: '0 auto',
     padding: '20px',
+    backgroundColor: '#fff',
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    margin: '20px auto',
-    maxWidth: '800px',
     textAlign: 'center',
   };
 
   const welcomeTextStyle = {
-    fontSize: '32px',
+    fontSize: '36px',
     fontWeight: 'bold',
     color: '#333',
   };
 
   const descriptionTextStyle = {
     fontSize: '18px',
-    lineHeight: '1.6',
     color: '#555',
-    margin: '10px 0',
+    marginTop: '10px',
   };
 
   return (
@@ -96,46 +123,13 @@ function Content() {
           alt={`Image ${currentImageIndex + 1}`}
           style={{ width: '100%', height: '120%', objectFit: 'contain' }}
         />
-        <button
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '10px',
-            transform: 'translateY(-50%)',
-            fontSize: '30px',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            color: 'white',
-            border: 'none',
-            padding: '10px',
-            cursor: 'pointer',
-            zIndex: 10,
-          }}
-          onClick={goToPreviousImage}
-        >
-          &#60;
-        </button>
-        <button
-          style={{
-            position: 'absolute',
-            top: '50%',
-            right: '10px',
-            transform: 'translateY(-50%)',
-            fontSize: '30px',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            color: 'white',
-            border: 'none',
-            padding: '10px',
-            cursor: 'pointer',
-            zIndex: 10,
-          }}
-          onClick={goToNextImage}
-        >
-          &#62;
-        </button>
+        <div style={textOverlayStyle}>
+          {texts[currentImageIndex]} {/* Overlay Text */}
+        </div>
       </div>
 
-      {/* Welcome Text and Description */}
-      <div style={boxContainerStyle}>
+           {/* Welcome Text and Description */}
+           <div style={boxContainerStyle}>
         <h1 style={welcomeTextStyle}>Welcome to Dwell-o</h1>
         <p style={descriptionTextStyle}>
           Our dormitory provides a comfortable and convenient living space for all students. 
@@ -166,7 +160,6 @@ function Content() {
         <strong>₱1,300 per month per tenant:</strong> Includes water bill and other utilities, but does not cover Wi-Fi and electricity. You can easily manage these additional costs based on usage, making budgeting simple and hassle-free.
       </p>
 
-
         <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>Accommodation Details</h3>
         <p style={descriptionTextStyle}>
           <strong>2 Units Available:</strong> Each unit is thoughtfully designed to meet the needs of its occupants.<br />
@@ -192,22 +185,27 @@ function Content() {
       ) : (
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '20px',
+            display: 'flex',
+            overflowX: 'auto', // Enable horizontal scrolling
             margin: '20px',
+            padding: '10px 0',
           }}
         >
-          {rooms.map((room) => (
+          {rooms.map((room, index) => (
             <div
               key={room.room_number}
+              className="room-card" // Applying the sliding animation class
               style={{
+                flex: 'none',
+                width: '300px', // Adjust width to fit your design
+                marginRight: '20px',
                 border: '1px solid #ccc',
                 borderRadius: '8px',
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                 padding: '15px',
                 backgroundColor: '#fff',
                 textAlign: 'center',
+                transition: 'transform 0.3s ease',
               }}
             >
               <img
@@ -230,13 +228,12 @@ function Content() {
                 <strong>Available Beds:</strong> {room.available_beds}
               </div>
               <div style={{ marginTop: '10px', fontSize: '16px', color: '#555' }}>
-              <strong>Status:</strong>{' '}
-              {room.available_beds === 0 ? (
-                <span style={{ color: 'red', fontWeight: 'bold' }}>Occupied</span>
-              ) : (
-                <span style={{ color: 'green', fontWeight: 'bold' }}>Available</span>
-              )}
-
+                <strong>Status:</strong>{' '}
+                {room.available_beds === 0 ? (
+                  <span style={{ color: 'red', fontWeight: 'bold' }}>Occupied</span>
+                ) : (
+                  <span style={{ color: 'green', fontWeight: 'bold' }}>Available</span>
+                )}
               </div>
               <div style={{ marginTop: '10px', fontSize: '16px', color: '#555' }}>
                 <strong>Price:</strong> ₱{room.price}
