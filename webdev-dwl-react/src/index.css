@@ -3,16 +3,19 @@
   padding: 0;
   font-family: Arial, sans-serif;
   box-sizing: border-box;
-
+  
 }
 
 
 .container-nav {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 2rem;
-  background-color: hsl(0, 100%, 50%); /* Similar to your image background */
+  align-items: center;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #1e3c72, #fafbfc);
+  border-radius: 8px; /* Adds rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+  color: white; /* Ensures text color is visible against the gradient */  
 }
 
 .menu-icon {
@@ -21,7 +24,7 @@
 }
 
 .login{
-  background: white;
+  background: rgb(255, 255, 255);
   padding: 8px 12px;
   display: flex;
   align-items: center;
@@ -32,7 +35,7 @@
 }
 
 .sign-up{
-  background: white;
+  background: rgb(255, 255, 255);
   padding: 8px 12px;
   display: flex;
   align-items: center;
@@ -53,6 +56,7 @@
 .title-section h1 {
   font-size: 1.5rem;
   font-weight: bold;
+  
 }
 
 .title-section p {
@@ -98,7 +102,7 @@
 
 .reviews-container {
   padding: 2rem;
-  background-color: #f1f3f5;
+  background-color: #ffffff;
 }
 
 .image-gallery {
@@ -165,7 +169,7 @@
 
 .review-content p {
   color: #666;
-}
+}z
 
 .message-icon {
   position: fixed;
@@ -301,6 +305,7 @@
 
         body {
           font-family: Arial, sans-serif;
+          
       }
       
       .menu-bar {
@@ -310,7 +315,7 @@
       
       .menu-button {
           padding: 10px 20px;
-          background-color: #00aeff;
+          background-color: #164154;
           color: white;
           border: none;
           border-radius: 5px;
@@ -491,6 +496,7 @@ header img {
   display: flex;
   justify-content: space-between;
   gap: 40px;
+  
 }
 
 .left-form, .right-form {
@@ -646,8 +652,9 @@ header img {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #f1f1f1;
+  color: white;
 }
+
 
 .title-section h1 {
   margin: 0;
@@ -795,24 +802,42 @@ header img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: hsl(0, 1%, 63%);
-  border-bottom: 1px solid #ddd;
+  padding: 15px 30px;
+  color: #ffffff; /* Beige text */
+  font-family: 'Arial', sans-serif;
 }
 
+/* Title section */
 .title-section h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 28px;
+  color: #F5F5DC; /* Beige text */
 }
 
 .title-section p {
   margin: 0;
-  color: #666;
+  color: #F5F5DC; /* Beige text */
+  font-size: 14px;
 }
 
+/* Actions section */
 .actions {
   display: flex;
   align-items: center;
+}
+
+/* Button style */
+.actions button {
+  background-color: #007FFF; /* Azure Blue */
+  color: #F5F5DC; /* Beige text */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background-color: #005B8C; /* Darker blue for hover effect */
 }
 
 .availability-button, .calendar-button, .notification, .share-idea, .profile-circle {
