@@ -2010,5 +2010,19 @@ h4 {
   animation: slideIn 0.5s ease-out;
 }
 
+.fade-image {
+  opacity: 0;
+  animation: fadeInOut 3s infinite;
+}
 
-
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

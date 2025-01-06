@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import IMG0 from '../assets/IMG0.jpg'; // Default room image
+import IMG0 from '../assets/IMG0.jpg';
 import IMG1 from '../assets/IMG1.jpg';
 import IMG2 from '../assets/IMG2.jpg';
 import IMG3 from '../assets/IMG3.jpg';
@@ -15,9 +15,9 @@ import Bot from './Bot'; // Ensure correct path to Bot component
 function Content() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // Tracks which image is currently shown
-  const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [rooms, setRooms] = useState([]);
 
   const images = [IMG0, IMG1, IMG2, IMG3, IMG4, IMG5, IMG6, IMG7, IMG8, IMG9, IMG10];
 
@@ -31,10 +31,10 @@ function Content() {
         const response = await fetch('http://localhost:5001/rooms');
         if (!response.ok) throw new Error('Failed to fetch room data');
         const data = await response.json();
+        setLoading(false);
         setRooms(data);
       } catch (err) {
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     };
@@ -113,55 +113,76 @@ function Content() {
           height: '600px',
           margin: '0 auto 30px',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          
           borderRadius: '8px',
           overflow: 'hidden',
           backdropFilter: 'blur(10px)',
         }}
       >
         <img
+          key={currentImageIndex} // Force a re-render on each image change
           src={images[currentImageIndex]}
           alt={`Image ${currentImageIndex + 1}`}
-          style={{ width: '100%', height: '120%', objectFit: 'contain' }}
+          className="fade-image"
+          style={{
+            width: '100%',
+            height: '120%',
+            objectFit: 'contain',
+            opacity: 0,
+            transition: 'opacity 1s ease',
+            animation: 'fadeInOut 6s infinite', // Added animation for smooth fade
+          }}
         />
         <div style={textOverlayStyle}>
           {texts[currentImageIndex]} {/* Overlay Text */}
         </div>
       </div>
 
-           {/* Welcome Text and Description */}
-           <div style={boxContainerStyle}>
+      {/* Welcome Text and Description */}
+      <div style={boxContainerStyle}>
         <h1 style={welcomeTextStyle}>Welcome to Dwell-o</h1>
         <p style={descriptionTextStyle}>
           Our dormitory provides a comfortable and convenient living space for all students. 
           With spacious rooms, modern amenities, and a friendly community, you’ll feel right at home. 
           Explore the different areas of our dorm and discover everything we have to offer!
         </p>
-              {/* New Section */}
-        <h2 style={{ fontSize: '28px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>Affordable and Secure Boarding House</h2>
+        
+        {/* New Section */}
+        <h2 style={{ fontSize: '28px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
+          Affordable and Secure Boarding House
+        </h2>
         <p style={descriptionTextStyle}>
-          Welcome to a boarding house designed for comfort, convenience, and affordability. Perfect for students or professionals, this space provides everything you need for a worry-free stay.
+          Welcome to a boarding house designed for comfort, convenience, and affordability. Perfect for students or professionals, 
+          this space provides everything you need for a worry-free stay.
         </p>
 
-        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>Safety and Security</h3>
+        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
+          Safety and Security
+        </h3>
         <p style={descriptionTextStyle}>
           <strong>CCTV Monitoring:</strong> 24/7 surveillance ensures a safe environment for all tenants.<br />
           <strong>Fire Extinguishers:</strong> Strategically placed for emergencies, ensuring everyone’s safety.
         </p>
 
-        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>Utilities and Services</h3>
+        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
+          Utilities and Services
+        </h3>
         <p style={descriptionTextStyle}>
           <strong>Internet Service:</strong> Stay connected with reliable Wi-Fi available throughout the property.<br />
           <strong>Continuous Water Supply:</strong> Enjoy uninterrupted access to clean water.<br />
           <strong>Stable Power Supply:</strong> A reliable power source for all your needs is guaranteed.
         </p>
 
-        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>Affordable Rent</h3>
-      <p style={descriptionTextStyle}>
-        <strong>₱1,300 per month per tenant:</strong> Includes water bill and other utilities, but does not cover Wi-Fi and electricity. You can easily manage these additional costs based on usage, making budgeting simple and hassle-free.
-      </p>
+        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
+          Affordable Rent
+        </h3>
+        <p style={descriptionTextStyle}>
+          <strong>₱1,300 per month per tenant:</strong> Includes water bill and other utilities, but does not cover Wi-Fi and electricity. 
+          You can easily manage these additional costs based on usage, making budgeting simple and hassle-free.
+        </p>
 
-        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>Accommodation Details</h3>
+        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
+          Accommodation Details
+        </h3>
         <p style={descriptionTextStyle}>
           <strong>2 Units Available:</strong> Each unit is thoughtfully designed to meet the needs of its occupants.<br />
           <strong>2 Bathrooms in each unit:</strong> For shared convenience.<br />
@@ -177,8 +198,9 @@ function Content() {
         </p>
       </div>
 
-      {/* Room Availability */}
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Room Availability</h1>
+
+ {/* Room Availability */}
+ <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Room Availability</h1>
       {loading ? (
         <p style={{ textAlign: 'center' }}>Loading...</p>
       ) : error ? (
@@ -244,31 +266,26 @@ function Content() {
         </div>
       )}
 
-      {/* Message Icon */}
+      {/* Chat Icon */}
       <div
-        className="message-icon"
-        aria-label="Messages"
         onClick={toggleChat}
         style={{
           position: 'fixed',
           bottom: '20px',
           right: '20px',
-          width: '50px',
-          height: '50px',
-          backgroundColor: '#007BFF',
-          color: '#fff',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          backgroundColor: '#007bff',
+          color: 'white',
           borderRadius: '50%',
+          padding: '15px',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
           cursor: 'pointer',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+          fontSize: '24px',
         }}
       >
-        ✉️
+        🗨️
       </div>
 
-      {/* Bot Component */}
+      {/* Chatbot */}
       {isChatOpen && <Bot />}
     </div>
   );
