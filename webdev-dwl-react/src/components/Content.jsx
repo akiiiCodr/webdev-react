@@ -10,7 +10,9 @@ import IMG7 from '../assets/IMG7.jpg';
 import IMG8 from '../assets/IMG8.jpg';
 import IMG9 from '../assets/IMG9.jpg';
 import IMG10 from '../assets/IMG10.jpg';
+import BGM from '../assets/gradient-image.svg';
 import Bot from './Bot'; // Ensure correct path to Bot component
+import WelcomeSection from './WelcomeSection';
 
 function Content() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -18,8 +20,10 @@ function Content() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rooms, setRooms] = useState([]);
+  const [hoveredRoom, setHoveredRoom] = useState(null); // State to track hovered room
 
   const images = [IMG0, IMG1, IMG2, IMG3, IMG4, IMG5, IMG6, IMG7, IMG8, IMG9, IMG10];
+  const bgimage = [BGM];
 
   const toggleChat = () => {
     setIsChatOpen((prevIsChatOpen) => !prevIsChatOpen);
@@ -78,30 +82,23 @@ function Content() {
     textAlign: 'center',
   };
 
-  const boxContainerStyle = {
-    width: '50%',
-    margin: '0 auto',
-    padding: '20px',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center',
+  // Handle hover effect
+  const handleMouseEnter = (roomNumber) => {
+    setHoveredRoom(roomNumber);
   };
 
-  const welcomeTextStyle = {
-    fontSize: '36px',
-    fontWeight: 'bold',
-    color: '#333',
-  };
-
-  const descriptionTextStyle = {
-    fontSize: '18px',
-    color: '#555',
-    marginTop: '10px',
+  const handleMouseLeave = () => {
+    setHoveredRoom(null);
   };
 
   return (
-    <div className="content-container">
+    <div className="content-container" style={{
+      backgroundImage: `url(${bgimage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      minHeight: '100vh', // Ensure it covers the entire viewport height
+      position: 'relative',
+    }}>
       {/* Large Image Display */}
       <div
         style={{
@@ -109,8 +106,8 @@ function Content() {
           justifyContent: 'center',
           alignItems: 'center',
           position: 'relative',
-          width: '80%',
-          height: '600px',
+          width: '100%', // Full width of the screen
+          height: '600px', // Fixed height
           margin: '0 auto 30px',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',
           borderRadius: '8px',
@@ -137,102 +134,53 @@ function Content() {
         </div>
       </div>
 
-      {/* Welcome Text and Description */}
-      <div style={boxContainerStyle}>
-        <h1 style={welcomeTextStyle}>Welcome to Dwell-o</h1>
-        <p style={descriptionTextStyle}>
-          Our dormitory provides a comfortable and convenient living space for all students. 
-          With spacious rooms, modern amenities, and a friendly community, you’ll feel right at home. 
-          Explore the different areas of our dorm and discover everything we have to offer!
-        </p>
-        
-        {/* New Section */}
-        <h2 style={{ fontSize: '28px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
-          Affordable and Secure Boarding House
-        </h2>
-        <p style={descriptionTextStyle}>
-          Welcome to a boarding house designed for comfort, convenience, and affordability. Perfect for students or professionals, 
-          this space provides everything you need for a worry-free stay.
-        </p>
+      <WelcomeSection />
 
-        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
-          Safety and Security
-        </h3>
-        <p style={descriptionTextStyle}>
-          <strong>CCTV Monitoring:</strong> 24/7 surveillance ensures a safe environment for all tenants.<br />
-          <strong>Fire Extinguishers:</strong> Strategically placed for emergencies, ensuring everyone’s safety.
-        </p>
-
-        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
-          Utilities and Services
-        </h3>
-        <p style={descriptionTextStyle}>
-          <strong>Internet Service:</strong> Stay connected with reliable Wi-Fi available throughout the property.<br />
-          <strong>Continuous Water Supply:</strong> Enjoy uninterrupted access to clean water.<br />
-          <strong>Stable Power Supply:</strong> A reliable power source for all your needs is guaranteed.
-        </p>
-
-        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
-          Affordable Rent
-        </h3>
-        <p style={descriptionTextStyle}>
-          <strong>₱1,300 per month per tenant:</strong> Includes water bill and other utilities, but does not cover Wi-Fi and electricity. 
-          You can easily manage these additional costs based on usage, making budgeting simple and hassle-free.
-        </p>
-
-        <h3 style={{ fontSize: '24px', color: '#333', fontWeight: 'bold', marginTop: '20px' }}>
-          Accommodation Details
-        </h3>
-        <p style={descriptionTextStyle}>
-          <strong>2 Units Available:</strong> Each unit is thoughtfully designed to meet the needs of its occupants.<br />
-          <strong>2 Bathrooms in each unit:</strong> For shared convenience.<br />
-          <strong>2 Rooms Per Unit:</strong>
-          <br />
-          Room 1: Comfortable space for up to 4 people.<br />
-          Room 2: Spacious enough to accommodate up to 6 people.
-        </p>
-
-        <p style={descriptionTextStyle}>
-          This boarding house combines practicality with affordability, ensuring a safe and comfortable living experience. 
-          Secure your spot now and enjoy all the amenities included at an unbeatable price!
-        </p>
-      </div>
-
-
- {/* Room Availability */}
- <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Room Availability</h1>
-      {loading ? (
-        <p style={{ textAlign: 'center' }}>Loading...</p>
-      ) : error ? (
-        <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>
-      ) : (
-        <div
-          style={{
-            display: 'flex',
-            overflowX: 'auto', // Enable horizontal scrolling
-            margin: '20px',
-            padding: '10px 0',
-          }}
-        >
-          {rooms.map((room, index) => (
+      <div
+      style={{
+        display: 'flex',
+        overflowX: 'hidden', // Hide overflow to avoid visual gaps
+        margin: '20px',
+        padding: '10px 0',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          animation: 'scroll 30s linear infinite', // Apply the scrolling animation
+          // whiteSpace: 'nowrap', // Ensures the cards don't wrap to the next line
+        }}
+      >
+        {/* Original set of room cards */}
+        {rooms
+          .slice()
+          .sort((a, b) => a.room_number - b.room_number) // Sort rooms by room_number
+          .map((room) => (
             <div
-              key={room.room_number}
-              className="room-card" // Applying the sliding animation class
+              key={`original-${room.room_number}`}
+              className="room-card"
+              onMouseEnter={() => handleMouseEnter(room.room_number)}
+              onMouseLeave={handleMouseLeave}
               style={{
                 flex: 'none',
-                width: '300px', // Adjust width to fit your design
+                width: '300px',
                 marginRight: '20px',
                 border: '1px solid #ccc',
                 borderRadius: '8px',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                 padding: '15px',
-                backgroundColor: '#fff',
                 textAlign: 'center',
-                transition: 'transform 0.3s ease',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent background
+                backdropFilter: 'blur(10px)', // Apply frosted glass effect
+                boxShadow: hoveredRoom === room.room_number
+                  ? '0 8px 16px rgba(0, 0, 0, 0.3)' // Stronger shadow when hovered
+                  : '0 4px 8px rgba(0, 0, 0, 0.1)', // Default shadow
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth transition
+                transform: hoveredRoom === room.room_number ? 'scale(1.05)' : 'scale(1)', // Scaling on hover
               }}
             >
               <img
-                src={room.image_filename || IMG1}
+                src={room.image_filename || IMG1} // Assuming IMG1 is a fallback image
                 alt={`Room ${room.room_number}`}
                 style={{
                   width: '100%',
@@ -241,16 +189,16 @@ function Content() {
                   borderRadius: '8px 8px 0 0',
                 }}
               />
-              <div style={{ marginTop: '10px', fontSize: '16px', color: '#555' }}>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
                 <strong>Room Number:</strong> {room.room_number}
               </div>
-              <div style={{ marginTop: '10px', fontSize: '16px', color: '#555' }}>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
                 <strong>Total Beds:</strong> {room.total_beds}
               </div>
-              <div style={{ marginTop: '10px', fontSize: '16px', color: '#555' }}>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
                 <strong>Available Beds:</strong> {room.available_beds}
               </div>
-              <div style={{ marginTop: '10px', fontSize: '16px', color: '#555' }}>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
                 <strong>Status:</strong>{' '}
                 {room.available_beds === 0 ? (
                   <span style={{ color: 'red', fontWeight: 'bold' }}>Occupied</span>
@@ -258,13 +206,78 @@ function Content() {
                   <span style={{ color: 'green', fontWeight: 'bold' }}>Available</span>
                 )}
               </div>
-              <div style={{ marginTop: '10px', fontSize: '16px', color: '#555' }}>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
                 <strong>Price:</strong> ₱{room.price}
               </div>
             </div>
           ))}
-        </div>
-      )}
+
+        {/* Duplicated set of room cards for continuous scrolling */}
+        {rooms
+          .slice()
+          .sort((a, b) => a.room_number - b.room_number)
+          .map((room) => (
+            <div
+              key={`duplicate-${room.room_number}`}
+              className="room-card"
+              onMouseEnter={() => handleMouseEnter(room.room_number)}
+              onMouseLeave={handleMouseLeave}
+              style={{
+                flex: 'none',
+                width: '300px',
+                marginRight: '20px',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+                padding: '15px',
+                textAlign: 'center',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent background
+                backdropFilter: 'blur(10px)', // Apply frosted glass effect
+                boxShadow: hoveredRoom === room.room_number
+                  ? '0 8px 16px rgba(0, 0, 0, 0.3)' // Stronger shadow when hovered
+                  : '0 4px 8px rgba(0, 0, 0, 0.1)', // Default shadow
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth transition
+                transform: hoveredRoom === room.room_number ? 'scale(1.05)' : 'scale(1)', // Scaling on hover
+              }}
+            >
+              <img
+                src={room.image_filename || IMG1} // Assuming IMG1 is a fallback image
+                alt={`Room ${room.room_number}`}
+                style={{
+                  width: '100%',
+                  height: '150px',
+                  objectFit: 'cover',
+                  borderRadius: '8px 8px 0 0',
+                }}
+              />
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
+                <strong>Room Number:</strong> {room.room_number}
+              </div>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
+                <strong>Total Beds:</strong> {room.total_beds}
+              </div>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
+                <strong>Available Beds:</strong> {room.available_beds}
+              </div>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
+                <strong>Status:</strong>{' '}
+                {room.available_beds === 0 ? (
+                  <span style={{ color: 'red', fontWeight: 'bold' }}>Occupied</span>
+                ) : (
+                  <span style={{ color: 'green', fontWeight: 'bold' }}>Available</span>
+                )}
+              </div>
+              <div style={{ marginTop: '10px', fontSize: '16px', color: '#333' }}>
+                <strong>Price:</strong> ₱{room.price}
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+
+
+
+
+
 
       {/* Chat Icon */}
       <div

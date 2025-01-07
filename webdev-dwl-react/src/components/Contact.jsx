@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import Bot from "./Bot"; // Import the Bot component
+import BGM from '../assets/gradient-image.svg'; // Import the background image
 
 const socket = io("http://localhost:5001"); // Replace with your server's address
 
@@ -16,6 +17,22 @@ function Contact() {
       console.log("Received message from server:", messageData);
       setMessages((prevMessages) => [...prevMessages, messageData]);
     });
+
+    // Apply background image to the body of the page
+    document.body.style.backgroundImage = `url(${BGM})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.minHeight = '100vh'; // Ensure body covers the entire viewport height
+
+    return () => {
+      // Clean up background styles when component is unmounted
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundRepeat = '';
+      document.body.style.minHeight = '';
+    };
   }, []);
 
   const handleChange = (e) => {
@@ -47,40 +64,45 @@ function Contact() {
     }
   };
 
-  // Inline styles
-  const containerStyle = {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "20px",
-    maxWidth: "800px",
-    margin: "auto",
-    fontFamily: "Arial, sans-serif"
-  };
-
+  // Inline styles for the Contact component form
   const formStyle = {
     width: "100%",
     display: "flex",
     flexDirection: "column",
     gap: "15px",
-    marginBottom: "20px"
+    marginBottom: "20px",
+    backdropFilter: "blur(10px)", // Apply blur effect to the form area
+    backgroundColor: "rgba(255, 255, 255, 0.2)", // Semi-transparent background
+    padding: "20px", // Padding for the form area
+    borderRadius: "10px", // Rounded corners for the glassmorphism effect
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Slight shadow to enhance the glass effect
+    maxWidth: "600px", // Limit the form width
+    marginTop: "50px", // Add some space at the top for better alignment
   };
 
   const inputStyle = {
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
+    padding: "12px",
+    border: "1px solid rgba(255, 255, 255, 0.4)", // Light border with transparency
+    borderRadius: "8px",
     width: "100%",
-    fontSize: "14px"
+    fontSize: "14px",
+    backdropFilter: "blur(5px)", // Apply slight blur behind the input field
+    backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent background for the input
+    color: "#fff", // Text color to make it readable on a light background
+    outline: "none", // Remove default outline
   };
 
   const textareaStyle = {
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
+    padding: "12px",
+    border: "1px solid rgba(255, 255, 255, 0.4)", // Light border with transparency
+    borderRadius: "8px",
     width: "100%",
     fontSize: "14px",
-    resize: "vertical"
+    resize: "vertical",
+    backdropFilter: "blur(5px)", // Apply slight blur behind the textarea
+    backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent background for the textarea
+    color: "#fff", // Text color to make it readable on a light background
+    outline: "none", // Remove default outline
   };
 
   const buttonStyle = {
@@ -91,12 +113,12 @@ function Contact() {
     borderRadius: "4px",
     cursor: "pointer",
     fontSize: "16px",
-    transition: "background-color 0.3s"
+    transition: "background-color 0.3s",
   };
 
   const buttonHoverStyle = {
     ...buttonStyle,
-    backgroundColor: "#0056b3"
+    backgroundColor: "#0056b3",
   };
 
   const toastNotificationStyle = {
@@ -112,7 +134,7 @@ function Contact() {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "300px"
+    width: "300px",
   };
 
   const closeButtonStyle = {
@@ -120,23 +142,23 @@ function Contact() {
     border: "none",
     color: "#fff",
     fontSize: "18px",
-    cursor: "pointer"
+    cursor: "pointer",
   };
 
   return (
-    <div style={containerStyle}>
-      <h1>Contact Us</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', textAlign: 'center' }}>
+      <h1 style={{ color: "#fff", marginBottom: '20px' }}>Contact Us</h1>
       <form onSubmit={handleSubmit} style={formStyle}>
         <div>
-          <label>Name</label>
+          <label style={{ color: "#fff" }}>Name</label>
           <input type="text" name="name" value={formData.name} onChange={handleChange} required style={inputStyle} />
         </div>
         <div>
-          <label>Email</label>
+          <label style={{ color: "#fff" }}>Email</label>
           <input type="email" name="email" value={formData.email} onChange={handleChange} required style={inputStyle} />
         </div>
         <div>
-          <label>Message</label>
+          <label style={{ color: "#fff" }}>Message</label>
           <textarea name="message" value={formData.message} onChange={handleChange} required style={textareaStyle}></textarea>
         </div>
         <button type="submit" style={buttonStyle}>Send Message</button>

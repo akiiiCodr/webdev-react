@@ -233,7 +233,6 @@ const PaymentTenant = () => {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background-color: #333;
           padding: 10px 20px;
           color: white;
         }
@@ -311,16 +310,23 @@ const PaymentTenant = () => {
         }
 
         .payment-card {
-          background-color: #f9f9f9;
-          padding: 20px;
-          border-radius: 8px;
-          flex: 1 1 250px; /* Allow cards to grow and shrink, minimum width of 250px */
-          box-sizing: border-box;
-          position: relative;
-          z-index: 1; /* Ensure payment cards are behind the modal */
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          margin: 10px 0;
-        }
+        background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+        backdrop-filter: blur(10px); /* Apply the blur effect to the background */
+        padding: 20px;
+        border-radius: 8px;
+        flex: 1 1 250px; /* Allow cards to grow and shrink, minimum width of 250px */
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1; /* Ensure payment cards are behind the modal */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Shadow for a soft effect */
+        margin: 10px 0;
+        transition: all 0.3s ease; /* Optional: Add smooth transition for hover effects */
+      }
+
+      .payment-card:hover {
+        transform: translateY(-5px); /* Optional: Slight lift effect on hover */
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Optional: Increased shadow on hover */
+      }
 
         .paid-label {
           position: absolute;
@@ -337,11 +343,13 @@ const PaymentTenant = () => {
         .payment-card-content h4 {
           font-size: 18px;
           margin-bottom: 10px;
+          color: #fff;
         }
 
         .payment-card-content p {
           font-size: 14px;
           margin: 5px 0;
+          color: #fff;
         }
 
         `}

@@ -1,11 +1,11 @@
-// Full component (as shared earlier with updated `handleLogin` function)
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import GoogleAuth from "./GoogleAuth";
 import UserInfo from "./UserInfo";
 import Logout from "./Logout";
 import ToastNotification from "./ToastNotification";
+import BGM from "../assets/gradient-image.svg";
 
 function Login() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -83,21 +83,40 @@ function Login() {
     }
   };
 
+  useEffect(() => {
+    // Apply background image to the body of the page
+    document.body.style.backgroundImage = `url(${BGM})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.minHeight = '100vh'; // Ensure body covers the entire viewport height
+
+    return () => {
+      // Clean up background styles when component is unmounted
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundRepeat = '';
+      document.body.style.minHeight = '';
+    };
+  }, []);
+
   return (
-    <div className="login-section">
-      <div className="login-box">
+    <div className="login-section" style={loginSectionStyle}>
+      <div className="login-box" style={loginBoxStyle}>
         <h1>Dwell-o</h1>
         <p>A Better Way to Dwell</p>
 
         {!isAuthenticated ? (
           <>
-            <form method="POST" onSubmit={handleLogin}>
+            <form method="POST" onSubmit={handleLogin} style={formStyle}>
               <input
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                style={inputStyle}
               />
               <input
                 type="password"
@@ -105,32 +124,26 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                style={inputStyle}
               />
-              <Link to="/forgot-password" className="forgot-password">
+              <Link to="/forgot-password" className="forgot-password" style={forgotPasswordStyle}>
                 Forgot password?
               </Link>
 
               <button
                 type="submit"
                 className="login-button"
-                style={{
-                  display: "inline-block",
-                  padding: "10px 20px",
-                  backgroundColor: "#007bff",
-                  color: "white",
-                  textAlign: "center",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
+                style={buttonStyle}
               >
                 Log In
               </button>
             </form>
 
-            <GoogleAuth />
+            <div style={googleAuthContainerStyle}>
+              <GoogleAuth />
+            </div>
 
-            <p className="signup-text">
+            <p className="signup-text" style={signupTextStyle}>
               Don't have an account?{" "}
               <Link to="/signup" className="menu-item">
                 Sign Up
@@ -144,16 +157,92 @@ function Login() {
           </>
         )}
 
-        {toastMessage && (
+        
+      </div>
+      {toastMessage && (
           <ToastNotification
             message={toastMessage}
             type={toastType}
             onClose={() => setToastMessage("")}
           />
         )}
-      </div>
     </div>
   );
 }
+
+// Glassmorphism Styles
+const loginSectionStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  minHeight: '100vh', // Ensure the container takes full viewport height
+  backdropFilter: 'blur(10px)', // Frosted glass effect
+  backgroundColor: 'rgba(0, 0, 0, 0.4)', // Semi-transparent background for glassmorphism
+};
+
+const loginBoxStyle = {
+  backgroundColor: 'rgba(255, 255, 255, 0.12)', // Semi-transparent background
+  backdropFilter: 'blur(10px)', // Frosted glass effect
+  padding: '30px',
+  borderRadius: '15px',
+  width: '100%',
+  maxWidth: '500px',
+  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)', // Enhanced box-shadow for stronger glass effect
+  margin: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center', // Center content horizontally
+};
+
+const formStyle = {
+  backgroundColor: 'rgba(0, 0, 0, 0.4)', // Darker, semi-transparent background for glassmorphism
+  backdropFilter: 'blur(10px)', // Frosted glass effect
+  padding: '30px',
+  borderRadius: '15px',
+  width: '100%',
+  maxWidth: '500px',
+  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+  margin: 'auto',
+};
+
+const inputStyle = {
+  padding: '12px 20px',
+  margin: '10px 0',
+  borderRadius: '8px',
+  border: '1px solid rgba(255, 255, 255, 0.3)',
+  backgroundColor: 'rgba(255, 255, 255, 0.1)', // Semi-transparent background for inputs
+  color: '#fff',
+  outline: 'none',
+  fontSize: '16px',
+  transition: 'border-color 0.3s ease',
+};
+
+const buttonStyle = {
+  padding: '12px 20px',
+  backgroundColor: '#007bff',
+  color: 'white',
+  textAlign: 'center',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  transition: 'background-color 0.3s ease',
+};
+
+const forgotPasswordStyle = {
+  color: '#fff',
+  textDecoration: 'none',
+  fontSize: '14px',
+};
+
+const signupTextStyle = {
+  color: '#fff',
+};
+
+const googleAuthContainerStyle = {
+  marginTop: '20px', // Add some space between the form and GoogleAuth button
+  display: 'flex',
+  justifyContent: 'center', // Center GoogleAuth horizontally
+  width: '100%',
+};
 
 export default Login;

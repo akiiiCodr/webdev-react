@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faEye, faEyeSlash, faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FaRegEye, FaArrowLeft, FaArrowRight, FaRegEyeSlash, FaCheck, FaTimes, } from 'react-icons/fa';
 import ToastNotification from "./ToastNotification";
+import BGM from "../assets/gradient-image.svg";
 
 const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -124,14 +124,22 @@ const Register = () => {
   };
 
   const checkPasswordRequirements = (password) => {
+    // Check for alphanumeric characters (at least one letter and one digit)
     const alphanumericPattern = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$/;
+    // Check for symbols (special characters)
     const symbolPattern = /[!@#$%^&*(),.?":{}|<>]/;
-
+  
+    // Check if the password meets both alphanumeric and symbol conditions
+    const isAlphanumeric = alphanumericPattern.test(password);
+    const hasSymbol = symbolPattern.test(password);
+  
     setPasswordRequirements({
-      alphanumeric: alphanumericPattern.test(password),
-      symbol: symbolPattern.test(password),
+      alphanumeric: isAlphanumeric,
+      symbol: hasSymbol,
     });
   };
+  
+  
 
   const getPageStyle = () => {
     return {
@@ -146,6 +154,25 @@ const Register = () => {
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
+
+
+    useEffect(() => {
+      // Apply background image to the body of the page
+      document.body.style.backgroundImage = `url(${BGM})`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.minHeight = '100vh'; // Ensure body covers the entire viewport height
+  
+      return () => {
+        // Clean up background styles when component is unmounted
+        document.body.style.backgroundImage = '';
+        document.body.style.backgroundSize = '';
+        document.body.style.backgroundPosition = '';
+        document.body.style.backgroundRepeat = '';
+        document.body.style.minHeight = '';
+      };
+    }, []);
 
   return (
     <div style={styles.container}>
@@ -167,7 +194,7 @@ const Register = () => {
             </div>
             {isActive(index + 1) && index < steps.length - 1 && (
               <div style={styles.arrowRight}>
-                <FontAwesomeIcon icon={faArrowRight} />
+                <FaArrowRight />
               </div>
             )}
           </div>
@@ -244,9 +271,10 @@ const Register = () => {
                       onClick={togglePasswordVisibility}
                       style={styles.eyeIcon}
                     >
-                      <FontAwesomeIcon icon={passwordVisible ? faEye : faEyeSlash} />
+                      {passwordVisible ? <FaRegEye /> : <FaRegEyeSlash />}
                     </button>
                   </div>
+
                   <p
                     style={{
                       ...styles.passwordStrength,
@@ -255,11 +283,14 @@ const Register = () => {
                           ? "green"
                           : passwordStrength === "Normal"
                           ? "orange"
-                          : "red",
+                          : passwordStrength === "Short"
+                          ? "red"
+                          : "gray", // Default to gray if passwordStrength is not set
                     }}
                   >
-                    {passwordStrength}
+                    {passwordStrength || "Enter a password"} {/* Show message if passwordStrength is not set */}
                   </p>
+
                   <div
                     style={{
                       ...styles.passwordStrengthBar,
@@ -268,30 +299,38 @@ const Register = () => {
                           ? "100%"
                           : passwordStrength === "Normal"
                           ? "60%"
-                          : "30%",
+                          : passwordStrength === "Short"
+                          ? "30%"
+                          : "0%", // No width if passwordStrength is not set
                       backgroundColor:
                         passwordStrength === "Strong"
                           ? "green"
                           : passwordStrength === "Normal"
                           ? "orange"
-                          : "red",
+                          : passwordStrength === "Short"
+                          ? "red"
+                          : "transparent", // No color if passwordStrength is not set
                     }}
                   ></div>
+
                   <div style={styles.passwordRequirements}>
                     <p
                       style={{
                         color: passwordRequirements.alphanumeric ? "green" : "red",
                       }}
                     >
-                      Alphanumeric: {passwordRequirements.alphanumeric ? "✔️" : "❌"}
+                      Alphanumeric: {passwordRequirements.alphanumeric ? <FaCheck/> : <FaTimes/>}
                     </p>
                     <p
                       style={{
                         color: passwordRequirements.symbol ? "green" : "red",
                       }}
                     >
-                      Contains Symbol: {passwordRequirements.symbol ? "✔️" : "❌"}
+                      Contains Symbol: {passwordRequirements.symbol ? <FaCheck/> : <FaTimes/>}
                     </p>
+                    {(passwordRequirements.alphanumeric && passwordRequirements.symbol) && (
+                      <p style={{ color: "green" }}><FaCheck/> Both requirements met</p>
+                    )}
                   </div>
                 </>
               )}
@@ -337,24 +376,33 @@ const Register = () => {
               {index !== 7 && (
                 <div style={styles.buttonContainer}>
                   <button onClick={handlePrev} style={styles.prevButton}>
-                    <FontAwesomeIcon icon={faArrowLeft} /> Previous
+                    <FaArrowLeft /> Previous
                   </button>
                   <button onClick={handleNext} style={styles.nextButton}>
-                    Next <FontAwesomeIcon icon={faArrowRight} />
+                    Next <FaArrowRight />
                   </button>
                 </div>
               )}
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Toast Notification */}
+        {/* Toast Notification */}
       {showToast && (
         <ToastNotification message={toastMessage} type={toastType} onClose={handleCloseToast} />
       )}
+      </div>
+
+      
     </div>
+    
   );
+  
+};
+
+const iconStyle = {
+  fontSize: '40px',
+  color: '#000',
+  marginBottom: '10px',
 };
 
 const styles = {
@@ -363,16 +411,20 @@ const styles = {
     maxWidth: "700px",
     margin: "0 auto",
     padding: "30px",
-    borderRadius: "8px",
+    borderRadius: "15px",
     boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#f9f9f9",
+    background: "rgba(255, 255, 255, 0.1)", // Semi-transparent white background
+    backdropFilter: "blur(10px)", // Apply the blur effect
+    border: "1px solid rgba(255, 255, 255, 0.2)", // Light border to simulate frosted glass
     boxSizing: "border-box",
+    color: "#fff", // Text color for visibility on the glass
   },
   header: {
     textAlign: "center",
     fontSize: "24px",
     fontWeight: "bold",
     marginBottom: "20px",
+    color: "#fff", // Ensure header text is readable on the glass
   },
   progressBar: {
     display: "flex",
@@ -391,11 +443,12 @@ const styles = {
     width: "30px",
     height: "30px",
     borderRadius: "50%",
-    border: "2px solid #ccc",
+    border: "2px solid #fff", // White border for contrast on glass
     lineHeight: "30px",
     textAlign: "center",
     marginBottom: "5px",
     fontSize: "16px",
+    color: "#fff", // Bullet color on the glass
   },
   arrowRight: {
     fontSize: "20px",
@@ -419,14 +472,22 @@ const styles = {
   title: {
     fontSize: "18px",
     marginBottom: "10px",
+    color: "#fff", // Title color for contrast
   },
   input: {
     width: "100%",
     padding: "10px",
     margin: "10px 0",
-    borderRadius: "4px",
-    border: "1px solid #ddd",
+    borderRadius: "8px",
+    border: "1px solid rgba(255, 255, 255, 0.3)", // Soft border for inputs
+    backgroundColor: "rgba(255, 255, 255, 0.2)", // Semi-transparent input background
     fontSize: "16px",
+    color: "#fff", // Input text color for contrast
+    outline: "none", // Remove outline on focus
+    transition: "border 0.3s ease",
+  },
+  inputFocus: {
+    borderColor: "#4caf50", // Focus border color to indicate active input
   },
   buttonContainer: {
     display: "flex",
@@ -435,28 +496,34 @@ const styles = {
     marginTop: "20px",
   },
   prevButton: {
-    backgroundColor: "#f44336",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     color: "white",
     padding: "10px 20px",
-    border: "none",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
     cursor: "pointer",
     flex: 1,
+    borderRadius: "8px",
+    transition: "background-color 0.3s ease",
   },
   nextButton: {
-    backgroundColor: "#4caf50",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     color: "white",
     padding: "10px 20px",
-    border: "none",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
     cursor: "pointer",
     flex: 1,
+    borderRadius: "8px",
+    transition: "background-color 0.3s ease",
   },
   submitButton: {
-    backgroundColor: "#4caf50",
+    backgroundColor: "rgba(76, 175, 80, 0.8)", // Semi-transparent green
     color: "white",
     padding: "10px 20px",
     border: "none",
     cursor: "pointer",
     width: "100%",
+    borderRadius: "8px",
+    transition: "background-color 0.3s ease",
   },
   passwordStrength: {
     fontSize: "14px",
@@ -487,6 +554,7 @@ const styles = {
     marginTop: "10px",
   },
 };
+
 
 
 

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import TenantProfile from './TenantProfile';
 import PaymentTenant from './PaymentTenant';
+import BGM from "../assets/gradient-image.svg"; // Your background image
 
 function TenantLounge() {
   const { username } = useParams(); // Get the username from URL params
@@ -12,6 +13,13 @@ function TenantLounge() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Apply background image to the body
+    document.body.style.backgroundImage = `url(${BGM})`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.minHeight = "100vh"; // Ensure body covers the entire viewport height
+
     const fetchTenantDetails = async () => {
       try {
         const response = await axios.get(
@@ -31,6 +39,15 @@ function TenantLounge() {
     };
 
     fetchTenantDetails();
+
+    return () => {
+      // Clean up background styles when component is unmounted
+      document.body.style.backgroundImage = "";
+      document.body.style.backgroundSize = "";
+      document.body.style.backgroundPosition = "";
+      document.body.style.backgroundRepeat = "";
+      document.body.style.minHeight = "";
+    };
   }, [username]);
 
   const showContent = (contentId) => {

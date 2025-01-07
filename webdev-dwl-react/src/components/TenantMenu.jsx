@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Tenants from './Tenants';
 import ToastNotification from './ToastNotification';
+import BGM from "../assets/gradient-image.svg";
 
 function TenantMenu() {
   const [selectedTenant, setSelectedTenant] = useState(null);
@@ -60,7 +61,25 @@ function TenantMenu() {
     }
   };
 
-  useEffect(() => {
+ useEffect(() => {
+    // Check if a custom background has been set before
+    const storedBackground = localStorage.getItem('bgImage');
+    
+    if (storedBackground) {
+      // If found, use the stored background
+      document.body.style.backgroundImage = `url(${storedBackground})`;
+    } else {
+      // If no background is stored, set the default one
+      document.body.style.backgroundImage = `url(${BGM})`;
+      localStorage.setItem('bgImage', BGM); // Store it in localStorage
+    }
+
+    // Common styles for the background
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.minHeight = '100vh';
+
     const fetchTenants = async () => {
       try {
         const response = await axios.get('http://localhost:5001/api/tenants');
@@ -70,7 +89,13 @@ function TenantMenu() {
       }
     };
     fetchTenants();
-  }, []);
+
+    // Cleanup background styles when component unmounts
+    return () => {
+      // Do not clear the background here as it should persist after refresh
+    };
+  }, []); // Empty dependency array means this effect runs once when the component mounts
+
 
   // Submit form data to the backend API
   const handleFormSubmit = async (e) => {
@@ -203,6 +228,14 @@ function TenantMenu() {
     }
   };
 
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setTenantData({
+      ...tenantData,
+      [name]: value,
+    });
+  };
+
   return (
     <div className="tenant-menu">
       <nav className="navbar">
@@ -285,77 +318,161 @@ function TenantMenu() {
         </div>
       )}
 
-      {/* Edit Modal */}
-      {isEditModalOpen && (
+        {/* Edit Modal */}
+        {isEditModalOpen ? (
         <div className="modal-overlay">
           <div className="edit_modal">
             <h2>Edit Tenant</h2>
             <form onSubmit={handleEditFormSubmit}>
-              <label>Tenant Name:
-                <input type="text" name="name" value={tenantData.name} onChange={handleInputChange} required />
-              </label>
-              <label>Birthday:
-                <input type="date" name="birthday" value={formatDateForInput(tenantData.birthday)} onChange={handleInputChange} required />
-              </label>
-              <label>Contact No.:
-                <input type="text" name="contactNo" value={tenantData.contactNo} onChange={handleInputChange} required />
-              </label>
-              <label>Email Address:
-                <input type="email" name="email" value={tenantData.email} onChange={handleInputChange} required />
-              </label>
-              <label>Guardian Name:
-                <input type="text" name="guardianName" value={tenantData.guardianName} onChange={handleInputChange} required />
-              </label>
-              <label>Home Address:
-                <textarea name="homeAddress" value={tenantData.homeAddress} onChange={handleInputChange} required />
-              </label>
-              <label>Rental Start Date:
-                <input type="date" name="rentalStart" value={formatDateForInput(tenantData.rentalStart)} onChange={handleInputChange} required />
-              </label>
+      
+
+              {/* Form Fields */}
               <label>
-                <input type="checkbox" checked={hasLeaseEnd} onChange={handleLeaseEndToggle} />
+                Tenant Name:
+                <input
+                  type="text"
+                  name="tenant_name"
+                  value={tenantData.tenant_name || ''}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </label>
+
+              <label>
+                Birthday:
+                <input
+                  type="date"
+                  name="birthday"
+                  value={formatDateForInput(tenantData.birthday || '')}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </label>
+
+              <label>
+                Contact No.:
+                <input
+                  type="text"
+                  name="contact_no"
+                  value={tenantData.contact_no || ''}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </label>
+
+              <label>
+                Email Address:
+                <input
+                  type="email"
+                  name="email_address"
+                  value={tenantData.email_address || ''}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </label>
+
+              <label>
+                Guardian Name:
+                <input
+                  type="text"
+                  name="guardian_name"
+                  value={tenantData.guardian_name || ''}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </label>
+
+              <label>
+                Home Address:
+                <textarea
+                  name="home_address"
+                  value={tenantData.home_address || ''}
+                  onChange={handleEditInputChange}
+                  required
+                ></textarea>
+              </label>
+
+              <label>
+                Rental Start Date:
+                <input
+                  type="date"
+                  name="rental_start"
+                  value={formatDateForInput(tenantData.rental_start || '')}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </label>
+
+              {/* Lease End Date Toggle */}
+              <label>
+                <input
+                  type="checkbox"
+                  checked={hasLeaseEnd}
+                  onChange={handleLeaseEndToggle}
+                />
                 Lease End Date (optional)
               </label>
+
               {hasLeaseEnd && (
-                <label>Lease End Date:
-                  <input type="date" name="leaseEnd" value={tenantData.leaseEnd} onChange={handleInputChange} />
+                <label>
+                  Lease End Date:
+                  <input
+                    type="date"
+                    name="leaseEnd"
+                    value={formatDateForInput(tenantData.lease_end || '')}
+                    onChange={handleEditInputChange}
+                  />
                 </label>
               )}
-              <button type="submit">Save Changes</button>
-              <button type="button" onClick={toggleEditModal}>Close</button>
+
+              {/* Form Actions */}
+              <div className="modal-actions">
+                <button type="submit">Save Changes</button>
+                <button type="button" onClick={toggleEditModal}>
+                  Cancel
+                </button>
+              </div>
             </form>
           </div>
         </div>
-      )}
+      ) : null} {/* Removed the <p>Loading tenant data...</p> */}
+
 
       {/* Lease Termination Modal */}
-      {leaseModalEnd && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Terminate Lease</h2>
-            <p>Are you sure you want to terminate the lease for tenant {tenantData.tenant_name}?</p>
-            <button onClick={() => handleTerminateLease(selectedTenant)}>Yes</button>
-            <button onClick={toggleLeaseModal}>No</button>
+        {leaseModalEnd && (
+          <div className="modal-terminate">
+            <div className="modal-content-terminate">
+              <h2>Terminate Lease</h2>
+              <p>Are you sure you want to terminate the lease for tenant <strong>{tenantData.tenant_name}</strong>?</p>
+              <div className="modal-actions">
+                <button className="confirm-btn" onClick={() => handleTerminateLease(selectedTenant)}>Yes</button>
+                <button className="cancel-btn" onClick={toggleLeaseModal}>No</button>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Lease Extension Modal */}
-      {leaseModalExtend && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Are you sure you want to extend the lease of {tenantData.tenant_name || 'this tenant'}?</h2>
-            <label>New Lease End Date:
-              <input
-                type="date"
-                value={newLeaseDate}
-                onChange={(e) => setNewLeaseDate(e.target.value)}
-                required
-              />
-            </label>
-            <button onClick={() => handleExtendLease(selectedTenant)}>Extend</button>
-            <button onClick={toggleLeaseModalExtend}>Cancel</button>
-          </div>
+        {/* Lease Extension Modal */}
+        {leaseModalExtend && (
+          <div className="modal-extend">
+            <div className="modal-content-extend">
+              <h2>Extend Lease</h2>
+              <p>Are you sure you want to extend the lease of <strong>{tenantData.tenant_name || 'this tenant'}</strong>?</p>
+              <label htmlFor="newLeaseDate">
+                New Lease End Date:
+                <input
+                  id="newLeaseDate"
+                  type="date"
+                  value={newLeaseDate}
+                  onChange={(e) => setNewLeaseDate(e.target.value)}
+                  required
+                />
+              </label>
+              <div className="modal-actions">
+                <button className="confirm-btn" onClick={() => handleExtendLease(selectedTenant)}>Extend</button>
+                <button className="cancel-btn" onClick={toggleLeaseModalExtend}>Cancel</button>
+              </div>
+            </div>
         </div>
       )}
 

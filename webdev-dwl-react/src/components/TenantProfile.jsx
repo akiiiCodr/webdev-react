@@ -256,7 +256,52 @@ const TenantProfile = ({ username }) => {
           onClose={() => setShowToast(false)}
         />
       )}
-
+  
+      {/* Modal for Editing outside of the card */}
+      {isEditing && (
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
+            <h2>Edit Profile</h2>
+            <label>Name:</label>
+            <input
+              type="text"
+              name="tenant_name"
+              value={updatedDetails.tenant_name || ""}
+              onChange={handleEditChange}
+              style={styles.input}
+            />
+            <label>Username:</label>
+            <input
+              type="text"
+              name="username"
+              value={updatedDetails.username || ""}
+              onChange={handleEditChange}
+              disabled
+              style={styles.input}
+            />
+            <label>Birthday:</label>
+            <input
+              type="date"
+              name="birthday"
+              value={formatBirthdayToUTC(updatedDetails.birthday) || ""}
+              onChange={handleEditChange}
+              style={styles.input}
+            />
+            <label>Profile Image:</label>
+            <input
+              type="file"
+              onChange={handleImageChange}
+              style={styles.input}
+            />
+            <div>
+              <button onClick={handleSaveChanges} style={styles.saveButton}>Save Changes</button>
+              <button onClick={() => setIsEditing(false)} style={styles.cancelButton}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Tenant Profile Card */}
       <div style={styles.card}>
         <img
           src={`/${avatar}` || "/assets/ike.jpg"} // Show the uploaded image, the updated avatar path, or the default one
@@ -264,50 +309,6 @@ const TenantProfile = ({ username }) => {
           style={styles.image}
         />
         <div style={styles.cardBody}>
-          {/* Modal for Editing */}
-          {isEditing && (
-            <div style={styles.modal}>
-              <div style={styles.modalContent}>
-                <h2>Edit Profile</h2>
-                <label>Name:</label>
-                <input
-                  type="text"
-                  name="tenant_name"
-                  value={updatedDetails.tenant_name || ""}
-                  onChange={handleEditChange}
-                  style={styles.input}
-                />
-                <label>Username:</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={updatedDetails.username || ""}
-                  onChange={handleEditChange}
-                  disabled
-                  style={styles.input}
-                />
-                <label>Birthday:</label>
-                <input
-                  type="date"
-                  name="birthday"
-                  value={formatBirthdayToUTC(updatedDetails.birthday) || ""}
-                  onChange={handleEditChange}
-                  style={styles.input}
-                />
-                <label>Profile Image:</label>
-                <input
-                  type="file"
-                  onChange={handleImageChange}
-                  style={styles.input}
-                />
-                <div>
-                  <button onClick={handleSaveChanges} style={styles.saveButton}>Save Changes</button>
-                  <button onClick={() => setIsEditing(false)} style={styles.cancelButton}>Cancel</button>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Regular View Mode */}
           {!isEditing && (
             <div>
@@ -329,19 +330,23 @@ const TenantProfile = ({ username }) => {
 const styles = {
   card: {
     width: "300px",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    boxShadow: "2px 4px 6px rgba(0, 0, 0, 0.1)",
+    border: "1px solid rgba(255, 255, 255, 0.2)", // Semi-transparent border
+    borderRadius: "10px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     overflow: "hidden",
     fontFamily: "Arial, sans-serif",
     margin: "20px auto",
     textAlign: "center",
-    position: "relative", // Ensure card elements do not overlap modal
+    position: "relative",
+    backgroundColor: "rgba(255, 255, 255, 0.1)", // Semi-transparent background
+    backdropFilter: "blur(10px)", // Frosted glass effect
+    color: "#fff", // Light text for better contrast
+    padding: "20px",
   },
   image: {
     width: "100%",
     height: "auto",
-    margin: "10px 0 0 0",
+    borderRadius: "8px",
   },
   cardBody: {
     padding: "15px",
@@ -349,12 +354,12 @@ const styles = {
   title: {
     margin: "0 0 10px",
     fontSize: "24px",
-    color: "#333",
+    color: "#fff",
   },
   text: {
     margin: "5px 0",
     fontSize: "16px",
-    color: "#666",
+    color: "#ddd", // Light gray text for readability
   },
   logoutButton: {
     marginTop: "15px",
@@ -402,27 +407,40 @@ const styles = {
     marginBottom: "10px",
     fontSize: "16px",
     borderRadius: "5px",
-    border: "1px solid #ccc",
+    background: "rgba(255, 255, 255, 0.2)", // Semi-transparent background
+    color: "#000", // White text color for contrast
+    border: "1px solid rgba(255, 255, 255, 0.3)", // Subtle glassmorphic border
+    backdropFilter: "blur(5px)", // Add a frosted glass blur effect
+    WebkitBackdropFilter: "blur(5px)", // For Safari
+    outline: "none", // Remove default outline
+    transition: "border-color 0.3s ease", // Smooth hover effect
   },
+  
   modal: {
-    position: 'fixed', /* Fixed positioning to overlay on top of the screen */
+    position: 'fixed', /* Modal covers the entire screen */
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', /* Semi-transparent background */
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', /* Semi-transparent black backdrop */
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000, /* Ensures modal is on top of all other elements */
+    zIndex: 1000, /* Ensures the modal is above other elements */
   },
   modalContent: {
-    backgroundColor: 'white',
+    background: 'rgba(255, 255, 255, 0.2)', /* Semi-transparent white background */
     padding: '20px',
-    borderRadius: '8px',
+    borderRadius: '12px', /* Rounded corners */
     width: '400px',
-    zIndex: 1000, /* Makes sure content within the modal is on top of the modal overlay */
-  },
+    zIndex: 1001, /* Ensure modal content is on top of the backdrop */
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)', /* Adds depth with shadow */
+    backdropFilter: 'blur(10px)', /* Frosted glass blur effect */
+    WebkitBackdropFilter: 'blur(10px)', /* For Safari */
+    border: '1px solid rgba(255, 255, 255, 0.3)', /* Subtle border for the glass effect */
+    color: '#fff', /* White text for contrast */
+    textAlign: 'center', /* Center-align the content */
+  },  
 };
 
 export default TenantProfile;
