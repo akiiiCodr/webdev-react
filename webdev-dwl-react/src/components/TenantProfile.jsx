@@ -417,16 +417,28 @@ const styles = {
   },
   
   modal: {
+<<<<<<< HEAD
     position: 'fixed', /* Modal covers the entire screen */
+=======
+    position: 'fixed', /* Change from 'relative' to 'fixed' */
+>>>>>>> e838cfce351d8489189ee6531b92d20dcb04dcee
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
+<<<<<<< HEAD
     backgroundColor: 'rgba(0, 0, 0, 0.5)', /* Semi-transparent black backdrop */
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000, /* Ensures the modal is above other elements */
+=======
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', /* Semi-transparent backdrop */
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000, /* Ensures the modal is on top of all other elements */
+>>>>>>> e838cfce351d8489189ee6531b92d20dcb04dcee
   },
   modalContent: {
     background: 'rgba(255, 255, 255, 0.2)', /* Semi-transparent white background */
@@ -434,6 +446,7 @@ const styles = {
     borderRadius: '12px', /* Rounded corners */
     width: '400px',
     zIndex: 1001, /* Ensure modal content is on top of the backdrop */
+<<<<<<< HEAD
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)', /* Adds depth with shadow */
     backdropFilter: 'blur(10px)', /* Frosted glass blur effect */
     WebkitBackdropFilter: 'blur(10px)', /* For Safari */
@@ -441,6 +454,10 @@ const styles = {
     color: '#fff', /* White text for contrast */
     textAlign: 'center', /* Center-align the content */
   },  
+=======
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', /* Optional: Add shadow for a subtle effect */
+  },
+>>>>>>> e838cfce351d8489189ee6531b92d20dcb04dcee
 };
 
 export default TenantProfile;
