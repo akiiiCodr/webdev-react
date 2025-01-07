@@ -359,9 +359,13 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#333",
+    backgroundColor: "rgba(51, 51, 51, 0.6)", // Semi-transparent black
     color: "#fff",
     padding: "10px 20px",
+    backdropFilter: "blur(10px)", // Frosted glass effect
+    borderRadius: "10px",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)", // Shadow for floating effect
+    transition: "all 0.3s ease",
   },
   navTitle: {
     fontSize: "24px",
@@ -372,7 +376,7 @@ const styles = {
     alignItems: "center",
   },
   navButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "rgba(76, 175, 80, 0.8)", // Semi-transparent green
     color: "#fff",
     border: "none",
     padding: "10px 20px",
@@ -380,7 +384,8 @@ const styles = {
     marginLeft: "10px",
     borderRadius: "5px",
     fontSize: "14px",
-    transition: "background-color 0.3s",
+    transition: "background-color 0.3s, transform 0.3s",
+    backdropFilter: "blur(8px)", // Frosted glass effect
   },
   container: {
     padding: "20px",
@@ -392,35 +397,50 @@ const styles = {
     marginTop: "20px",
   },
   card: {
-    border: "1px solid #ddd",
+    border: "1px solid rgba(255, 255, 255, 0.2)", // Subtle border
     padding: "15px",
-    borderRadius: "5px",
+    borderRadius: "15px",
     textAlign: "center",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
     minHeight: "250px",
-    backgroundColor: "#fff",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent white
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", // Subtle shadow
+    backdropFilter: "blur(12px)", // Frosted glass effect
     transition: "transform 0.3s, box-shadow 0.3s",
   },
   available: {
-    color: "green",
+    color: "#fff", // Text color for better contrast
     fontWeight: "bold",
+    padding: "5px 10px", // Padding for better visibility
+    borderRadius: "10px", // Rounded corners
+    backgroundImage: "linear-gradient(45deg, green, black)", // Gradient fill for the border
+    border: "2px solid transparent", // Transparent border for the gradient effect
+    backgroundClip: "padding-box", // Ensures background doesn't cover the text
+    display: "inline-block", // Ensures the border wraps tightly around the text
   },
   occupied: {
-    color: "red",
+    color: "#fff", // Text color for better contrast
     fontWeight: "bold",
+    padding: "5px 10px", // Padding for better visibility
+    borderRadius: "10px", // Rounded corners
+    backgroundImage: "linear-gradient(45deg, red, black)", // Gradient fill for the border
+    border: "2px solid transparent", // Transparent border for the gradient effect
+    backgroundClip: "padding-box", // Ensures background doesn't cover the text
+    display: "inline-block", // Ensures the border wraps tightly around the text
   },
+  
   removeButton: {
-    backgroundColor: "#f44336",
+    backgroundColor: "rgba(244, 67, 54, 0.8)", // Semi-transparent red
     color: "#fff",
     border: "none",
     cursor: "pointer",
     borderRadius: "5px",
     fontSize: "14px",
     marginRight: "10px",
-    transition: "background-color 0.3s",
+    transition: "background-color 0.3s, transform 0.3s",
+    backdropFilter: "blur(8px)", // Frosted glass effect
   },
   cardButtonsContainer: {
     display: "flex",
@@ -435,17 +455,21 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    zIndex: "2000",
   },
   modal: {
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(255, 255, 255, 0.2)", // Transparent white
     padding: "30px",
-    borderRadius: "5px",
+    borderRadius: "15px",
     width: "500px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)", // Subtle shadow
+    backdropFilter: "blur(12px)", // Frosted glass effect
+    transition: "transform 0.3s, opacity 0.3s",
+    color: "#000", // Black text for readability
   },
   modalLabel: {
     display: "block",
@@ -456,9 +480,11 @@ const styles = {
     width: "100%",
     padding: "12px",
     marginBottom: "15px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
+    borderRadius: "10px",
+    border: "1px solid rgba(255, 255, 255, 0.2)", // Subtle border
+    backgroundColor: "rgba(255, 255, 255, 0.2)", // Transparent input background
     fontSize: "14px",
+    backdropFilter: "blur(6px)", // Frosted glass effect
   },
   modalActions: {
     display: "flex",
@@ -466,5 +492,6 @@ const styles = {
     marginTop: "15px",
   },
 };
+
 
 export default BedAvailability;

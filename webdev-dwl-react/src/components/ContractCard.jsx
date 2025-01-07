@@ -11,7 +11,7 @@ const ContractCard = () => {
     // Fetch contracts
     const fetchContracts = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/contracts'); // Replace with your API endpoint
+        const response = await fetch('http://localhost:5001/api/contracts');
         const data = await response.json();
         setContracts(data);
       } catch (error) {
@@ -22,7 +22,7 @@ const ContractCard = () => {
     // Fetch tenants
     const fetchTenants = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/tenants'); // Replace with your tenants API endpoint
+        const response = await fetch('http://localhost:5001/api/tenants');
         const data = await response.json();
         setTenants(data);
       } catch (error) {
@@ -41,11 +41,10 @@ const ContractCard = () => {
   };
 
   const handleDownload = (contractId) => {
-    // Trigger the download for the specific contract
-    const downloadUrl = `http://localhost:5001/api/downloadContract/${contractId}`; // Modify as per your API
+    const downloadUrl = `http://localhost:5001/api/downloadContract/${contractId}`;
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = `Contract_${contractId}.docx`; // Provide the filename
+    link.download = `Contract_${contractId}.docx`;
     link.click();
   };
 
@@ -77,13 +76,20 @@ const ContractCard = () => {
   );
 };
 
-// Styles
+// Glassmorphic Styles
+
+
 const containerStyle = {
   margin: '20px',
   padding: '20px',
-  backgroundColor: '#f9f9f9',
-  borderRadius: '5px',
+  background: 'rgba(255, 255, 255, 0.1)', // Semi-transparent background
+  backdropFilter: 'blur(10px)', // Apply the blur effect for the glassmorphic look
+  borderRadius: '15px', // Rounded corners
+  border: '1px solid rgba(255, 255, 255, 0.2)', // Light border for definition
+  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Soft shadow for depth
+  color: '#fff', // Text color to contrast with background
 };
+
 
 const cardListStyle = {
   display: 'flex',
@@ -91,13 +97,6 @@ const cardListStyle = {
   gap: '15px',
 };
 
-const contractCardStyle = {
-  backgroundColor: '#fff',
-  padding: '15px',
-  border: '1px solid #ddd',
-  borderRadius: '5px',
-  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-};
 
 const buttonGroupStyle = {
   marginTop: '10px',
@@ -113,6 +112,19 @@ const iconButtonStyle = {
   cursor: 'pointer',
   display: 'inline-flex',
   alignItems: 'center',
+};
+
+
+const contractCardStyle = {
+  background: 'rgba(255, 255, 255, 0.1)',
+  backdropFilter: 'blur(10px)',
+  borderRadius: '15px',
+  padding: '15px',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+  color: '#000',
+  transition: 'transform 0.3s, box-shadow 0.3s',
+  zIndex: 1, // Set the card's z-index lower than the modal
 };
 
 export default ContractCard;

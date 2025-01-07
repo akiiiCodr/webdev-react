@@ -351,45 +351,8 @@ const RentalContractApp = () => {
   );
 };
 
-// Styles
-const navbarStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: '10px',
-  backgroundColor: '#f8f9fa',
-  borderBottom: '1px solid #ddd',
-};
 
-const navbarButtonStyle = {
-  padding: '10px 20px',
-  backgroundColor: '#007bff',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-};
-
-const cardStyle = {
-  margin: '20px auto',
-  padding: '20px',
-  border: '1px solid #ddd',
-  borderRadius: '5px',
-  width: '90%',
-  maxWidth: '600px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-};
-
-const iconButtonStyle = {
-  margin: '0 10px',
-  padding: '10px',
-  backgroundColor: '#007bff',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '50%',
-  cursor: 'pointer',
-};
-
+// Glassmorphic Styles
 const modalOverlayStyle = {
   position: 'fixed',
   top: 0,
@@ -400,16 +363,20 @@ const modalOverlayStyle = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  zIndex: 9999, // Ensure the modal overlay is above all other elements
 };
 
 const modalContainerStyle = {
-  backgroundColor: '#fff',
-  padding: '20px',
-  borderRadius: '5px',
+  background: 'rgba(255, 255, 255, 0.1)',
+  backdropFilter: 'blur(10px)',
+  borderRadius: '15px',
   width: '90%',
   maxWidth: '500px',
-  position: 'relative', // Ensure the close button is properly positioned
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  padding: '20px',
+  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+  position: 'relative',
+  color: '#fff',
+  zIndex: 10000, // Ensure the modal container is on top of the overlay
 };
 
 const closeButtonStyle = {
@@ -419,8 +386,25 @@ const closeButtonStyle = {
   backgroundColor: 'transparent',
   border: 'none',
   fontSize: '24px',
-  color: '#333',
+  color: '#fff',
   cursor: 'pointer',
+};
+
+const navbarStyle = {
+  display: 'flex',
+  justifyContent: 'right',
+  alignItems: 'center',
+  padding: '10px',
+};
+
+const navbarButtonStyle = {
+  padding: '10px 20px',
+  backgroundColor: 'rgba(0, 123, 255, 0.7)', // Semi-transparent background
+  color: '#fff',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  backdropFilter: 'blur(5px)',
 };
 
 const formGroupStyle = {
@@ -432,8 +416,56 @@ const inputStyle = {
   padding: '10px',
   fontSize: '16px',
   marginTop: '5px',
-  border: '1px solid #ccc',
+  border: '1px solid rgba(255, 255, 255, 0.3)', // Light border for input
   borderRadius: '5px',
+  background: 'rgba(255, 255, 255, 0.1)', // Light transparent background
+  color: '#fff',
+  backdropFilter: 'blur(5px)',
+};
+
+const cardListStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '15px',
+};
+
+const contractCardStyle = {
+  background: 'rgba(255, 255, 255, 0.1)', // Semi-transparent white background
+  backdropFilter: 'blur(10px)', // Apply blur effect for glass effect
+  borderRadius: '15px',
+  padding: '15px',
+  border: '1px solid rgba(255, 255, 255, 0.2)', // Light border for definition
+  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+  color: '#fff', // Text color to contrast with background
+  transition: 'transform 0.3s, box-shadow 0.3s', // Smooth transition for hover effect
+};
+
+const iconButtonStyle = {
+  margin: '0 10px',
+  padding: '10px',
+  backgroundColor: 'rgba(0, 123, 255, 0.7)', // Semi-transparent background for buttons
+  color: '#fff',
+  border: 'none',
+  borderRadius: '50%',
+  cursor: 'pointer',
+  backdropFilter: 'blur(5px)',
+  display: 'inline-flex',
+  alignItems: 'center',
+};
+
+// Styles for the generated contract button
+const buttonGroupStyle = {
+  marginTop: '10px',
+};
+
+const contractCardButtonStyle = {
+  padding: '10px 15px',
+  backgroundColor: 'rgba(0, 123, 255, 0.7)', // Semi-transparent
+  color: '#fff',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  backdropFilter: 'blur(5px)',
 };
 
 export default RentalContractApp;

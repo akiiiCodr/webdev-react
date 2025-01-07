@@ -3,20 +3,25 @@
   padding: 0;
   font-family: Arial, sans-serif;
   box-sizing: border-box;
-  
 }
 
 
 .container-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Lower z-index to ensure it stays below the modal */
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-image: radial-gradient(at 15.72826799215623% 25.493277896613954%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 1) 0%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 0) 100%), radial-gradient(at 78.97276061616753% 1.33667754125244%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 1) 0%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 0) 100%), radial-gradient(at 75.84093081625203% 16.95725201146503%, hsla(179.04761904761907, 74.11764705882354%, 50%, 1) 0%, hsla(179.04761904761907, 74.11764705882354%, 50%, 0) 100%), radial-gradient(at 80.23228481234055% 24.400593679959282%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 1) 0%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 0) 100%), radial-gradient(at 73.75880237983483% 51.78228476087079%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 1) 0%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 0) 100%), radial-gradient(at 94.77399627513148% 69.77236721923126%, hsla(179.04761904761907, 74.11764705882354%, 50%, 1) 0%, hsla(179.04761904761907, 74.11764705882354%, 50%, 0) 100%), radial-gradient(at 42.35253303275681% 25.536919312454497%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 1) 0%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 0) 100%), radial-gradient(at 78.66055503639056% 36.38267062463774%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 1) 0%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 0) 100%), radial-gradient(at 14.76714630360425% 34.9344190584669%, hsla(179.04761904761907, 74.11764705882354%, 50%, 1) 0%, hsla(179.04761904761907, 74.11764705882354%, 50%, 0) 100%), radial-gradient(at 50.15166727583515% 58.37488289197592%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 1) 0%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 0) 100%), radial-gradient(at 16.70298770667533% 71.39009102263184%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 1) 0%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 0) 100%);
-  border-radius: 8px; /* Adds rounded corners */
+  background-image: url(./assets/header.svg);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
-  color: white; /* Ensures text color is visible against the gradient */  
+  color: white;
 }
+
+
+
+
 
 .menu-icon {
   font-size: 1.5rem;
@@ -184,82 +189,6 @@
 }
 
 
-.footer {
-  background-color: #333;
-  color: #fff;
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.footer-content {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 1200px;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.footer-section {
-  flex: 1;
-  min-width: 200px;
-}
-
-.footer-section h3 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  color: #f1f1f1;
-}
-
-.footer-section ul {
-  list-style: none;
-}
-
-.footer-section ul li {
-  margin-bottom: 0.5rem;
-}
-
-.footer-section ul li a {
-  text-decoration: none;
-  color: #ccc;
-  font-size: 0.9rem;
-}
-
-.footer-section ul li a:hover {
-  color: #f1f1f1;
-}
-
-.social-icons {
-  display: flex;
-  gap: 0.8rem;
-}
-
-.social-icons a {
-  display: inline-block;
-  width: 35px;
-  height: 35px;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  line-height: 35px;
-  border-radius: 50%;
-  text-decoration: none;
-  font-size: 1.2rem;
-}
-
-.social-icons a:hover {
-  background-color: #777;
-}
-
-.footer-bottom {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #bbb;
-}
 
 
 /* USERSCREEN */
@@ -309,73 +238,98 @@
       }
       
       .menu-bar {
-          position: relative;
-          display: inline-block;
+        position: relative;
+        display: inline-block;
       }
       
       .menu-button {
-          padding: 10px 20px;
-          background-color: #164154;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
+        padding: 10px 20px;
+        background-color: rgba(22, 65, 84, 0.8); /* Semi-transparent background */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        backdrop-filter: blur(8px); /* Frosted glass effect */
+        -webkit-backdrop-filter: blur(8px); /* For Safari */
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+      
+      .menu-button:hover {
+        background-color: rgba(22, 65, 84, 1); /* Fully opaque on hover */
+        transform: scale(1.05); /* Slight zoom effect */
       }
       
       .dropdown {
         display: none; /* Hidden by default */
-        background-color: #f1f1f1;
+        background: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+        backdrop-filter: blur(10px); /* Frosted glass effect */
+        -webkit-backdrop-filter: blur(10px); /* For Safari */
         position: absolute;
         min-width: 160px;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Soft shadow */
         z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border for glass effect */
       }
       
       .dropdown.active {
         display: block; /* Show the dropdown when the 'active' class is applied */
       }
-
+      
       /* Remove bullets from the list */
       .dropdown ul {
         list-style-type: none;
         padding: 0;
         margin: 0;
       }
-
+      
       /* Style the list items */
       .dropdown li {
         padding: 10px;
       }
-
+      
       /* Style the anchor tags inside the list items */
       .dropdown li a {
         text-decoration: none;
         color: black;
         display: block;
         padding: 8px;
+        background: rgba(255, 255, 255, 0.3); /* Slightly transparent background */
+        border-radius: 5px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
       }
-
-      /* Hover effect for anchor tags */
+      
       .dropdown li a:hover {
-        background-color: #ddd;
+        background-color: rgba(255, 255, 255, 0.6); /* Brighter on hover */
+        transform: scale(1.05); /* Slight zoom effect */
       }
-
       
-        
-      
+      /* Menu items */
       .menu-item {
-          display: block;
-          padding: 10px 20px;
-          color: black;
-          text-decoration: none;
+        display: block;
+        padding: 10px 20px;
+        color: black;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        background: rgba(255, 255, 255, 0.2); /* Glass effect */
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 5px;
       }
       
       .menu-item:hover {
-          background-color: #f1f1f1; /* Change color on hover */
-      }    
+        background-color: rgba(255, 255, 255, 0.6); /* Brighter hover effect */
+      }
+        
+
+
+
 .login-section {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #fff;
 }
 
 .login-box {
@@ -392,7 +346,7 @@
 }
 
 .login-box p {
-  color: #666;
+  color: #ffffff;
   margin-bottom: 20px;
 }
 
@@ -1018,8 +972,8 @@ button .availability-text, button .date-text {
 /* Left Sidebar */
 .left-sidebar {
   width: 350px; /* Adjust width based on sidebar size */
-  background-color: #f4f4f4;
   padding: 10px;
+  background-image: url(./assets/gradient-image.svg);
   height: 80vh; /* Full height of the viewport */
   overflow-y: auto; /* Allows scrolling if content overflows */
   float: left; /* Makes the sidebar float to the left */
@@ -1029,23 +983,35 @@ button .availability-text, button .date-text {
 .rectangle {
   width: 100%; /* Full width of the sidebar */
   height: 60px; /* Rectangle height */
-  background-color: #ddd;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+  backdrop-filter: blur(10px); /* Blur the background behind the element */
   margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: Arial, sans-serif;
   font-size: 14px;
-  color: #333;
-  border-radius: 4px;
+  color: #fff;
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Light border for the glass effect */
   cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+  transition: all 0.3s ease; /* Smooth transition for hover effect */
 }
+
+.rectangle:hover {
+  background: rgba(255, 255, 255, 0.15); /* Increase opacity on hover */
+  backdrop-filter: blur(15px); /* Increase blur effect on hover */
+  box-shadow: 0 0 15px 5px rgba(255, 165, 0, 0.8); /* Yellow-orange box shadow around the rectangle */
+}
+
+
 
 /* Content Viewer beside Sidebar */
 .content-viewer {
   margin-left: 210px; /* Space between sidebar and content viewer */
   padding: 20px;
-  background-color: #ffffff;
+  background-image: url(./assets/gradient-image.svg);
   height: 80vh; /* Same height as the sidebar */
   overflow-y: auto; /* Allows scrolling if content is too long */
   display: block; /* Ensures it's positioned beside the sidebar */
@@ -1054,7 +1020,7 @@ button .availability-text, button .date-text {
 /* Content Styling */
 .viewer-content {
   font-family: Arial, sans-serif;
-  color: #333;
+  color: #fff;
   font-size: 16px;
   display: none; /* Hide by default */
 }
@@ -1437,7 +1403,7 @@ button .availability-text, button .date-text {
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
+  background-image: url(./assets/gradient-image.svg);
 }
 
 .contact-container h1 {
@@ -1611,9 +1577,9 @@ button .availability-text, button .date-text {
   z-index: 1000;
 }
 
-/* Modal container */
+/* Glassmorphic Modal container */
 .add_modal, .edit_modal {
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
   padding: 20px;
   border-radius: 10px;
   max-width: 600px;
@@ -1621,29 +1587,18 @@ button .availability-text, button .date-text {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
   transition: transform 0.3s ease-in-out, opacity 0.3s ease;
   position: relative;
 }
 
-/* Modal backdrop */
-.add_modal::before, .edit_modal::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  z-index: -1; /* Behind the modal content */
-  transition: background-color 0.3s ease;
-}
 
 /* Modal content */
 .add_modal h2, .edit_modal h2 {
   font-size: 1.5rem;
   margin-bottom: 20px;
-  color: #333;
+  color: #fff; /* White text */
   font-weight: bold;
   text-align: center;
   letter-spacing: 1px;
@@ -1656,10 +1611,11 @@ button .availability-text, button .date-text {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Light border */
   border-radius: 5px;
   font-size: 1rem;
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.1); /* Transparent background */
+  color: #fff; /* White text */
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
@@ -1667,7 +1623,7 @@ button .availability-text, button .date-text {
 .add_modal textarea:focus, .edit_modal textarea:focus,
 .add_modal select:focus, .edit_modal select:focus {
   border-color: #007BFF;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.3); /* Slightly more opaque on focus */
   outline: none;
 }
 
@@ -1682,6 +1638,7 @@ button .availability-text, button .date-text {
   font-size: 1rem;
   margin-top: 10px;
   transition: background-color 0.3s ease;
+  backdrop-filter: blur(5px); /* Slight blur for buttons */
 }
 
 .add_modal button:hover, .edit_modal button:hover {
@@ -1712,7 +1669,7 @@ button .availability-text, button .date-text {
   background: transparent;
   border: none;
   font-size: 1.5rem;
-  color: #333;
+  color: #fff; /* White color for close button */
   cursor: pointer;
 }
 
@@ -1720,15 +1677,14 @@ button .availability-text, button .date-text {
   color: #f44336;
 }
 
-
-/* Scrollable content */
+/* Modal content with overflow */
 .modal-content {
-  max-height: 80vh; /* Limit the content height */
-  overflow-y: auto; /* Allow scrolling if content overflows */
-  padding-right: 10px; /* Add padding to avoid content being hidden by scrollbar */
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
-/* For buttons in the modal */
+/* Button styles in the modal */
 .modal-actions button {
   margin-right: 10px;
 }
@@ -1747,7 +1703,7 @@ button .availability-text, button .date-text {
   width: 60%;
   padding: 8px;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Light border */
   border-radius: 4px;
 }
 
@@ -1767,6 +1723,7 @@ button .availability-text, button .date-text {
 
 
 
+
 /* TENANTS CARD */
 
 .tenants {
@@ -1782,29 +1739,32 @@ button .availability-text, button .date-text {
 }
 
 .tenants li {
-  background-color: #ffffff;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+  backdrop-filter: blur(10px); /* Apply blur effect */
+  border-radius: 15px; /* Rounded corners */
   margin-bottom: 50px;
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
   transition: transform 0.5s, box-shadow 0.5s;
+  color: #fff; /* Set text color to white for contrast */
 }
 
 .tenants li:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+  transform: translateY(-5px); /* Slightly raise the card on hover */
 }
+
 
 .tenants h2 {
   margin: 0 0 10px;
   font-size: 1.5rem;
-  color: #333;
+  color: hsla(0, 0%, 100%, 0.922);
 }
 
 .tenants p {
   margin: 5px 0;
   font-size: 1rem;
-  color: #555;
+  color: hsla(0, 0%, 100%, 0.922);
 }
 
 .tenants p > strong {
@@ -1828,6 +1788,112 @@ button .availability-text, button .date-text {
   pointer-events: none; /* Prevents clicks */
   opacity: 0.5; /* Makes it look disabled */
 }
+
+
+/* TENANT MENU - LEASE and EXTEND */
+
+/* Glassmorphic Effect for Modals */
+.modal-terminate, .modal-extend {
+  background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Deeper shadow for better glass effect */
+  backdrop-filter: blur(12px); /* Frosted glass effect */
+  -webkit-backdrop-filter: blur(12px); /* For Safari */
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease;
+  position: relative;
+  color: #fff; /* White text for contrast */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border for glass effect */
+}
+
+/* Glassmorphic Effect for Modal Content */
+.modal-content-terminate, .modal-content-extend {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.25); /* Slightly more transparent background */
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for content */
+  backdrop-filter: blur(10px); /* Slightly less blur for content */
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  color: #000; /* Black text for better readability */
+  overflow-y: auto;
+  max-height: 80vh;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Content border for separation */
+}
+
+/* Modal Titles */
+.modal-terminate h2, .modal-extend h2 {
+  font-size: 1.75rem;
+  margin-bottom: 20px;
+  color: #000; /* Black text for the title */
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* Modal Buttons Container */
+.modal-actions {
+  display: flex;
+  justify-content: space-between; /* Even spacing between buttons */
+  gap: 20px; /* Add space between buttons */
+  margin-top: 20px;
+}
+
+/* Modal Buttons */
+.modal-terminate button, .modal-extend button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-terminate button:hover, .modal-extend button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* Cancel Button */
+.modal-terminate .cancel-btn, .modal-extend .cancel-btn {
+  background-color: #f44336;
+}
+
+.modal-terminate .cancel-btn:hover, .modal-extend .cancel-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Close Button */
+.modal-terminate .close-btn, .modal-extend .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-terminate .close-btn:hover, .modal-extend .close-btn:hover {
+  color: #f44336;
+  transform: rotate(90deg); /* Rotate on hover for effect */
+}
+
+/* Label and Input Styles */
+.modal-content-extend label {
+  display: block;
+  margin: 15px 0 5px;
+  font-size: 1rem;
+  color: #000; /* Black for contrast */
+}
+
 
 
 
@@ -1855,7 +1921,6 @@ button .availability-text, button .date-text {
 .content-viewer-tenant {
   margin-left: 210px; /* Space between sidebar and content viewer */
   padding: 20px;
-  background-color: #ffffff;
   height: 80vh; /* Same height as the sidebar */
   overflow-y: auto; /* Allows scrolling if content is too long */
   display: block; /* Ensures it's positioned beside the sidebar */
@@ -1898,7 +1963,6 @@ button .availability-text, button .date-text {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #4CAF50;
   padding: 10px 20px;
   color: white;
   font-size: 18px;
@@ -1940,7 +2004,7 @@ form {
 
 form label {
   font-size: 16px;
-  color: #333;
+  color: #fff;
 }
 
 form select,
@@ -1994,6 +2058,27 @@ h4 {
   }
 }
 
+@keyframes scroll {
+  0% {
+    transform: translateX(0); /* Start at the leftmost position */
+  }
+  100% {
+    transform: translateX(-100%); /* Move the container to the left, sliding it all the way */
+  }
+}
+
+.room-list-wrapper {
+  display: flex;
+  overflow-x: hidden; /* Hide overflow */
+}
+
+.room-list {
+  display: flex;
+  flex-direction: row;
+  animation: scroll 30s linear infinite; /* Apply the smooth scroll */
+}
+
+
 .room-card {
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -2026,3 +2111,109 @@ h4 {
     opacity: 0;
   }
 }
+
+
+/* Apply styles to the scrollbar */
+.content-container::-webkit-scrollbar {
+  height: 10px; /* Height of the horizontal scrollbar */
+}
+
+.content-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5); /* Color of the scroll thumb */
+  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+}
+
+.content-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); /* Color of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the scrollbar track */
+}
+
+.content-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.8); /* Darker thumb when hovered */
+}
+
+
+
+/* FOOTER */
+
+
+.footer-content {
+  background-image: url(./assets/header.svg);
+  color: #000000;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  text-align: center;
+}
+
+.footer-section {
+  margin-bottom: 20px;
+}
+
+.footer-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #000000; /* Green color for section titles */
+}
+
+.footer-section p {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #000000;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+
+.footer-section ul li a {
+  text-decoration: none;
+  color: #000000;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+  color: #4CAF50; /* Change link color on hover */
+}
+
+.social-icons a {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: #ddd;
+  color: #333;
+  border-radius: 50%;
+  margin: 0 10px;
+  font-size: 16px;
+  text-align: center;
+  line-height: 30px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.social-icons a:hover {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.footer-bottom {
+  font-size: 0.875rem;
+  color: #000000;
+  margin-top: 20px;
+}
+
+.footer-bottom a {
+  text-decoration: none;
+  color: #bbb;
+}
+
+.footer-bottom a:hover {
+  color: #fff;
+}
+

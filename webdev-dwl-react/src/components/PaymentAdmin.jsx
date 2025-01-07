@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ToastNotification from './ToastNotification.jsx';  // Assuming this is the correct path
+import ToastNotification from './ToastNotification.jsx';
 
 const PaymentAdmin = (props) => {
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -15,9 +15,14 @@ const PaymentAdmin = (props) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('success');  // success, error, info, etc.
+  const [toastType, setToastType] = useState('success');
 
   useEffect(() => {
+    // Set background image for the body
+    document.body.style.backgroundImage = "url('https://path-to-your-image.jpg')";
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center center";
+
     const fetchTenants = async () => {
       try {
         const response = await axios.get('http://localhost:5001/api/tenants');
@@ -57,12 +62,10 @@ const PaymentAdmin = (props) => {
 
   const filteredPayments = payments.filter((payment) => {
     const tenantMatch = tenantMap[payment.tenant_id];
-    
-    // Check if the payment is within the date range if the filter is active
     const paymentDate = new Date(payment.payment_date);
     const startDateValid = startDate ? paymentDate >= new Date(startDate) : true;
     const endDateValid = endDate ? paymentDate <= new Date(endDate) : true;
-  
+
     return tenantMatch && startDateValid && endDateValid;
   });
 
@@ -82,16 +85,16 @@ const PaymentAdmin = (props) => {
   const handleAddPayment = async () => {
     try {
       const formData = new FormData();
-      formData.append('tenant_id', tenantId); // Ensure field name matches backend
-      formData.append('payment_amount', paymentAmount); // Ensure field name matches backend
-      formData.append('payment_date', paymentDate); // Ensure field name matches backend
-  
+      formData.append('tenant_id', tenantId);
+      formData.append('payment_amount', paymentAmount);
+      formData.append('payment_date', paymentDate);
+
       if (proofOfPayment) {
-        formData.append('proof_of_payment', proofOfPayment); // Ensure field name matches backend
+        formData.append('proof_of_payment', proofOfPayment);
       }
-  
+
       const response = await axios.post('http://localhost:5001/api/payments', formData);
-      if (response.status === 201) { // 201 indicates successful resource creation
+      if (response.status === 201) {
         setPayments((prev) => [...prev, response.data]);
         setIsModalOpen(false);
         setToastMessage('Payment added successfully.');
@@ -238,20 +241,22 @@ const PaymentAdmin = (props) => {
         </div>
       )}
 
-<style>
+      <style>
         {`
           html, body {
             height: 100%;
             margin: 0;
+            font-family: Arial, sans-serif;
           }
 
           .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #333;
+            background-color: rgba(51, 51, 51, 0.8);
             padding: 10px 20px;
             color: white;
+            backdrop-filter: blur(10px);
           }
 
           .navbar-title {
@@ -319,12 +324,13 @@ const PaymentAdmin = (props) => {
           }
 
           .payment-card {
-            background-color: #f9f9f9;
+            background-color: rgba(255, 255, 255, 0.2);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 15px;
             width: 250px;
             position: relative;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
           }
 
           .paid-label {
