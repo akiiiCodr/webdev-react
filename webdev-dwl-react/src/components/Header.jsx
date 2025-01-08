@@ -1,83 +1,89 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserGraduate, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios for HTTP requests
+import UserInfo from "./UserInfo";
+import Logout from "./Logout";
+import Register from "./Register"; // Import Register component
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); // To toggle the modal visibility
-  const modalRef = useRef(null); // Reference to the modal element
-  const navigate = useNavigate(); // Get the navigate function
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Add this state
+  const [tenantStatus, setTenantStatus] = useState(null); // Track tenant status (active/inactive)
+  const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  // Toggle the navigation menu
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
-  // Open the modal when the Sign Up button is clicked
+  // Open the sign-up page (navigate to /register)
   const handleSignUpClick = () => {
-    setShowModal(true);
+    navigate("/register");
   };
 
-  // Handle role selection and redirect to the signup page with the selected role
-  const handleRoleSelect = (role) => {
-    setShowModal(false); // Close the modal
-    navigate(`/signup?role=${role}`);
-  };
-
-  // Close the modal if user clicks outside of it
-  const handleClickOutside = (event) => {
-    if (modalRef.current && !modalRef.current.contains(event.target)) {
-      setShowModal(false); // Close the modal if click is outside
-    }
-  };
-
-  // Add the event listener for outside clicks when the modal is open
   useEffect(() => {
-    if (showModal) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
+    const checkAuthenticationAndTenantStatus = async () => {
+      try {
+        // Check if the user is authenticated
+        const authResponse = await axios.get("http://localhost:5001/api/current-user", {
+          withCredentials: true,
+        });
 
-    // Cleanup the event listener when the component unmounts
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+        if (authResponse.data && authResponse.data.user) {
+          setIsAuthenticated(true); // User is authenticated
+          
+          // Fetch tenant details if user is authenticated
+          const tenantResponse = await axios.get(`http://localhost:5001/api/tenants`);
+          if (tenantResponse.data && tenantResponse.data.tenant && tenantResponse.data.tenant["0"]) {
+            const tenantData = tenantResponse.data.tenant["0"];
+            if (tenantData.active === "1") {
+              setTenantStatus("active");
+            } else {
+              setTenantStatus("inactive");
+            }
+          } else {
+            setTenantStatus("inactive"); // No tenant found
+          }
+        } else {
+          setIsAuthenticated(false); // User is not authenticated
+          setTenantStatus("inactive"); // If user isn't authenticated, set tenant as inactive
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        setIsAuthenticated(false);
+        setTenantStatus("inactive");
+      }
     };
-  }, [showModal]);
+  
+    checkAuthenticationAndTenantStatus();
+  }, []);  // Empty dependency array so this only runs once after the component mounts
 
   return (
     <div className="container-nav">
-      {/* Left Side: Menu Icon */}
+      {/* Left Side: Navigation Menu */}
       <div className="menu-bar">
         <button
           className="menu-button"
           onClick={toggleMenu}
           aria-label="Toggle navigation menu"
         >
-          &#9776; {/* Menu icon */}
+          &#9776;
         </button>
-
-        {/* Dropdown Content */}
-        <div className={`dropdown ${isMenuOpen ? "active" : ""}`} id="dropdownMenu">
+        <div className={`dropdown ${isMenuOpen ? "active" : ""}`}>
           <ul>
             <li>
               <Link to="/" className="menu-item">
                 Home
               </Link>
             </li>
-
             <li>
-              <Link to="/reserve" className="menu-item">
-                Reserve
+              <Link to="/book-a-room" className="menu-item">
+                Book a Room
               </Link>
             </li>
-
             <li>
-              <Link to="/" className="menu-item">
+              <Link to="/manage" className="menu-item">
                 Manage
               </Link>
             </li>
-
             <li>
               <Link to="/contact-us" className="menu-item">
                 Contact Us
@@ -90,7 +96,7 @@ function Header() {
       {/* Center: Title and Subtitle */}
       <div className="title-section">
         <h1>
-          <Link to="/">Dwell-o</Link> {/* Using Link for navigation */}
+          <Link to="/">Dwell-o</Link>
         </h1>
         <p>A Better Way to Dwell</p>
       </div>
@@ -98,62 +104,43 @@ function Header() {
       {/* Right Side: Actions */}
       <div className="right-header">
         <div className="header-actions">
-          {/* Bed Availability as a Button */}
+          {/* Bed Availability Button */}
           <button className="availability-button">
             <i className="fa fa-user"></i>
             <div className="availability-text">2 Bed Availability</div>
           </button>
 
-          {/* Calendar as a Button */}
+          {/* Calendar Button */}
           <button className="calendar-button">
             <div className="calendar-icon">&#128197;</div>
             <div className="date-text">
-              <span id="current-date">
-                {new Date().toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
+              {new Date().toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
             </div>
           </button>
         </div>
-      </div>
 
-      {/* Login & Sign Up */}
-      <div className="auth-buttons">
-        <button
-          className="sign-up"
-          onClick={handleSignUpClick} // Open the modal on click
-        >
-          Sign Up
-        </button>
-        <Link to="/login" className="login">
-          Log In
-        </Link>
-      </div>
-
-      {/* Modal for Role Selection */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-card" ref={modalRef}>
-            <h3>Select your Role</h3>
-            <div className="modal-buttons">
-              {/* Student Button with Icon */}
-              <button onClick={() => handleRoleSelect("Student")} className="modal-button">
-                <FontAwesomeIcon icon={faUserGraduate} size="3x" /> {/* Student Icon */}
-                <span>Student</span>
-              </button>
-
-              {/* Admin Button with Icon */}
-              <button onClick={() => handleRoleSelect("Admin")} className="modal-button">
-                <FontAwesomeIcon icon={faChalkboardTeacher} size="3x" /> {/* Admin Icon */}
-                <span>Admin</span>
-              </button>
-            </div>
+        {/* Show UserInfo and Logout if authenticated and active */}
+        {isAuthenticated && tenantStatus === "active" ? (
+          <div className="auth-logged-in">
+            <UserInfo />
+            <Logout />
           </div>
-        </div>
-      )}
+        ) : (
+          // Show Login & Sign Up buttons if not authenticated or inactive
+          <div className="auth-buttons">
+            <Link to="/login" className="login">
+              Log In
+            </Link>
+            <button className="sign-up" onClick={handleSignUpClick}>
+              Sign Up
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

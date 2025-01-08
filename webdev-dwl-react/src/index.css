@@ -3,17 +3,25 @@
   padding: 0;
   font-family: Arial, sans-serif;
   box-sizing: border-box;
-
 }
 
 
 .container-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Lower z-index to ensure it stays below the modal */
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 2rem;
-  background-color: hsl(0, 100%, 50%); /* Similar to your image background */
+  align-items: center;
+  padding: 10px 20px;
+  background-image: url(./assets/header.svg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+  color: white;
 }
+
+
+
+
 
 .menu-icon {
   font-size: 1.5rem;
@@ -21,7 +29,7 @@
 }
 
 .login{
-  background: white;
+  background: rgb(255, 255, 255);
   padding: 8px 12px;
   display: flex;
   align-items: center;
@@ -32,7 +40,7 @@
 }
 
 .sign-up{
-  background: white;
+  background: rgb(255, 255, 255);
   padding: 8px 12px;
   display: flex;
   align-items: center;
@@ -53,6 +61,7 @@
 .title-section h1 {
   font-size: 1.5rem;
   font-weight: bold;
+  
 }
 
 .title-section p {
@@ -98,7 +107,7 @@
 
 .reviews-container {
   padding: 2rem;
-  background-color: #f1f3f5;
+  background-color: #ffffff;
 }
 
 .image-gallery {
@@ -165,7 +174,7 @@
 
 .review-content p {
   color: #666;
-}
+}z
 
 .message-icon {
   position: fixed;
@@ -180,82 +189,6 @@
 }
 
 
-.footer {
-  background-color: #333;
-  color: #fff;
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.footer-content {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 1200px;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.footer-section {
-  flex: 1;
-  min-width: 200px;
-}
-
-.footer-section h3 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  color: #f1f1f1;
-}
-
-.footer-section ul {
-  list-style: none;
-}
-
-.footer-section ul li {
-  margin-bottom: 0.5rem;
-}
-
-.footer-section ul li a {
-  text-decoration: none;
-  color: #ccc;
-  font-size: 0.9rem;
-}
-
-.footer-section ul li a:hover {
-  color: #f1f1f1;
-}
-
-.social-icons {
-  display: flex;
-  gap: 0.8rem;
-}
-
-.social-icons a {
-  display: inline-block;
-  width: 35px;
-  height: 35px;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  line-height: 35px;
-  border-radius: 50%;
-  text-decoration: none;
-  font-size: 1.2rem;
-}
-
-.social-icons a:hover {
-  background-color: #777;
-}
-
-.footer-bottom {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #bbb;
-}
 
 
 /* USERSCREEN */
@@ -301,76 +234,102 @@
 
         body {
           font-family: Arial, sans-serif;
+          
       }
       
       .menu-bar {
-          position: relative;
-          display: inline-block;
+        position: relative;
+        display: inline-block;
       }
       
       .menu-button {
-          padding: 10px 20px;
-          background-color: #007BFF;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
+        padding: 10px 20px;
+        background-color: rgba(22, 65, 84, 0.8); /* Semi-transparent background */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        backdrop-filter: blur(8px); /* Frosted glass effect */
+        -webkit-backdrop-filter: blur(8px); /* For Safari */
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+      
+      .menu-button:hover {
+        background-color: rgba(22, 65, 84, 1); /* Fully opaque on hover */
+        transform: scale(1.05); /* Slight zoom effect */
       }
       
       .dropdown {
         display: none; /* Hidden by default */
-        background-color: #f1f1f1;
+        background: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+        backdrop-filter: blur(10px); /* Frosted glass effect */
+        -webkit-backdrop-filter: blur(10px); /* For Safari */
         position: absolute;
         min-width: 160px;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Soft shadow */
         z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border for glass effect */
       }
       
       .dropdown.active {
         display: block; /* Show the dropdown when the 'active' class is applied */
       }
-
+      
       /* Remove bullets from the list */
       .dropdown ul {
         list-style-type: none;
         padding: 0;
         margin: 0;
       }
-
+      
       /* Style the list items */
       .dropdown li {
         padding: 10px;
       }
-
+      
       /* Style the anchor tags inside the list items */
       .dropdown li a {
         text-decoration: none;
         color: black;
         display: block;
         padding: 8px;
+        background: rgba(255, 255, 255, 0.3); /* Slightly transparent background */
+        border-radius: 5px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
       }
-
-      /* Hover effect for anchor tags */
+      
       .dropdown li a:hover {
-        background-color: #ddd;
+        background-color: rgba(255, 255, 255, 0.6); /* Brighter on hover */
+        transform: scale(1.05); /* Slight zoom effect */
       }
-
       
-        
-      
+      /* Menu items */
       .menu-item {
-          display: block;
-          padding: 10px 20px;
-          color: black;
-          text-decoration: none;
+        display: block;
+        padding: 10px 20px;
+        color: black;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        background: rgba(255, 255, 255, 0.2); /* Glass effect */
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 5px;
       }
       
       .menu-item:hover {
-          background-color: #f1f1f1; /* Change color on hover */
-      }    
+        background-color: rgba(255, 255, 255, 0.6); /* Brighter hover effect */
+      }
+        
+
+
+
 .login-section {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #fff;
 }
 
 .login-box {
@@ -387,7 +346,7 @@
 }
 
 .login-box p {
-  color: #666;
+  color: #ffffff;
   margin-bottom: 20px;
 }
 
@@ -491,6 +450,7 @@ header img {
   display: flex;
   justify-content: space-between;
   gap: 40px;
+  
 }
 
 .left-form, .right-form {
@@ -646,8 +606,9 @@ header img {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #f1f1f1;
+  color: white;
 }
+
 
 .title-section h1 {
   margin: 0;
@@ -795,24 +756,42 @@ header img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: hsl(0, 1%, 63%);
-  border-bottom: 1px solid #ddd;
+  padding: 15px 30px;
+  color: #ffffff; /* Beige text */
+  font-family: 'Arial', sans-serif;
 }
 
+/* Title section */
 .title-section h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 28px;
+  color: #F5F5DC; /* Beige text */
 }
 
 .title-section p {
   margin: 0;
-  color: #666;
+  color: #F5F5DC; /* Beige text */
+  font-size: 14px;
 }
 
+/* Actions section */
 .actions {
   display: flex;
   align-items: center;
+}
+
+/* Button style */
+.actions button {
+  background-color: #007FFF; /* Azure Blue */
+  color: #F5F5DC; /* Beige text */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background-color: #005B8C; /* Darker blue for hover effect */
 }
 
 .availability-button, .calendar-button, .notification, .share-idea, .profile-circle {
@@ -993,8 +972,8 @@ button .availability-text, button .date-text {
 /* Left Sidebar */
 .left-sidebar {
   width: 350px; /* Adjust width based on sidebar size */
-  background-color: #f4f4f4;
   padding: 10px;
+  background-image: url(./assets/gradient-image.svg);
   height: 80vh; /* Full height of the viewport */
   overflow-y: auto; /* Allows scrolling if content overflows */
   float: left; /* Makes the sidebar float to the left */
@@ -1004,23 +983,35 @@ button .availability-text, button .date-text {
 .rectangle {
   width: 100%; /* Full width of the sidebar */
   height: 60px; /* Rectangle height */
-  background-color: #ddd;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+  backdrop-filter: blur(10px); /* Blur the background behind the element */
   margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: Arial, sans-serif;
   font-size: 14px;
-  color: #333;
-  border-radius: 4px;
+  color: #fff;
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Light border for the glass effect */
   cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+  transition: all 0.3s ease; /* Smooth transition for hover effect */
 }
+
+.rectangle:hover {
+  background: rgba(255, 255, 255, 0.15); /* Increase opacity on hover */
+  backdrop-filter: blur(15px); /* Increase blur effect on hover */
+  box-shadow: 0 0 15px 5px rgba(255, 165, 0, 0.8); /* Yellow-orange box shadow around the rectangle */
+}
+
+
 
 /* Content Viewer beside Sidebar */
 .content-viewer {
   margin-left: 210px; /* Space between sidebar and content viewer */
   padding: 20px;
-  background-color: #ffffff;
+  background-image: url(./assets/gradient-image.svg);
   height: 80vh; /* Same height as the sidebar */
   overflow-y: auto; /* Allows scrolling if content is too long */
   display: block; /* Ensures it's positioned beside the sidebar */
@@ -1029,7 +1020,7 @@ button .availability-text, button .date-text {
 /* Content Styling */
 .viewer-content {
   font-family: Arial, sans-serif;
-  color: #333;
+  color: #fff;
   font-size: 16px;
   display: none; /* Hide by default */
 }
@@ -1282,4 +1273,947 @@ button .availability-text, button .date-text {
   }
 }
 
+
+
+.room-booking-form {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.room-booking-form h1 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+/* Form Group Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.form-group span {
+  color: red;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  height: 80px;
+}
+
+.name-fields {
+  display: flex;
+  gap: 10px;
+}
+
+.name-fields input {
+  flex: 1;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.radio-group label {
+  font-weight: normal;
+}
+
+.radio-group input {
+  margin-right: 5px;
+}
+
+/* Total Amount */
+.total-amount {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 8px;
+  text-align: center;
+}
+
+
+
+
+
+/* Reserve Button */
+.reserve {
+  display: flex;
+  background-color: #046c98;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 1px 1px 0.5px black;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  margin: 20px auto;
+  width: fit-content;
+}
+
+.reserve:hover {
+  background-color: #ffffffe1;
+  color: #046c98;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .name-fields {
+    flex-direction: column;
+  }
+}
+
+
+
+
+
+
+
+
+.contact-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+  background-image: url(./assets/gradient-image.svg);
+}
+
+.contact-container h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 600px) {
+  .contact-container {
+    padding: 1rem;
+  }
+}
+
+
+
+
+
+
+.bot-container {
+  max-width: 600px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+}
+
+.chat-window {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.chat-message {
+  padding: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.chat-message p {
+  margin: 0;
+}
+
+.input-area {
+  display: flex;
+  gap: 5px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.input-area button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.input-area button:hover {
+  background-color: #0056b3;
+}
+
+
+
+
+.tenant-menu {
+  width: 100%;
+  background-color: hsla(0, 0%, 100%, 0);
+  color: #000000;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.hamburger-menu {
+  font-size: 24px;
+  background: none;
+  color: #000000;
+  border: none;
+  cursor: pointer;
+  display: none;
+}
+
+.navbar-right {
+  display: flex;
+  gap: 15px;
+}
+
+.menu-item {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.menu-item:hover {
+  background-color: #555;
+}
+
+@media screen and (max-width: 768px) {
+  .hamburger-menu {
+    display: block;
+  }
+  
+  .navbar-right {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: #333;
+  }
+
+  .navbar-right.open {
+    display: flex;
+  }
+
+  .menu-item {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
+
+
+
+
+
+/* MODAL FOR TENANT REGISTRATION MODAL */
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Glassmorphic Modal container */
+.add_modal, .edit_modal {
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease;
+  position: relative;
+}
+
+
+/* Modal content */
+.add_modal h2, .edit_modal h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #fff; /* White text */
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* Form fields */
+.add_modal input, .edit_modal input,
+.add_modal textarea, .edit_modal textarea,
+.add_modal select, .edit_modal select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Light border */
+  border-radius: 5px;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.1); /* Transparent background */
+  color: #fff; /* White text */
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.add_modal input:focus, .edit_modal input:focus,
+.add_modal textarea:focus, .edit_modal textarea:focus,
+.add_modal select:focus, .edit_modal select:focus {
+  border-color: #007BFF;
+  background-color: rgba(255, 255, 255, 0.3); /* Slightly more opaque on focus */
+  outline: none;
+}
+
+/* Button styling */
+.add_modal button, .edit_modal button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+  backdrop-filter: blur(5px); /* Slight blur for buttons */
+}
+
+.add_modal button:hover, .edit_modal button:hover {
+  background-color: #0056b3;
+}
+
+/* Cancel Button */
+.add_modal .cancel-btn, .edit_modal .cancel-btn {
+  background-color: #f44336;
+}
+
+.add_modal .cancel-btn:hover, .edit_modal .cancel-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Scrollable content in the modal */
+.add_modal, .edit_modal {
+  padding-bottom: 20px;
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+/* Modal close button */
+.add_modal .close-btn, .edit_modal .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff; /* White color for close button */
+  cursor: pointer;
+}
+
+.add_modal .close-btn:hover, .edit_modal .close-btn:hover {
+  color: #f44336;
+}
+
+/* Modal content with overflow */
+.modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Button styles in the modal */
+.modal-actions button {
+  margin-right: 10px;
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.modal input,
+.modal textarea {
+  width: 60%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Light border */
+  border-radius: 4px;
+}
+
+.modal button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.modal button:hover {
+  background-color: #555;
+}
+
+
+
+
+/* TENANTS CARD */
+
+.tenants {
+  padding: 15px;
+  background-color: transparent;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tenants ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.tenants li {
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+  backdrop-filter: blur(10px); /* Apply blur effect */
+  border-radius: 15px; /* Rounded corners */
+  margin-bottom: 50px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+  transition: transform 0.5s, box-shadow 0.5s;
+  color: #fff; /* Set text color to white for contrast */
+}
+
+.tenants li:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+  transform: translateY(-5px); /* Slightly raise the card on hover */
+}
+
+
+.tenants h2 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  color: hsla(0, 0%, 100%, 0.922);
+}
+
+.tenants p {
+  margin: 5px 0;
+  font-size: 1rem;
+  color: hsla(0, 0%, 100%, 0.922);
+}
+
+.tenants p > strong {
+  color: #333;
+}
+
+.tenants p:nth-child(odd) {
+  font-weight: bold;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+
+
+
+.not-clickable {
+  pointer-events: none; /* Prevents clicks */
+  opacity: 0.5; /* Makes it look disabled */
+}
+
+
+/* TENANT MENU - LEASE and EXTEND */
+
+/* Glassmorphic Effect for Modals */
+.modal-terminate, .modal-extend {
+  background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Deeper shadow for better glass effect */
+  backdrop-filter: blur(12px); /* Frosted glass effect */
+  -webkit-backdrop-filter: blur(12px); /* For Safari */
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease;
+  position: relative;
+  color: #fff; /* White text for contrast */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border for glass effect */
+}
+
+/* Glassmorphic Effect for Modal Content */
+.modal-content-terminate, .modal-content-extend {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.25); /* Slightly more transparent background */
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for content */
+  backdrop-filter: blur(10px); /* Slightly less blur for content */
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  color: #000; /* Black text for better readability */
+  overflow-y: auto;
+  max-height: 80vh;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Content border for separation */
+}
+
+/* Modal Titles */
+.modal-terminate h2, .modal-extend h2 {
+  font-size: 1.75rem;
+  margin-bottom: 20px;
+  color: #000; /* Black text for the title */
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* Modal Buttons Container */
+.modal-actions {
+  display: flex;
+  justify-content: space-between; /* Even spacing between buttons */
+  gap: 20px; /* Add space between buttons */
+  margin-top: 20px;
+}
+
+/* Modal Buttons */
+.modal-terminate button, .modal-extend button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-terminate button:hover, .modal-extend button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* Cancel Button */
+.modal-terminate .cancel-btn, .modal-extend .cancel-btn {
+  background-color: #f44336;
+}
+
+.modal-terminate .cancel-btn:hover, .modal-extend .cancel-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Close Button */
+.modal-terminate .close-btn, .modal-extend .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-terminate .close-btn:hover, .modal-extend .close-btn:hover {
+  color: #f44336;
+  transform: rotate(90deg); /* Rotate on hover for effect */
+}
+
+/* Label and Input Styles */
+.modal-content-extend label {
+  display: block;
+  margin: 15px 0 5px;
+  font-size: 1rem;
+  color: #000; /* Black for contrast */
+}
+
+
+
+
+
+/* TENANT PAGE CSS */
+
+
+/* Sidebar Rectangles */
+.rectangle_tenant {
+  width: 100%; /* Full width of the sidebar */
+  height: 60px; /* Rectangle height */
+  background-color: hsl(200, 100%, 30%);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: hsl(0, 0%, 94%);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Content Viewer beside Sidebar */
+.content-viewer-tenant {
+  margin-left: 210px; /* Space between sidebar and content viewer */
+  padding: 20px;
+  height: 80vh; /* Same height as the sidebar */
+  overflow-y: auto; /* Allows scrolling if content is too long */
+  display: block; /* Ensures it's positioned beside the sidebar */
+}
+
+/* Content Styling */
+.viewer-content-tenant {
+  font-family: Arial, sans-serif;
+  color: #333;
+  font-size: 16px;
+  display: none; /* Hide by default */
+}
+
+/* Show active content */
+.viewer-content-tenant.active {
+  display: block; /* Show content when active */
+}
+
+/* REFRESH ANIMATION */
+
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-animate {
+  animation: spin 1s ease-in-out;
+}
+
+
+/* PAYMENTS TAB */
+
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: white;
+  font-size: 18px;
+}
+
+.navbar-title {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.navbar-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.navbar-buttons button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #fff;
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.navbar-buttons button:hover {
+  background-color: #45a049;
+}
+
+/* Form Styles */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+  margin: auto;
+}
+
+form label {
+  font-size: 16px;
+  color: #fff;
+}
+
+form select,
+form input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+form button {
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+form button:hover {
+  background-color: #45a049;
+}
+
+/* Payment Status Display */
+h4 {
+  color: #333;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+
+/* CONTENT STYLE */
+
+/* .content-container {
+  background-image: radial-gradient(at 15.72826799215623% 25.493277896613954%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 1) 0%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 0) 100%), radial-gradient(at 78.97276061616753% 1.33667754125244%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 1) 0%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 0) 100%), radial-gradient(at 75.84093081625203% 16.95725201146503%, hsla(179.04761904761907, 74.11764705882354%, 50%, 1) 0%, hsla(179.04761904761907, 74.11764705882354%, 50%, 0) 100%), radial-gradient(at 80.23228481234055% 24.400593679959282%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 1) 0%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 0) 100%), radial-gradient(at 73.75880237983483% 51.78228476087079%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 1) 0%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 0) 100%), radial-gradient(at 94.77399627513148% 69.77236721923126%, hsla(179.04761904761907, 74.11764705882354%, 50%, 1) 0%, hsla(179.04761904761907, 74.11764705882354%, 50%, 0) 100%), radial-gradient(at 42.35253303275681% 25.536919312454497%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 1) 0%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 0) 100%), radial-gradient(at 78.66055503639056% 36.38267062463774%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 1) 0%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 0) 100%), radial-gradient(at 14.76714630360425% 34.9344190584669%, hsla(179.04761904761907, 74.11764705882354%, 50%, 1) 0%, hsla(179.04761904761907, 74.11764705882354%, 50%, 0) 100%), radial-gradient(at 50.15166727583515% 58.37488289197592%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 1) 0%, hsla(194.76923076923075, 78.31325301204821%, 48.8235294117647%, 0) 100%), radial-gradient(at 16.70298770667533% 71.39009102263184%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 1) 0%, hsla(192.20338983050848, 70.23809523809523%, 67.05882352941177%, 0) 100%);
+} */
+
+/* CONTENT ANIMATION */
+
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0); /* Start at the leftmost position */
+  }
+  100% {
+    transform: translateX(-100%); /* Move the container to the left, sliding it all the way */
+  }
+}
+
+.room-list-wrapper {
+  display: flex;
+  overflow-x: hidden; /* Hide overflow */
+}
+
+.room-list {
+  display: flex;
+  flex-direction: row;
+  animation: scroll 30s linear infinite; /* Apply the smooth scroll */
+}
+
+
+.room-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  background-color: #fff;
+  text-align: center;
+  animation: slide-in 0.5s ease-out;
+  opacity: 1;
+}
+
+.room-card-visible {
+  opacity: 1;
+  animation: slideIn 0.5s ease-out;
+}
+
+.fade-image {
+  opacity: 0;
+  animation: fadeInOut 3s infinite;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+
+/* Apply styles to the scrollbar */
+.content-container::-webkit-scrollbar {
+  height: 10px; /* Height of the horizontal scrollbar */
+}
+
+.content-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5); /* Color of the scroll thumb */
+  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+}
+
+.content-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); /* Color of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the scrollbar track */
+}
+
+.content-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.8); /* Darker thumb when hovered */
+}
+
+
+
+/* FOOTER */
+
+
+.footer-content {
+  background-image: url(./assets/header.svg);
+  color: #000000;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  text-align: center;
+}
+
+.footer-section {
+  margin-bottom: 20px;
+}
+
+.footer-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #000000; /* Green color for section titles */
+}
+
+.footer-section p {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #000000;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+
+.footer-section ul li a {
+  text-decoration: none;
+  color: #000000;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+  color: #4CAF50; /* Change link color on hover */
+}
+
+.social-icons a {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: #ddd;
+  color: #333;
+  border-radius: 50%;
+  margin: 0 10px;
+  font-size: 16px;
+  text-align: center;
+  line-height: 30px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.social-icons a:hover {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.footer-bottom {
+  font-size: 0.875rem;
+  color: #000000;
+  margin-top: 20px;
+}
+
+.footer-bottom a {
+  text-decoration: none;
+  color: #bbb;
+}
+
+.footer-bottom a:hover {
+  color: #fff;
+}
 
