@@ -1,17 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserGraduate, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios for HTTP requests
+import UserInfo from "./UserInfo";
+import Logout from "./Logout";
+import { useAuth } from './AuthContext.jsx'; // Import AuthProvider
 
 function Header() {
+  const { isLoggedIn } = useAuth(); // Access the logged-in state
+  const [rooms, setRooms] = useState([]);
+  const [availableBeds, setAvailableBeds] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); // To toggle the modal visibility
-  const modalRef = useRef(null); // Reference to the modal element
-  const navigate = useNavigate(); // Get the navigate function
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Add this state
+  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  // Toggle the navigation menu
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
   // Open the modal when the Sign Up button is clicked
   const handleSignUpClick = () => {
@@ -32,18 +36,52 @@ function Header() {
   };
 
   // Add the event listener for outside clicks when the modal is open
+  // First useEffect: Check if the user is authenticated
   useEffect(() => {
-    if (showModal) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
+    const checkAuthentication = async () => {
+      try {
+        const authResponse = await axios.get("http://localhost:5001/api/current-user", {
+          withCredentials: true,
+        });
 
-    // Cleanup the event listener when the component unmounts
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+        if (authResponse.data && authResponse.data.user) {
+          setIsAuthenticated(true); // User is authenticated
+        } else {
+          setIsAuthenticated(false); // User is not authenticated
+        }
+      } catch (err) {
+        console.error("Error checking authentication:", err);
+        setIsAuthenticated(false);
+      }
     };
-  }, [showModal]);
+
+    checkAuthentication();
+  }, []); // Empty dependency array so this runs once after the component mounts
+
+
+  useEffect(() => {
+    // Fetch available beds from /rooms endpoint
+    const fetchRooms = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/rooms'); // Adjust the URL as needed
+        if (response.data && Array.isArray(response.data)) {
+          setRooms(response.data);
+
+          // Calculate the total available beds from the rooms
+          const totalAvailableBeds = response.data.reduce((acc, room) => {
+            return acc + (room.available_beds || 0); // Add the available_beds count for each room
+          }, 0);
+
+          setAvailableBeds(totalAvailableBeds); // Set the total available beds
+        }
+      } catch (error) {
+        console.error('Error fetching available beds:', error);
+      }
+    };
+
+    fetchRooms();
+  }, []); // This effect runs once to fetch available beds when the component mounts
+
 
   return (
     <div className="container-nav">
@@ -101,7 +139,7 @@ function Header() {
           {/* Bed Availability as a Button */}
           <button className="availability-button">
             <i className="fa fa-user"></i>
-            <div className="availability-text">2 Bed Availability</div>
+            <div className="availability-text">{availableBeds} Bed Availability</div>
           </button>
 
           {/* Calendar as a Button */}
