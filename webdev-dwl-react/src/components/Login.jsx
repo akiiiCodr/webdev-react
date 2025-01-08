@@ -1,45 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
+import { FaEye, FaEyeSlash } from "react-icons/fa"; 
 import GoogleAuth from "./GoogleAuth";
 import UserInfo from "./UserInfo";
 import Logout from "./Logout";
 import ToastNotification from "./ToastNotification";
 import BGM from "../assets/gradient-image.svg";
-import { useAuth } from './AuthContext.jsx'; // Import AuthProvider
+import { useAuth } from './AuthContext.jsx'; 
 
 function Login({ isLoggedIn }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [usernameOrEmail, setUsernameOrEmail] = useState("");  // Renamed to handle both username and email
+  const [usernameOrEmail, setUsernameOrEmail] = useState(""); 
   const [password, setPassword] = useState("");
-  const { setIsLoggedIn } = useAuth(); // Use setIsLoggedIn to update login state
+  const { setIsLoggedIn } = useAuth(); 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // State for password visibility
-  const [loginType, setLoginType] = useState("user"); // New state to handle login type (tenant or user)
+  const [showPassword, setShowPassword] = useState(false); 
+  const [loginType, setLoginType] = useState("user"); 
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
 
 
-// Fetch tenants on component mount
-useEffect(() => {
-  const fetchTenants = async () => {
-    try {
-      const response = await axios.get("http://localhost:5001/api/tenants");
-      if (response.status === 200) {
-        setTenants(response.data.tenants); // Assuming the API response has a 'tenants' field
-      } else {
-        console.error("Failed to fetch tenants: Invalid response status");
+  useEffect(() => {
+    const fetchTenants = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/api/tenants");
+        if (response.status === 200) {
+          setTenants(response.data.tenants); 
+        } else {
+          console.error("Failed to fetch tenants: Invalid response status");
+        }
+      } catch (error) {
+        console.error("Error fetching tenants:", error);
       }
-    } catch (error) {
-      console.error("Error fetching tenants:", error);
-    }
-  };
+    };
 
     fetchTenants();
 
-    // Apply background image to the body of the page
     document.body.style.backgroundImage = `url(${BGM})`;
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
@@ -47,22 +44,19 @@ useEffect(() => {
     document.body.style.minHeight = "100vh";
 
     return () => {
-      // Clean up background styles when component is unmounted
       document.body.style.backgroundImage = "";
       document.body.style.backgroundSize = "";
       document.body.style.backgroundPosition = "";
       document.body.style.backgroundRepeat = "";
       document.body.style.minHeight = "";
     };
-  }, []); // Empty dependency array ensures it runs only on mount
+  }, []); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Check if the login is for admin
     if (usernameOrEmail === "eaptadmin" && password === "eaptadmin") {
-      setIsLoggedIn(true); // Set the user as logged in(true);
-
+      setIsLoggedIn(true);
       setToastMessage("Admin login successful! Redirecting...");
       setToastType("success");
 
@@ -72,7 +66,6 @@ useEffect(() => {
       return;
     }
 
-    // Ensure both username/email and password are provided
     if (!usernameOrEmail || !password) {
       setToastMessage("Please enter both username/email and password.");
       setToastType("error");
@@ -80,7 +73,6 @@ useEffect(() => {
     }
 
     if (loginType === "tenant") {
-      // Tenant login logic
       try {
         const tenantResponse = await axios.post(
           `http://localhost:5001/api/login/?username=${usernameOrEmail}&password=${password}`
@@ -89,7 +81,7 @@ useEffect(() => {
         if (tenantResponse.data.tenant) {
           const { tenant_id, username } = tenantResponse.data.tenant;
 
-          setIsLoggedIn(true); // Set the user as logged in(true);
+          setIsLoggedIn(true);
           localStorage.setItem("tenant_id", tenant_id);
           localStorage.setItem("tenant_username", username);
 
@@ -102,16 +94,15 @@ useEffect(() => {
         } else {
           setToastMessage("Tenant login failed. Please check your credentials.");
           setToastType("error");
-          setIsLoggedIn(false); // Set the user as logged in to (false);
+          setIsLoggedIn(false); 
         }
       } catch (tenantError) {
         console.error("Tenant login failed:", tenantError);
         setToastMessage("Tenant login failed. Please check your credentials.");
         setToastType("error");
-        setIsLoggedIn(false); // Set the user as logged in to (false);
+        setIsLoggedIn(false); 
       }
     } else {
-      // Regular user login logic
       try {
         const accountResponse = await axios.post("http://localhost:5001/account/login", {
           usernameOrEmail,
@@ -121,7 +112,7 @@ useEffect(() => {
         if (accountResponse.status === 200) {
           const { username } = accountResponse.data;
 
-          setIsLoggedIn(true); // Set the user as logged in
+          setIsLoggedIn(true); 
           localStorage.setItem("user_username", username);
 
           setToastMessage("User login successful! Redirecting...");
@@ -143,152 +134,118 @@ useEffect(() => {
     }
   };
 
-
   return (
     <>
-
-
-      {/* Login Section */}
       <div className="login-section">
         <div className="login-box">
           <h1>Dwell-o</h1>
           <p>A Better Way to Dwell</p>
 
-        {!isAuthenticated || !isLoggedIn ? (
-          <>
-            <form method="POST" onSubmit={handleLogin} style={formStyle}>
-              {/* Select for tenant or user login */}
-              <div className="form_login_type" style={{ marginBottom: '16px' }}>
-                <select
-                  value={loginType}
-                  onChange={(e) => setLoginType(e.target.value)}
-                  style={selectStyle}
-                >
-                  <option style={{ color: "black" }} value="user">Regular User</option>
-                  <option style={{ color: "black" }} value="tenant">Tenant</option>
-                </select>
-              </div>
+          {!isLoggedIn ? (
+            <>
+              <form method="POST" onSubmit={handleLogin} style={formStyle}>
+                <div className="form_login_type" style={{ marginBottom: '16px' }}>
+                  <select
+                    value={loginType}
+                    onChange={(e) => setLoginType(e.target.value)}
+                    style={selectStyle}
+                  >
+                    <option style={{ color: "black" }} value="user">Regular User</option>
+                    <option style={{ color: "black" }} value="tenant">Tenant</option>
+                  </select>
+                </div>
 
-              {/* Floating Label for Username or Email */}
-              <div className="form_email_username" style={{ marginBottom: '16px', position: 'relative' }}>
-                <input
-                  className="input__email"
-                  type="text"
-                  placeholder=""
-                  value={usernameOrEmail}
-                  onChange={(e) => setUsernameOrEmail(e.target.value)}
-                  required
-                />
-                <label className="username_email__label">
-                  Username or Email
-                </label>
-              </div>
+                <div className="form_email_username" style={{ marginBottom: '16px', position: 'relative' }}>
+                  <input
+                    className="input__email"
+                    type="text"
+                    placeholder=""
+                    value={usernameOrEmail}
+                    onChange={(e) => setUsernameOrEmail(e.target.value)}
+                    required
+                  />
+                  <label className="username_email__label">
+                    Username or Email
+                  </label>
+                </div>
 
-              {/* Floating Label for Password */}
-              <div className="form_password" style={{ marginBottom: '16px', position: 'relative' }}>
-                <input
-                  className="input__password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  placeholder=""
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <label className="password_label">
-                  Password
-                </label>
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
+                <div className="form_password" style={{ marginBottom: '16px', position: 'relative' }}>
+                  <input
+                    className="input__password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    placeholder=""
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <label className="password_label">
+                    Password
+                  </label>
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '16px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#fff',
+                      fontSize: '20px',
+                    }}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+                <Link to="/forgot-password" className="forgot-password" style={forgotPasswordStyle}>
+                  Forgot password?
+                </Link>
+
+                <button
+                  type="submit"
+                  className="login-button"
                   style={{
-                    position: 'absolute',
-                    right: '16px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    cursor: 'pointer',
-                    color: '#fff',
-                    fontSize: '20px',
+                    display: 'inline-block',
+                    padding: '10px 20px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    textAlign: 'center',
+                    borderRadius: '5px',
                   }}
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
+                  Log In
+                </button>
+              </form>
+
+              <div style={googleAuthContainerStyle}>
+                <GoogleAuth />
               </div>
-              <Link to="/forgot-password" className="forgot-password" style={forgotPasswordStyle}>
-                Forgot password?
-              </Link>
 
-            <Link
-              to="/user-screen" // Update the link to a valid route in your app
-              className="login-button"
-              style={{
-                display: 'inline-block',
-                padding: '10px 20px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                textAlign: 'center',
-                textDecoration: 'none',
-                borderRadius: '5px',
-              }}
-            >
-              Log In
-            </Link>
-          </form>
-
-            <div style={googleAuthContainerStyle}>
-              <GoogleAuth />
-            </div>
-
-            <p className="signup-text" style={signupTextStyle}>
-              Don't have an account?{" "}
-              <Link to="/signup" className="menu-item">
-                Sign Up
-              </Link>
-            </p>
-          </>
-        ) : (
-          <>
-            <UserInfo />
-            <Logout onLogout={() => setIsAuthenticated(false)} />
-          </>
-        )}
-
-
-        
+              <p className="signup-text" style={signupTextStyle}>
+                Don't have an account?{" "}
+                <Link to="/signup" className="menu-item">
+                  Sign Up
+                </Link>
+              </p>
+            </>
+          ) : (
+            <>
+              <UserInfo />
+              <Logout onLogout={() => setIsLoggedIn(false)} />
+            </>
+          )}
+        </div>
       </div>
-      {/* Automatically rendered toast */}
+
       {toastMessage && (
-          <ToastNotification
-            message={toastMessage}
-            type={toastType}
-            onClose={() => setToastMessage("")}
-          />
-        )}
-    </div>
+        <ToastNotification
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setToastMessage("")}
+        />
+      )}
+    </>
   );
 }
-
-// Glassmorphism Styles
-const loginSectionStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  minHeight: '100vh',
-  backdropFilter: 'blur(10px)', 
-  backgroundColor: 'rgba(0, 0, 0, 0.4)', 
-};
-
-const loginBoxStyle = {
-  backgroundColor: 'rgba(255, 255, 255, 0.12)', 
-  backdropFilter: 'blur(10px)', 
-  padding: '30px',
-  borderRadius: '15px',
-  width: '100%',
-  maxWidth: '500px',
-  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-  margin: 'auto',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-};
 
 const formStyle = {
   backgroundColor: 'rgba(0, 0, 0, 0.4)', 
@@ -310,17 +267,6 @@ const selectStyle = {
   color: '#fff',
   fontSize: '16px',
   marginBottom: '16px',
-};
-
-const buttonStyle = {
-  display: 'inline-block',
-  padding: '12px 20px',
-  backgroundColor: '#007bff',
-  color: 'white',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-  transition: 'background-color 0.3s ease',
 };
 
 const forgotPasswordStyle = {

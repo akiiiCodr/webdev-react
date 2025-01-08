@@ -1,0 +1,95 @@
+[33m4e340d6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnew-features[m[33m, [m[1;31morigin/new-features[m[33m)[m HEAD@{0}: checkout: moving from main to new-features
+[33m7dd60d2[m[33m ([m[1;32mmain[m[33m)[m HEAD@{1}: reset: moving to HEAD
+[33m7dd60d2[m[33m ([m[1;32mmain[m[33m)[m HEAD@{2}: reset: moving to HEAD~
+[33m5cef897[m HEAD@{3}: reset: moving to HEAD~
+[33m9933ccf[m HEAD@{4}: commit (merge): Merge branch 'main' of https://github.com/akiiiCodr/webdev-react
+[33m5cef897[m HEAD@{5}: commit: FINAL AT LAST.
+[33m7dd60d2[m[33m ([m[1;32mmain[m[33m)[m HEAD@{6}: reset: moving to HEAD~
+[33m1217ab8[m HEAD@{7}: commit: polishing
+[33m7dd60d2[m[33m ([m[1;32mmain[m[33m)[m HEAD@{8}: commit: FINAL COMMIT by notsungjeywoo
+[33me22f6c3[m HEAD@{9}: reset: moving to HEAD~
+[33m934cc5a[m HEAD@{10}: reset: moving to HEAD~
+[33m4f0bce2[m HEAD@{11}: commit (merge): Merge branch 'main' of https://github.com/akiiiCodr/webdev-react
+[33m934cc5a[m HEAD@{12}: commit: FINAL COMMIT by notsungjeywoo
+[33me22f6c3[m HEAD@{13}: reset: moving to HEAD~
+[33ma8ab5c4[m HEAD@{14}: reset: moving to HEAD~
+[33m9624238[m HEAD@{15}: commit (merge): Merge branch 'main' of https://github.com/akiiiCodr/webdev-react
+[33ma8ab5c4[m HEAD@{16}: commit: FINAL COMMIT by notsungjeywoo
+[33me22f6c3[m HEAD@{17}: reset: moving to HEAD~
+[33m6b041a6[m HEAD@{18}: checkout: moving from main to main
+[33m6b041a6[m HEAD@{19}: commit: FINAL COMMIT by notsungjeywoo
+[33me22f6c3[m HEAD@{20}: reset: moving to HEAD~
+[33mddffe38[m HEAD@{21}: reset: moving to HEAD~
+[33m4e4248e[m HEAD@{22}: reset: moving to HEAD~
+[33m6332a10[m HEAD@{23}: commit (merge): Merge branch 'main' of https://github.com/akiiiCodr/webdev-react
+[33m4e4248e[m HEAD@{24}: commit: FINAL COMMIT by notsungjeywoo
+[33mddffe38[m HEAD@{25}: commit: FINAL COMMIT by notsungjeywoo
+[33me22f6c3[m HEAD@{26}: commit: FIX GLASSMORPHIC in TENANT PROFILE
+[33m73d0065[m HEAD@{27}: commit (merge): Merge branch 'main' of https://github.com/akiiiCodr/webdev-react
+[33mce966e1[m HEAD@{28}: commit: PARTIAL FINISHED CSS COMPLETED
+[33m5ca12db[m HEAD@{29}: reset: moving to HEAD~
+[33me838cfc[m HEAD@{30}: commit: PARTIAL FINISHED CSS COMPLETED
+[33m5ca12db[m HEAD@{31}: pull --tags origin main: Fast-forward
+[33me3071fb[m HEAD@{32}: commit: change color palette of header
+[33m9347ef4[m HEAD@{33}: commit: CONTENT ADDED
+[33mf42f037[m HEAD@{34}: commit: ADDED ROOM AVAILABILITY IN CONTENT
+[33m1571b11[m HEAD@{35}: pull --tags origin main: Fast-forward
+[33m5e0a829[m HEAD@{36}: commit: SIGNUP COMPLETED
+[33m332c2bd[m HEAD@{37}: commit: BOOK A ROOM PARTIAL IMPLEMENTED
+[33mbe20d51[m HEAD@{38}: commit: CANCEL DEPLOYMENT AS IT REQUIRES A LOT OF WORK
+[33m7fcfa07[m HEAD@{39}: commit: move backend server.js
+[33m18fd17e[m HEAD@{40}: commit: backend deployment
+[33mf1bbc95[m HEAD@{41}: commit: testing
+[33maac8a40[m HEAD@{42}: commit: setup testing deployment
+[33m41d590d[m HEAD@{43}: commit: TOAST NOTIFICATION INTEGRATED
+[33m22c8531[m HEAD@{44}: pull --tags origin main: Merge made by the 'ort' strategy.
+[33mb2dff29[m HEAD@{45}: commit: BED AVAILABILITY NOW ACCESSIBLE
+[33m34e02fd[m HEAD@{46}: reset: moving to HEAD~
+[33m5b45b39[m HEAD@{47}: reset: moving to HEAD~
+[33mba51f2c[m HEAD@{48}: commit: BED AVAILABILITY NOW ACCESSIBLE
+[33m5b45b39[m HEAD@{49}: reset: moving to HEAD~
+[33m81b5959[m HEAD@{50}: commit: BED AVAILABILITY NOW ACCESSIBLE
+[33m5b45b39[m HEAD@{51}: checkout: moving from main to main
+[33m5b45b39[m HEAD@{52}: commit: FIX server.js foreign keys error
+[33m34e02fd[m HEAD@{53}: pull --tags origin main: Merge made by the 'ort' strategy.
+[33me622461[m HEAD@{54}: commit: FIXED
+[33m003a741[m HEAD@{55}: reset: moving to HEAD~
+[33me69f688[m HEAD@{56}: reset: moving to HEAD~
+[33mb92bcef[m HEAD@{57}: reset: moving to HEAD~
+[33m333c23d[m HEAD@{58}: pull --tags origin main: Merge made by the 'ort' strategy.
+[33mb92bcef[m HEAD@{59}: commit: CONTRACT INTEGRATED CAN BE DOWNLOAD ALSO
+[33me69f688[m HEAD@{60}: reset: moving to HEAD~
+[33m41b0cc1[m HEAD@{61}: reset: moving to HEAD~
+[33m84272c0[m HEAD@{62}: commit: CONTRACT INTEGRATED CAN BE DOWNLOAD ALSO
+[33m41b0cc1[m HEAD@{63}: commit: CONTRACT INTEGRATED CAN BE DOWNLOAD ALSO
+[33me69f688[m HEAD@{64}: commit: CONTRACT PANEL ADMIN
+[33m003a741[m HEAD@{65}: pull --tags origin main: Merge made by the 'ort' strategy.
+[33me4abf99[m HEAD@{66}: commit: CONTRACT PANEL ADMIN
+[33mb1a9f03[m HEAD@{67}: checkout: moving from main to main
+[33mb1a9f03[m HEAD@{68}: reset: moving to HEAD~
+[33m7e52d25[m HEAD@{69}: commit: CONTRACT PANEL ADMIN
+[33mb1a9f03[m HEAD@{70}: commit: FIXED TENANT DASHBOARD except conracts and info
+[33mc2ce166[m HEAD@{71}: pull --tags origin main: Merge made by the 'ort' strategy.
+[33m2f712f7[m HEAD@{72}: commit: FIXED TENANT DASHBOARD except contracts and info
+[33m7cbaa62[m HEAD@{73}: reset: moving to HEAD~
+[33mb755966[m HEAD@{74}: checkout: moving from main to main
+[33mb755966[m HEAD@{75}: commit: FIXED TENANT DASHBOARD except conracts and info
+[33m7cbaa62[m HEAD@{76}: commit: UNFIXED EDIT TENANT PROFILE
+[33m048ccfc[m HEAD@{77}: commit: ADMIN PAYMENT and TENANT DASHBOARD ESTABLISHED
+[33m53d5991[m HEAD@{78}: reset: moving to HEAD~
+[33m7856e88[m HEAD@{79}: commit: TG BOT and TENANTS MENU ALL FIXED
+[33m53d5991[m HEAD@{80}: pull --tags origin main: Fast-forward
+[33m6c84320[m HEAD@{81}: checkout: moving from ADMIN-PANEL-branch to main
+[33m8c94570[m[33m ([m[1;31morigin/ADMIN-PANEL-branch[m[33m, [m[1;32mADMIN-PANEL-branch[m[33m)[m HEAD@{82}: reset: moving to HEAD
+[33m8c94570[m[33m ([m[1;31morigin/ADMIN-PANEL-branch[m[33m, [m[1;32mADMIN-PANEL-branch[m[33m)[m HEAD@{83}: commit (merge): TG BOT and TENANTS MENU ALL FIXED
+[33mc3b1190[m HEAD@{84}: commit: TG BOT and TENANTS MENU ALL FIXED
+[33m6c84320[m HEAD@{85}: reset: moving to HEAD~
+[33medf1d2a[m HEAD@{86}: commit: TG BOT and TENANTS MENU ALL FIXED
+[33m6c84320[m HEAD@{87}: reset: moving to HEAD~
+[33me98e550[m HEAD@{88}: commit: TENANTS MENU ALL FIXED
+[33m6c84320[m HEAD@{89}: checkout: moving from ADMIN-PANEL-branch to ADMIN-PANEL-branch
+[33m6c84320[m HEAD@{90}: checkout: moving from ADMIN-PANEL-branch to ADMIN-PANEL-branch
+[33m6c84320[m HEAD@{91}: checkout: moving from main to ADMIN-PANEL-branch
+[33m6c84320[m HEAD@{92}: commit: FIXED TENANTMENU(ADMIN PANEL)
+[33m05afd42[m HEAD@{93}: commit: FIXED TENANTMENU(ADMIN PANEL)
+[33me7c7683[m HEAD@{94}: clone: from https://github.com/akiiiCodr/webdev-react.git
