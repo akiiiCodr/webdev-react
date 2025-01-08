@@ -350,10 +350,10 @@ const Register = () => {
                   onChange={handleInputChange}
                   style={styles.input}
                 >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="" style={{ color: "black" }}>Select Gender</option>
+                  <option value="Male" style={{ color: "black" }}>Male</option>
+                  <option value="Female" style={{ color: "black" }}>Female</option>
+                  <option value="Other" style={{ color: "black" }}>Other</option>
                 </select>
               )}
               {index === 6 && (
@@ -363,9 +363,9 @@ const Register = () => {
                   onChange={handleInputChange}
                   style={styles.input}
                 >
-                  <option value="">Select Account</option>
-                  <option value="Student">Student</option>
-                  <option value="Guest">Guest</option>
+                  <option value="" style={{ color: "black" }}>Select Account</option>
+                  <option value="Student" style={{ color: "black" }}>Student</option>
+                  <option value="Guest" style={{ color: "black" }}>Guest</option>
                 </select>
               )}
               {index === 7 && (
